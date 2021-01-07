@@ -16,8 +16,8 @@
   },
   "browserslist": "last 4 version",
   "resolutions": {
-    "browserslist": "4.14.2",
-    "caniuse-lite": "1.0.30001129"
+    "browserslist": "4.16.1",
+    "caniuse-lite": "1.0.30001173"
   },
   "postcss": {
     "plugins": {
