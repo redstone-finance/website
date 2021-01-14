@@ -1695,17 +1695,7 @@ browserify-zlib@^0.2.0:
   dependencies:
     pako "~1.0.5"
 
-browserslist@4.14.2, browserslist@^4.0.0, browserslist@^4.1.0, browserslist@^4.12.0, browserslist@^4.14.5, browserslist@^4.16.0, browserslist@^4.6.4:
-  version "4.14.2"
-  resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-4.14.2.tgz#1b3cec458a1ba87588cc5e9be62f19b6d48813ce"
-  integrity sha512-HI4lPveGKUR0x2StIz+2FXfDk9SfVMrxn6PLh1JeGUwcuoDkdKZebWiyLRJ68iIPDpMI4JLVDf7S7XzslgWOhw==
-  dependencies:
-    caniuse-lite "^1.0.30001125"
-    electron-to-chromium "^1.3.564"
-    escalade "^3.0.2"
-    node-releases "^1.1.61"
-
-browserslist@^4.16.1:
+browserslist@4.16.1, browserslist@^4.0.0, browserslist@^4.1.0, browserslist@^4.12.0, browserslist@^4.14.5, browserslist@^4.16.0, browserslist@^4.16.1, browserslist@^4.6.4:
   version "4.16.1"
   resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-4.16.1.tgz#bf757a2da376b3447b800a16f0f1c96358138766"
   integrity sha512-UXhDrwqsNcpTYJBTZsbGATDxZbiVDsx6UjpmRUmtnP10pr8wAYr5LgFoEFw9ixriQH2mv/NX2SfGzE/o8GndLA==
@@ -1832,12 +1822,7 @@ caniuse-api@^3.0.0:
     lodash.memoize "^4.1.2"
     lodash.uniq "^4.5.0"
 
-caniuse-lite@1.0.30001129, caniuse-lite@^1.0.0, caniuse-lite@^1.0.30000981, caniuse-lite@^1.0.30001109, caniuse-lite@^1.0.30001125:
-  version "1.0.30001129"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001129.tgz#e6514b94c0ef50f98cf7476daa91228ddd2ef7bc"
-  integrity sha512-9945fTVKS810DZITpsAbuhQG7Lam0tEfVbZlsBaCFZaszepbryrArS05PWmJSBQ6mta+v9iz0pUIAbW1eBILIg==
-
-caniuse-lite@^1.0.30001173:
+caniuse-lite@1.0.30001173, caniuse-lite@^1.0.0, caniuse-lite@^1.0.30000981, caniuse-lite@^1.0.30001109, caniuse-lite@^1.0.30001173:
   version "1.0.30001173"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001173.tgz#3c47bbe3cd6d7a9eda7f50ac016d158005569f56"
   integrity sha512-R3aqmjrICdGCTAnSXtNyvWYMK3YtV5jwudbq0T7nN9k4kmE4CBuwPqyJ+KBzepSTh0huivV2gLbSMEzTTmfeYw==
@@ -2062,7 +2047,7 @@ commander@^5.0.0:
   resolved "https://registry.yarnpkg.com/commander/-/commander-5.1.0.tgz#46abbd1652f8e059bddaef99bbdcb2ad9cf179ae"
   integrity sha512-P0CysNDQ7rtVw4QIQtm+MRxV66vKFSvlsQvGYXZWR3qFU0jlMKHZZZgw8e+8DSah4UDKMqnknRDQz+xuQXQ/Zg==
 
-community-js@^1.0.15, community-js@^1.1.14:
+community-js@^1.0.15:
   version "1.1.14"
   resolved "https://registry.yarnpkg.com/community-js/-/community-js-1.1.14.tgz#ce5dea061cee8cb87810f7f578b51a45c1353210"
   integrity sha512-EiCqYCdjcdkXBX+A2uhjBRslvoZv9c+CDIgrLUi9UO+DOdeKd9I2Yz/j7JoAiF9549z+upUUJaoGwcfTk10kdA==
@@ -2070,6 +2055,16 @@ community-js@^1.0.15, community-js@^1.1.14:
     arweave "^1.9.1"
     axios "^0.21.0"
     smartweave "^0.4.21"
+    tiny-worker "^2.3.0"
+
+community-js@^1.1.15:
+  version "1.1.15"
+  resolved "https://registry.yarnpkg.com/community-js/-/community-js-1.1.15.tgz#d61ef0d672faf4e29131f1a061c715f03049be9b"
+  integrity sha512-Ynp5lwokeSKUL948pDEtAa2oj9gyUmEi86IU3Bw0mLYHenPZOdPnsLkBJs8iY5hO9YX4Nc4R2Z01q4D9ys1Zrg==
+  dependencies:
+    arweave "^1.9.1"
+    axios "^0.21.0"
+    smartweave "^0.4.23"
     tiny-worker "^2.3.0"
 
 component-emitter@^1.2.1:
@@ -2666,7 +2661,7 @@ ee-first@1.1.1:
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
   integrity sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=
 
-electron-to-chromium@^1.3.564, electron-to-chromium@^1.3.634:
+electron-to-chromium@^1.3.634:
   version "1.3.634"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.634.tgz#82ea400f520f739c4f6ff00c1f7524827a917d25"
   integrity sha512-QPrWNYeE/A0xRvl/QP3E0nkaEvYUvH3gM04ZWYtIa6QlSpEetRlRI1xvQ7hiMIySHHEV+mwDSX8Kj4YZY6ZQAw==
@@ -2765,7 +2760,7 @@ es-to-primitive@^1.2.1:
     is-date-object "^1.0.1"
     is-symbol "^1.0.2"
 
-escalade@^3.0.2, escalade@^3.1.1:
+escalade@^3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/escalade/-/escalade-3.1.1.tgz#d8cfdc7000965c5a0174b4a82eaa5c0552742e40"
   integrity sha512-k0er2gUkLf8O0zKJiAhmkTnJlTvINGv7ygDNPbeIsX/TJjGJZHuh9B2UxbsaEkmlEo9MfhrSzmhIlhRlI2GXnw==
@@ -4346,7 +4341,7 @@ node-libs-browser@^2.0.0:
     util "^0.11.0"
     vm-browserify "^1.0.1"
 
-node-releases@^1.1.61, node-releases@^1.1.69:
+node-releases@^1.1.69:
   version "1.1.69"
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.69.tgz#3149dbde53b781610cd8b486d62d86e26c3725f6"
   integrity sha512-DGIjo79VDEyAnRlfSqYTsy+yoHd2IOjJiKUozD2MV2D85Vso6Bug56mb9tT/fY5Urt0iqk01H7x+llAruDR2zA==
@@ -6203,6 +6198,17 @@ smartweave@^0.4.21:
   version "0.4.21"
   resolved "https://registry.yarnpkg.com/smartweave/-/smartweave-0.4.21.tgz#2c40e0faf4d45f67f32367b88b3fa39a29faa1bc"
   integrity sha512-DgNdYzCeG6YEeG2Cxg7Bqvgkgii7PVR+Ni53MZ/Oflv9EWu/YNnnXvu5KpoveSfkNHDX7TYZL1iLnjVy9jLkZA==
+  dependencies:
+    "@weavery/clarity" "^0.1.5"
+    arweave "^1.9.1"
+    bignumber.js "^9.0.1"
+    loglevel "^1.7.0"
+    yargs "^16.1.0"
+
+smartweave@^0.4.23:
+  version "0.4.23"
+  resolved "https://registry.yarnpkg.com/smartweave/-/smartweave-0.4.23.tgz#8037102b839f4e324fe2aaa605d02e8a14bd0a50"
+  integrity sha512-vU9iAPKZRnjVaRFmRdvkAKy1e+oWYo4mj/7s36VOumYX7jceBYQPb2cwEILgghaimWpIvdHi1kcfs0zcqcNlHg==
   dependencies:
     "@weavery/clarity" "^0.1.5"
     arweave "^1.9.1"

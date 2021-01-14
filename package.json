@@ -69,7 +69,7 @@
     "autoprefixer": "^9.8.6",
     "axios": "^0.21.1",
     "bootstrap": "twbs/bootstrap#4fc701f",
-    "community-js": "^1.1.14",
+    "community-js": "^1.1.15",
     "express": "^4.17.1",
     "feather-icons": "^4.28.0",
     "jdenticon": "^3.0.1",
