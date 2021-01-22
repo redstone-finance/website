@@ -1,5 +1,4 @@
 import { spawn, ModuleThread } from 'threads';
-import { run } from 'ar-gql';
 
 import $ from '../libs/jquery';
 import { BalancesWorker } from '../workers/balances';
@@ -15,8 +14,6 @@ export default class PageDashboard {
   private firstCall = true;
   private balancesWorker: ModuleThread<BalancesWorker>;
   private votesWorker: ModuleThread<VotesWorker>;
-  private cursor: string = '';
-  private currentPage = 1;
 
   constructor() {}
 
@@ -44,8 +41,6 @@ export default class PageDashboard {
   }
 
   public async syncPageState() {
-    this.cursor = '';
-
     const market = new Market(app.getCommunityId(), await app.getAccount().getWallet());
     if (await app.getAccount().isLoggedIn()) {
       market.showBuyButton();
@@ -121,40 +116,10 @@ export default class PageDashboard {
       .parents('.dimmer')
       .removeClass('active');
 
-    const activity = new ActivityTable(`
-      query($commId: [String!]!, $cursor: String!) {
-        transactions(
-          tags: [
-            { name: "Service", values: "CommunityXYZ" }
-            { name: "Community-ID", values: $commId }
-          ]
-          first: 50
-          after: $cursor
-        ) {
-          pageInfo {
-            hasNextPage
-          }
-          edges {
-            cursor
-            node {
-              id
-              tags {
-                name
-                value
-              }
-              owner {
-                address
-              }
-              block {
-                timestamp
-              }
-            }
-          }
-        }
-      }
-    `, {
-      commId: app.getCommunityId(),
-      cursor: this.cursor
+    const activity = new ActivityTable({
+      owners: [],
+      commId: [app.getCommunityId()],
+      cursor: ''
     }, false, 5);
     activity.show();
   }

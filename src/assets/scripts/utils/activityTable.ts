@@ -10,6 +10,7 @@ export default class ActivityTable {
   private currentPage: number = 1;
   private limit: number = 10;
   private isMembersPage: boolean = true;
+  private isAll: boolean = true;
 
   private hasNextPage: boolean = false;
   private cursor: string = '';
@@ -23,29 +24,30 @@ export default class ActivityTable {
     date: string;
   }[] = [];
 
-  private query: string;
-  private vars: Record<string, unknown> = {};
+  private vars: {
+    commId: string[];
+    owners: string[];
+    cursor: string;
+  } = {commId: [''], owners: [''], cursor: ''};
 
-  constructor(gqlQuery: string, gqlVariables: Record<string, unknown>, isMembersPage: boolean = true, limit: number = 10) {
+  constructor(gqlVariables: {commId: string[], owners: string[], cursor: string}, isMembersPage: boolean = true, limit: number = 10) {
     this.isMembersPage = isMembersPage;
     this.limit = limit;
-
-    this.query = gqlQuery;
     this.vars = gqlVariables;
     this.vars.cursor = '';
   }
 
-  async show() {
+  async show(forceUpdate: boolean = false) {
     await this.removeEvents();
     
     $('.act-cards').find('.dimmer').addClass('active');
 
-    if(((this.currentPage*this.limit) >= this.items.length && this.hasNextPage) || !this.cursor.length) {
+    if(forceUpdate || ((this.currentPage*this.limit) >= this.items.length && this.hasNextPage) || !this.cursor.length) {
       await this.request();
     }
 
     const res = await Promise.all([this.showHeader(), this.showContent()]);
-    $('.comm-activity').html(res.join(''));
+    $('.act-cards').find('.comm-activity').html(res.join(''));
     $('.act-cards').find('.card-footer').html(await this.showFooter());
     $('.act-cards').find('.dimmer.active').removeClass('active');
 
@@ -133,7 +135,44 @@ export default class ActivityTable {
   private async request() {
     this.items = [];
 
-    const res = await run(this.query, this.vars);
+    let query = `
+      query(${this.vars.commId.length ? '$commId: [String!]!, ' : ''}${this.vars.owners.length? '$owners: [String!]!, ' : ''} $cursor: String!) {
+        transactions(
+          tags: [
+            ${this.isAll? '{ name: "Type", values: "ArweaveActivity" }' : '{ name: "Service", values: "CommunityXYZ" }'}
+            ${this.vars.commId.length? '{ name: "Community-ID", values: $commId }' : ''}
+          ]
+          ${this.vars.owners.length? 'owners: $owners' : ''}
+          first: 50
+          after: $cursor
+        ) {
+          pageInfo {
+            hasNextPage
+          }
+          edges {
+            cursor
+            node {
+              id
+              tags {
+                name
+                value
+              }
+              owner {
+                address
+              }
+              block {
+                timestamp
+              }
+            }
+          }
+        }
+      }
+    `;
+
+    console.log(query);
+    console.log(this.vars);
+
+    const res = await run(query, this.vars);
     const edges = res.data.transactions.edges;
     if(!edges.length) {
       return;
@@ -191,6 +230,16 @@ export default class ActivityTable {
   }
 
   private async events() {
+    $('.act-cards').on('change', '.act-filter', e => {
+      const $filter = $('.act-cards').find('.act-filter');
+      if($filter.is(':checked')) {
+        this.isAll = true;
+      } else {
+        this.isAll = false;
+      }
+      this.show(true);
+    });
+
     $('.act-cards').on('click', '.page-link', e => {
       e.preventDefault();
 
@@ -210,8 +259,7 @@ export default class ActivityTable {
       }
     });
   }
-
   private async removeEvents() {
-    $('.act-cards').off('click');
+    $('.act-cards').off('click').off('change');
   }
 }

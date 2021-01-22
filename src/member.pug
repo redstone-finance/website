@@ -47,7 +47,14 @@ html(lang="en")
         .container
           .row.act-cards: .col-12
             .card
-              .card-header: .card-title Activity
+              .card-header
+                .card-title Activity
+                .card-actions.row
+                  .col-auto Governance only
+                  .col-auto
+                    label.form-check.form-switch.m-0
+                      input.act-filter.form-check-input.position-static(type="checkbox", checked)
+                  .col-auto All
               .dimmer.active
                 .loader
                 .dimmer-content

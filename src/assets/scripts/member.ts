@@ -11,13 +11,10 @@ import { ModuleThread, spawn } from 'threads';
 import { TokensWorker } from './workers/tokens';
 import Utils from './utils/utils';
 import ActivityTable from './utils/activityTable';
-import { run } from 'ar-gql';
 
 class MemberPage {
   private hash: string;
   private hashes: string[];
-  private cursor: string = '';
-  private currentPage: number = 1;
   private activityTable: ActivityTable;
 
   constructor() {
@@ -45,40 +42,10 @@ class MemberPage {
   }
 
   private async pageChanged() {
-    this.activityTable = new ActivityTable(`
-      query($owners: [String!]!, $cursor: String!) {
-        transactions(
-          owners: $owners
-          tags: [
-            { name: "Type", values: "ArweaveActivity" }
-          ]
-          first: 10
-          after: $cursor
-        ) {
-          pageInfo {
-            hasNextPage
-          }
-          edges {
-            cursor
-            node {
-              id
-              tags {
-                name
-                value
-              }
-              owner {
-                address
-              }
-              block {
-                timestamp
-              }
-            }
-          }
-        }
-      }
-    `, {
+    this.activityTable = new ActivityTable({
+      commId: [],
       owners: [this.hashes[0]],
-      cursor: this.cursor
+      cursor: ''
     });
   
     const address = this.hashes[0];
@@ -274,25 +241,6 @@ class MemberPage {
     $('.copy').on('click', e => {
       e.preventDefault();
       Utils.copyToClipboard(this.hashes[0]);
-    });
-
-    $('.next').on('click', e => {
-      e.preventDefault();
-
-      if($('.next').parent().hasClass('disabled')) return;
-
-      this.currentPage++;
-      this.loadActivity();
-    });
-    $('.prev').on('click', e => {
-      e.preventDefault();
-
-      if($('.prev').parent().hasClass('disabled')) return;
-
-      this.cursor = '';
-
-      this.currentPage = 1;
-      this.loadActivity();
     });
   }
 }
