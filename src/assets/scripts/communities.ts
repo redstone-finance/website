@@ -113,7 +113,7 @@ const loadCards = async () => {
     try {
       const community = new Community(arweave);
       await community.setCommunityTx(comm);
-      state = await community.getState();
+      state = await community.getState(true);
     } catch (e) {
       return go(++current);
     }

@@ -95,4 +95,19 @@
             span.votes-completed
             |  completed
 
+  .row.act-cards: .col-12
+    .card
+      .card-header
+        .card-title Activity
+      .table-responsive.dimmer.active
+        .loader
+        .dimmer-content
+          table.comm-activity.table.table-mobile-md.table-vcenter.card-table
+            thead
+              tr
+                th Member
+                th Action
+                th Date
+      .card-footer.d-flex.align-items-center
+        
 include partials/verto

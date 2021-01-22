@@ -1,4 +1,5 @@
 import { spawn, ModuleThread } from 'threads';
+import { run } from 'ar-gql';
 
 import $ from '../libs/jquery';
 import { BalancesWorker } from '../workers/balances';
@@ -7,12 +8,15 @@ import Utils from '../utils/utils';
 import app from '../app';
 import arweave from '../libs/arweave';
 import Market from '../models/market';
+import ActivityTable from '../utils/activityTable';
 
 export default class PageDashboard {
   // workers
   private firstCall = true;
   private balancesWorker: ModuleThread<BalancesWorker>;
   private votesWorker: ModuleThread<VotesWorker>;
+  private cursor: string = '';
+  private currentPage = 1;
 
   constructor() {}
 
@@ -28,14 +32,20 @@ export default class PageDashboard {
 
     $('.link-home').addClass('active');
     this.syncPageState();
+
+    this.events();
   }
 
   async close() {
+    await this.removeEvents();
+
     $('.link-home').removeClass('active');
     $('.page-dashboard').hide();
   }
 
   public async syncPageState() {
+    this.cursor = '';
+
     const market = new Market(app.getCommunityId(), await app.getAccount().getWallet());
     if (await app.getAccount().isLoggedIn()) {
       market.showBuyButton();
@@ -110,5 +120,45 @@ export default class PageDashboard {
       .text(`${votesAll - votesActive} `)
       .parents('.dimmer')
       .removeClass('active');
+
+    const activity = new ActivityTable(`
+      query($commId: [String!]!, $cursor: String!) {
+        transactions(
+          tags: [
+            { name: "Service", values: "CommunityXYZ" }
+            { name: "Community-ID", values: $commId }
+          ]
+          first: 10
+          after: $cursor
+        ) {
+          pageInfo {
+            hasNextPage
+          }
+          edges {
+            cursor
+            node {
+              id
+              tags {
+                name
+                value
+              }
+              owner {
+                address
+              }
+              block {
+                timestamp
+              }
+            }
+          }
+        }
+      }
+    `, {
+      commId: app.getCommunityId(),
+      cursor: this.cursor
+    }, false);
+    activity.show();
   }
+
+  private async events() {}
+  private async removeEvents() {}
 }

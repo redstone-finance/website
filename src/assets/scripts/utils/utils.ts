@@ -1,9 +1,10 @@
 import jdenticon from 'jdenticon';
+import Toast from './toast';
 
 export default class Utils {
   static async pause(timeout: number = 500) {
     return new Promise((resolve) => {
-      setTimeout(() => resolve(), timeout);
+      setTimeout(() => resolve(true), timeout);
     });
   }
 
@@ -100,5 +101,16 @@ export default class Utils {
   static escapeScriptStyles(str: string) {
     str = str.replace(/onload="?[^>]+/gi, '');
     return str.replace(/<(\/?(script|style|iframe))[^>]*>/gi, '&lt;$1$2&gt;');
+  }
+
+  static copyToClipboard(str: string) {
+    const $temp = $('<input>');
+    $('body').append($temp);
+    $temp.val(str).trigger('select');
+    document.execCommand('copy');
+    $temp.remove();
+  
+    const toast = new Toast();
+    toast.show('Copied', 'Copied to your clipboard', 'success', 1000);
   }
 }

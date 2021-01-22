@@ -8,20 +8,10 @@ import './global';
 import Account from './models/account';
 import arweave from './libs/arweave';
 import Toast from './utils/toast';
+import Utils from './utils/utils';
 
 const community = new Community(arweave);
 const account = new Account(community);
-
-function copyToClipboard(str: string) {
-  const $temp = $('<input>');
-  $('body').append($temp);
-  $temp.val(str).select();
-  document.execCommand('copy');
-  $temp.remove();
-
-  const toast = new Toast();
-  toast.show('Copied', 'Link copied!', 'success', 1000);
-}
 
 // @ts-ignore
 window.currentPage = {
@@ -44,7 +34,7 @@ $(() => {
   $('a.ref-link').on('click', (e) => {
     e.preventDefault();
 
-    copyToClipboard($('a.ref-link').text().toString().trim());
+    Utils.copyToClipboard($('a.ref-link').text().toString().trim());
   });
 
   $('.claim').on('click', async (e) => {
