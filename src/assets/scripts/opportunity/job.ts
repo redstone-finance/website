@@ -172,9 +172,11 @@ export default class PageJob {
                 <span class="avatar avatar-md" style="background-image: url(${authorApp.avatar})"></span>
               </div>
               <div class="col">
-                <a href="./member.html#${authorApp.address}" target="_blank" class="text-dark card-title m-0 d-inline" data-toggle="tooltip" data-original-title="${authorApp.address}">${
-        authorApp.name
-      }</a>
+                <a href="./member.html#${
+                  authorApp.address
+                }" target="_blank" class="text-dark card-title m-0 d-inline" data-toggle="tooltip" data-original-title="${
+        authorApp.address
+      }">${authorApp.name}</a>
                 <div class="mb-2">
                   <a class="btn btn-sm btn-light mr-2" href="https://wqpddejmpwo6.arweave.net/RlUqMBb4NrvosxXV6e9kQkr2i4X0mqIAK49J_C3yrKg/index.html#/inbox/to=${
                     authorApp.address

@@ -102,10 +102,10 @@ export default class Account {
     $('.user-name').text(this.username);
     $('.user-avatar').css('background-image', `url(${this.avatar})`);
     $('.member-profile').attr('href', `./member.html#${this.address}`);
-    arweave.wallets.getBalance(this.address).then(bal => {
+    arweave.wallets.getBalance(this.address).then((bal) => {
       $('.member-ar').removeAttr('href').html(`
-      ${feather.icons['dollar-sign'].toSvg({class: 'icon'})} 
-      ${arweave.ar.winstonToAr(bal, {formatted: true, decimals: 5, trim: true})} 
+      ${feather.icons['dollar-sign'].toSvg({ class: 'icon' })} 
+      ${arweave.ar.winstonToAr(bal, { formatted: true, decimals: 5, trim: true })} 
       AR`);
     });
 

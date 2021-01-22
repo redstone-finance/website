@@ -12,7 +12,7 @@ import ActivityTable from '../utils/activityTable';
 export default class PageDashboard {
   private firstCall: boolean = true;
   private prevCall: number;
-  
+
   // workers
   private balancesWorker: ModuleThread<BalancesWorker>;
   private votesWorker: ModuleThread<VotesWorker>;
@@ -43,7 +43,7 @@ export default class PageDashboard {
   }
 
   public async syncPageState() {
-    if(this.prevCall && (new Date().getTime() - this.prevCall < (1000 * 60))) {
+    if (this.prevCall && new Date().getTime() - this.prevCall < 1000 * 60) {
       return;
     }
     this.prevCall = new Date().getTime();
@@ -123,11 +123,15 @@ export default class PageDashboard {
       .parents('.dimmer')
       .removeClass('active');
 
-    const activity = new ActivityTable({
-      owners: [],
-      commId: [app.getCommunityId()],
-      cursor: ''
-    }, false, 5);
+    const activity = new ActivityTable(
+      {
+        owners: [],
+        commId: [app.getCommunityId()],
+        cursor: '',
+      },
+      false,
+      5,
+    );
     activity.show();
   }
 

@@ -111,7 +111,9 @@ export default class Vote implements VoteInterface {
           <span class="avatar mr-2" style="background-image: url(${arId.avatar})"></span>
           <div class="flex-fill">
             <div class="strong">${arId.name || this.recipient || this.target}</div>
-            <a href="./member.html#${this.recipient || this.target}" target="_blank" class="text-muted text-h5">${this.recipient || this.target}</a>
+            <a href="./member.html#${this.recipient || this.target}" target="_blank" class="text-muted text-h5">${
+        this.recipient || this.target
+      }</a>
           </div>
         </div>
       </div>`;

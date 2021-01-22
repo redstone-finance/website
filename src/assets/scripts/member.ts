@@ -45,20 +45,22 @@ class MemberPage {
     this.activityTable = new ActivityTable({
       commId: [],
       owners: [this.hashes[0]],
-      cursor: ''
+      cursor: '',
     });
-  
+
     const address = this.hashes[0];
-    
+
     $('.avatar').css('background-image', `url(${Utils.generateIcon(address, 72)})`);
     $('h1').text(address);
     $('.viewblock').attr('href', `https://viewblock.io/arweave/address/${address}`);
-  
-    arweave.wallets.getBalance(address).then(bal => {
-      $('h3').text(`${arweave.ar.winstonToAr(bal, { formatted: true, decimals: 5, trim: true})} AR`);
-    }).catch(console.log);
-  
-  
+
+    arweave.wallets
+      .getBalance(address)
+      .then((bal) => {
+        $('h3').text(`${arweave.ar.winstonToAr(bal, { formatted: true, decimals: 5, trim: true })} AR`);
+      })
+      .catch(console.log);
+
     this.activityTable.show();
     this.loadCommunities();
   }
@@ -72,7 +74,7 @@ class MemberPage {
 
     $('.loaded').show();
 
-    let list: { html: string; balance: number; vault: number; }[] = [];
+    let list: { html: string; balance: number; vault: number }[] = [];
     let current = -1;
     let completed = 0;
     $('.total').text(commIds.length);
@@ -95,8 +97,10 @@ class MemberPage {
         return go(++current);
       }
 
-      const users = (await tokensWorker.sortHoldersByBalance(state.balances, state.vault)).filter(u => u.address === address);
-      if(!users.length) {
+      const users = (await tokensWorker.sortHoldersByBalance(state.balances, state.vault)).filter(
+        (u) => u.address === address,
+      );
+      if (!users.length) {
         $('.completed').text(++completed);
         $('.progress-bar').width(`${Math.floor((completed / commIds.length) * 100)}%`);
         return go(++current);
@@ -130,21 +134,21 @@ class MemberPage {
               ${Utils.formatMoney(user.vaultBalance, 0)}
             </td>
             <td class="text-muted" data-label="Total Balance">
-              ${Utils.formatMoney((user.balance + user.vaultBalance), 0)}
+              ${Utils.formatMoney(user.balance + user.vaultBalance, 0)}
             </td>
             <td class="text-muted" data-label="Role">
-              ${state.roles[address]? state.roles[address] : '-'}
+              ${state.roles[address] ? state.roles[address] : '-'}
             </td>
           </tr>`,
         balance: user.balance,
-        vault: user.vaultBalance
+        vault: user.vaultBalance,
       });
 
       $('.completed').text(++completed);
       $('.progress-bar').width(`${Math.floor((completed / commIds.length) * 100)}%`);
 
       return go(++current);
-    }
+    };
 
     const gos = [];
     for (let i = 0, j = 5; i < j; i++) {
@@ -153,11 +157,16 @@ class MemberPage {
 
     await Promise.all(gos);
     $('#loading').remove();
-    $('#balance').append(
-      `<tbody> 
-        ${list.sort((a, b) => b.balance + b.vault - (a.balance + a.vault)).map((a) => a.html).join('')}
-      </tbody>`
-    ).show();
+    $('#balance')
+      .append(
+        `<tbody> 
+        ${list
+          .sort((a, b) => b.balance + b.vault - (a.balance + a.vault))
+          .map((a) => a.html)
+          .join('')}
+      </tbody>`,
+      )
+      .show();
 
     $('#total-psc').text(` (${list.length})`);
   }
@@ -165,7 +174,7 @@ class MemberPage {
   private async getAllCommunityIds(): Promise<string[]> {
     let cursor = '';
     let hasNextPage = true;
-  
+
     let ids: string[] = [];
     while (hasNextPage) {
       const query = {
@@ -207,17 +216,17 @@ class MemberPage {
       };
       const res = await arweave.api.post('/graphql', query);
       const data: GQLResultInterface = res.data;
-  
+
       for (let i = 0, j = data.data.transactions.edges.length; i < j; i++) {
         ids.push(data.data.transactions.edges[i].node.id);
       }
       hasNextPage = data.data.transactions.pageInfo.hasNextPage;
-  
+
       if (hasNextPage) {
         cursor = data.data.transactions.edges[data.data.transactions.edges.length - 1].cursor;
       }
     }
-  
+
     return ids;
   }
 
@@ -225,7 +234,7 @@ class MemberPage {
     $(window).on('hashchange', () => {
       this.hashChanged();
     });
-    $('.psc-btn').on('click', e => {
+    $('.psc-btn').on('click', (e) => {
       e.preventDefault();
 
       $('.act-btn').removeClass('btn-primary').addClass('btn-secondary');
@@ -234,7 +243,7 @@ class MemberPage {
       $('.act-cards').hide();
       $('.comm-cards').show();
     });
-    $('.act-btn').on('click', e => {
+    $('.act-btn').on('click', (e) => {
       e.preventDefault();
 
       $('.psc-btn').removeClass('btn-primary').addClass('btn-secondary');
@@ -243,7 +252,7 @@ class MemberPage {
       $('.comm-cards').hide();
       $('.act-cards').show();
     });
-    $('.copy').on('click', e => {
+    $('.copy').on('click', (e) => {
       e.preventDefault();
       Utils.copyToClipboard(this.hashes[0]);
     });

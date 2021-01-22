@@ -109,7 +109,7 @@ export default class Utils {
     $temp.val(str).trigger('select');
     document.execCommand('copy');
     $temp.remove();
-  
+
     const toast = new Toast();
     toast.show('Copied', 'Copied to your clipboard', 'success', 1000);
   }

@@ -217,7 +217,6 @@ export default class PageVault {
       e.preventDefault();
 
       if (!(await app.getAccount().isLoggedIn())) {
-
         // @ts-ignore
         $('#modal-lock').modal('hide');
         return app.getAccount().showLoginError();
