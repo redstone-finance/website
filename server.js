@@ -57,6 +57,10 @@ app.get('/claim.html', (_, res) => {
   res.redirect('/claim');
 });
 
+app.get('/member.html', (_, res) => {
+  res.redirect('/member');
+});
+
 app.get('/opportunity', (_, res) => {
   res.sendFile(path.join(__dirname, 'dist/opportunity.html'));
 });
@@ -71,6 +75,10 @@ app.get('/home', (_, res) => {
 
 app.get('/communities', (_, res) => {
   res.sendFile(path.join(__dirname, 'dist/communities.html'));
+});
+
+app.get('/member', (_, res) => {
+  res.sendFile(path.join(__dirname, 'dist/member.html'));
 });
 
 app.get('/claim', (_, res) => {
