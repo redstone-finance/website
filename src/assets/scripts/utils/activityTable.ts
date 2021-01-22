@@ -76,6 +76,28 @@ export default class ActivityTable {
     for(let i = 0, j = items.length; i < j; i++) {
       const item = items[i];
 
+      let state: StateInterface;
+      if(this.isMembersPage) {
+        try {
+          const community = new Community(arweave);
+          await community.setCommunityTx(item.community);
+          state = await community.getState(true);
+        } catch (e) {
+          console.log(e);
+          continue;
+        }
+        item.name = `${state.name} (${state.ticker})`;
+        
+        let logo = state.settings.get('communityLogo');
+        if (logo && logo.length) {
+          const config = arweave.api.getConfig();
+          logo = `${config.protocol}://${config.host}:${config.port}/${logo}`;
+        } else {
+          logo = Utils.generateIcon(item.community, 32);
+        }
+        item.avatar = logo;
+      }
+
       html += `
       <tr>
         <td data-label="${(this.isMembersPage? 'Community' : 'Member')}">
@@ -190,29 +212,8 @@ export default class ActivityTable {
         }
       }
 
-      let state: StateInterface;
       let name = tx.node.owner.address;
       let avatar = Utils.generateIcon(tx.node.owner.address);
-      if(this.isMembersPage) {
-        try {
-          const community = new Community(arweave);
-          await community.setCommunityTx(comm);
-          state = await community.getState(true);
-        } catch (e) {
-          console.log(e);
-          continue;
-        }
-        name = `${state.name} (${state.ticker})`;
-        
-        let logo = state.settings.get('communityLogo');
-        if (logo && logo.length) {
-          const config = arweave.api.getConfig();
-          logo = `${config.protocol}://${config.host}:${config.port}/${logo}`;
-        } else {
-          logo = Utils.generateIcon(comm, 32);
-        }
-        avatar = logo;
-      }
 
       this.items.push({
         avatar,
