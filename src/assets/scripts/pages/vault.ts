@@ -126,7 +126,7 @@ export default class PageVault {
             <span class="avatar mr-2" style="background-image: url(${avatar})"></span>
             <div class="flex-fill">
               <div class="strong">${arId.name || users[i]}</div>
-              <div class="text-muted text-h5">${users[i]}</div>
+              <a href="./member.html#${users[i]}" target="_blank" class="text-muted text-h5">${users[i]}</a>
             </div>
           </div>
         </td>
@@ -217,6 +217,8 @@ export default class PageVault {
       e.preventDefault();
 
       if (!(await app.getAccount().isLoggedIn())) {
+
+        // @ts-ignore
         $('#modal-lock').modal('hide');
         return app.getAccount().showLoginError();
       }
@@ -257,6 +259,7 @@ export default class PageVault {
         toast.show('Lock balance error', err.message, 'error', 3000);
       }
 
+      // @ts-ignore
       $('#modal-lock').modal('hide');
       $(e.target).removeClass('btn-loading disabled');
     });
@@ -294,6 +297,7 @@ export default class PageVault {
       const $tr = $(e.target).parents('tr');
       $('.vault-id').text(`#${$tr.index()}`).val($tr.index());
 
+      // @ts-ignore
       $('#modal-increase-lock').modal('show');
     });
 
@@ -301,6 +305,7 @@ export default class PageVault {
       e.preventDefault();
 
       if (!(await app.getAccount().isLoggedIn())) {
+        // @ts-ignore
         $('#modal-increase-lock').modal('hide');
         return app.getAccount().showLoginError();
       }
@@ -313,6 +318,7 @@ export default class PageVault {
 
       const vaultId = +$('#lock-vault-id').val().toString().trim();
       if (!state.vault[await app.getAccount().getAddress()][vaultId]) {
+        // @ts-ignore
         $('#modal-increase-lock').modal('hide');
         const toast = new Toast();
         toast.show('Increase lock error', "This vault ID isn't available.", 'error', 3000);
@@ -334,6 +340,7 @@ export default class PageVault {
         toast.show('Transfer error', err.message, 'error', 3000);
       }
 
+      // @ts-ignore
       $('#modal-increase-lock').modal('hide');
       $(e.target).removeClass('disabled').text('Increase lock');
     });

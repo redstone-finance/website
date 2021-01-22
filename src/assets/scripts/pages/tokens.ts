@@ -109,7 +109,7 @@ export default class PageTokens {
             <span class="avatar mr-2" style="background-image: url(${avatar})"></span>
             <div class="flex-fill">
               <div class="strong">${arId.name || holder.address}</div>
-              <div class="text-muted text-h5">${holder.address}</div>
+              <a href="./member.html#${holder.address}" target="_blank" class="text-muted text-h5">${holder.address}</a>
             </div>
           </div>
         </td>
@@ -214,6 +214,7 @@ export default class PageTokens {
       e.preventDefault();
 
       if (!(await app.getAccount().isLoggedIn())) {
+        // @ts-ignore
         $('#modal-transfer').modal('hide');
         return app.getAccount().showLoginError();
       }
@@ -248,6 +249,7 @@ export default class PageTokens {
         toast.show('Transfer error', err.message, 'error', 3000);
       }
 
+      // @ts-ignore
       $('#modal-transfer').modal('hide');
       $(e.target).removeClass('btn-loading disabled');
     });
@@ -268,6 +270,8 @@ export default class PageTokens {
       const addy = $(e.target).parent().attr('data-addy');
       $('#transfer-target').val(addy.trim());
       $('#transfer-balance').val(0);
+
+      // @ts-ignore
       $('#modal-transfer').modal('show');
     });
 
@@ -286,6 +290,8 @@ export default class PageTokens {
         $('input[name="voteType"][value="burnVault"]').trigger('click');
         $('#vote-target').val(addy);
       }
+
+      // @ts-ignore
       $('#modal-new-vote').modal('show');
     });
 
