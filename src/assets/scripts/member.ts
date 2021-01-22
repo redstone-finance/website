@@ -75,6 +75,7 @@ class MemberPage {
     let list: { html: string; balance: number; vault: number; }[] = [];
     let current = -1;
     let completed = 0;
+    $('.total').text(commIds.length);
 
     const go = async (i = 0) => {
       if (i >= commIds.length) {
@@ -89,11 +90,15 @@ class MemberPage {
         await community.setCommunityTx(comm);
         state = await community.getState(true);
       } catch (e) {
+        $('.completed').text(++completed);
+        $('.progress-bar').width(`${Math.floor((completed / commIds.length) * 100)}%`);
         return go(++current);
       }
 
       const users = (await tokensWorker.sortHoldersByBalance(state.balances, state.vault)).filter(u => u.address === address);
       if(!users.length) {
+        $('.completed').text(++completed);
+        $('.progress-bar').width(`${Math.floor((completed / commIds.length) * 100)}%`);
         return go(++current);
       }
       const user = users[0];
