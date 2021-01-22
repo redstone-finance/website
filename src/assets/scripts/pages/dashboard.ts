@@ -10,8 +10,10 @@ import Market from '../models/market';
 import ActivityTable from '../utils/activityTable';
 
 export default class PageDashboard {
+  private firstCall: boolean = true;
+  private prevCall: number;
+  
   // workers
-  private firstCall = true;
   private balancesWorker: ModuleThread<BalancesWorker>;
   private votesWorker: ModuleThread<VotesWorker>;
 
@@ -41,6 +43,11 @@ export default class PageDashboard {
   }
 
   public async syncPageState() {
+    if(this.prevCall && (new Date().getTime() - this.prevCall < (1000 * 60))) {
+      return;
+    }
+    this.prevCall = new Date().getTime();
+
     const market = new Market(app.getCommunityId(), await app.getAccount().getWallet());
     if (await app.getAccount().isLoggedIn()) {
       market.showBuyButton();
