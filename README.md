@@ -24,6 +24,13 @@ Starting from version 1.0.2 there's also permaweb versions stored forever on the
 Versions will be updated here as soon as a new one is created, by default it will be pointing to arweave().net but you can use any other gateway available for arweave().
 
 ```
+v1.0.13 - https://arweave.net/0jZx2GZt-48sEoXkbByRjWLBz4MuVbUh1toJggs_88U
+- Activity board for Communities and members
+- New members profile with activity and tokens owned
+- Solved issue with multi-loading of the dashboard on first entry
+- Members address links to the member profile
+- Logged in member can now see the AR balance of the account by clicking on the wallet address (header, right-side)
+
 v1.0.12 - https://arweave.net/536IoIKHRA26ZVgUGVCWUN9fEVjKF0FSe3bhHYVH2d4
 - Single transaction for fee + contract call
 - Better description on each call
