@@ -32,14 +32,15 @@ export default class ActivityTable {
 
     this.query = gqlQuery;
     this.vars = gqlVariables;
-    console.log(this.query, this.vars);
     this.vars.cursor = '';
   }
 
   async show() {
+    await this.removeEvents();
+    
     $('.act-cards').find('.dimmer').addClass('active');
 
-    if(((this.currentPage*10) >= this.items.length && this.hasNextPage) || !this.cursor.length) {
+    if(((this.currentPage*this.limit) >= this.items.length && this.hasNextPage) || !this.cursor.length) {
       await this.request();
     }
 
@@ -47,6 +48,8 @@ export default class ActivityTable {
     $('.comm-activity').html(res.join(''));
     $('.act-cards').find('.card-footer').html(await this.showFooter());
     $('.act-cards').find('.dimmer.active').removeClass('active');
+
+    this.events();
   }
 
   private async showHeader(): Promise<string> {
@@ -66,7 +69,7 @@ export default class ActivityTable {
       return `<tr><td colspan="3" class="text-center">No activity logged for this ${(this.isMembersPage? 'member' : 'Community')}</td></tr>`;
     }
 
-    const items = this.items.slice((this.currentPage - 1), this.limit);
+    const items = this.items.slice((this.currentPage - 1) * this.limit, this.currentPage * this.limit);
 
     for(let i = 0, j = items.length; i < j; i++) {
       const item = items[i];
@@ -97,22 +100,22 @@ export default class ActivityTable {
   private async showFooter(): Promise<string> {
     if(!this.items.length) return '';
 
-    const pages = this.items.length / this.limit;
-
+    const pages = Math.ceil(this.items.length / this.limit);
+    
     let html = `
     <ul class="pagination m-0 ml-auto">
-      <li class="page-item disabled">
+      <li class="page-item ${(this.currentPage === 1? 'disabled' : '')}">
         <a class="prev-page page-link" href="#">
           ${feather.icons['chevron-left'].toSvg()} First
         </a>
       </li>`;
 
-    for(const p of pages) {
+    for(let i = 0, j = pages; i < j; i++){
+      const page = i+1;
       html += `
-      <li class="page-item">
-        <a href="#" class="page-link">${(p+1)}</a>
-      </li>
-      `;
+      <li class="page-item ${(this.currentPage === page? 'active' : '')}">
+        <a href="#" class="page-link page-number">${page}</a>
+      </li>`;
     }
 
     html += `
@@ -136,6 +139,7 @@ export default class ActivityTable {
       return;
     }
     
+    this.hasNextPage = res.data.transactions.pageInfo.hasNextPage;
     for(const tx of res.data.transactions.edges) {
       let comm: string;
       let message: string;
@@ -179,8 +183,35 @@ export default class ActivityTable {
         message: message.replace(/[a-z0-9_-]{43}/ig, `<a href="./member.html#$&" target="_blank"><code>$&</code></a>`),
         date: (new Date(tx.node.block.timestamp * 1000)).toLocaleString()
       });
+
+      this.cursor = tx.cursor;
     }
 
     return this.items;
+  }
+
+  private async events() {
+    $('.act-cards').on('click', '.page-link', e => {
+      e.preventDefault();
+
+      if($(e.target).hasClass('disabled')) return;
+
+      if($(e.target).hasClass('next-page')) {
+        this.currentPage++;
+        this.show();
+      } else if($(e.target).hasClass('prev-page')) {
+        this.cursor = '';
+        this.currentPage = 1;
+        this.hasNextPage = false;
+        this.show();
+      } else if($(e.target).hasClass('page-number')) {
+        this.currentPage = +$(e.target).text();
+        this.show();
+      }
+    });
+  }
+
+  private async removeEvents() {
+    $('.act-cards').off('click');
   }
 }

@@ -128,7 +128,7 @@ export default class PageDashboard {
             { name: "Service", values: "CommunityXYZ" }
             { name: "Community-ID", values: $commId }
           ]
-          first: 10
+          first: 50
           after: $cursor
         ) {
           pageInfo {
@@ -155,7 +155,7 @@ export default class PageDashboard {
     `, {
       commId: app.getCommunityId(),
       cursor: this.cursor
-    }, false);
+    }, false, 5);
     activity.show();
   }
 
