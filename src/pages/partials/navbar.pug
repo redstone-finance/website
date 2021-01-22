@@ -27,10 +27,13 @@ header.navbar.navbar-expand-md.navbar-light
             .mt-1.small.text-muted.user-role
 
         .dropdown-menu.dropdown-menu-right.dropdown-menu-arrow
-          //- a.dropdown-item(href="#/profile") 
-          //-   i.icon.dropdown-item-icon(data-feather="settings")
-          //-   | Profile
-          //- .dropdown-divider
+          a.member-ar.dropdown-item(href='#!')
+            i.icon.dropdown-item-icon(data-feather="dollar-sign")
+            | 0 AR
+          a.member-profile.dropdown-item(href="#!", target="_blank") 
+            i.icon.dropdown-item-icon(data-feather="user")
+            | Profile
+          .dropdown-divider
           a.logout.dropdown-item(href="#!")
             i.icon.dropdown-item-icon(data-feather="log-out")
             | Logout

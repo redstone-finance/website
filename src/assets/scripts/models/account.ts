@@ -1,4 +1,5 @@
 import { JWKInterface } from 'arweave/web/lib/wallet';
+import feather from 'feather-icons';
 
 import $ from '../libs/jquery';
 import Toast from '../utils/toast';
@@ -100,6 +101,13 @@ export default class Account {
 
     $('.user-name').text(this.username);
     $('.user-avatar').css('background-image', `url(${this.avatar})`);
+    $('.member-profile').attr('href', `./member.html#${this.address}`);
+    arweave.wallets.getBalance(this.address).then(bal => {
+      $('.member-ar').removeAttr('href').html(`
+      ${feather.icons['dollar-sign'].toSvg({class: 'icon'})} 
+      ${arweave.ar.winstonToAr(bal, {formatted: true, decimals: 5, trim: true})} 
+      AR`);
+    });
 
     if (this.address.length && this.arBalance >= 0) {
       this.loggedIn = true;
@@ -141,7 +149,7 @@ export default class Account {
             }
           }
 
-          resolve();
+          resolve(true);
         };
         fileReader.readAsText(e.target.files[0]);
       });
