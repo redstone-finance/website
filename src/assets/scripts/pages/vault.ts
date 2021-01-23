@@ -115,6 +115,10 @@ export default class PageVault {
     for (let i = 0, j = users.length; i < j; i++) {
       const v = usersAndBalances[users[i]];
 
+      if(!v.weight) {
+        continue;
+      }
+
       const acc = new Author(null, users[i], null);
       const arId = await acc.getDetails();
       const avatar = arId.avatar;
