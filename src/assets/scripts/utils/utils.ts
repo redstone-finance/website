@@ -29,7 +29,7 @@ export default class Utils {
 
       const negativeSign = amount < 0 ? '-' : '';
 
-      const i = parseInt((Math.abs(Number(amount) || 0)).toFixed(decimalCount), 10).toString();
+      const i = parseInt(Math.abs(Number(amount) || 0).toFixed(decimalCount), 10).toString();
       const j = i.length > 3 ? i.length % 3 : 0;
 
       return (

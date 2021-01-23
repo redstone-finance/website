@@ -9,7 +9,6 @@ import OpportunityInterface, {
 } from '../interfaces/opportunity';
 import Utils from '../utils/utils';
 import { GQLTransactionsResultInterface, GQLEdgeInterface, GQLNodeInterface } from '../interfaces/gqlResult';
-import Arweave from 'arweave';
 import Transaction from 'arweave/node/lib/transaction';
 import Toast from '../utils/toast';
 import { OpportunitiesWorker } from '../workers/opportunities';
@@ -18,6 +17,7 @@ import Applicant from './applicant';
 import Author from './author';
 import communityDB from '../libs/db';
 import arweave from '../libs/arweave';
+import JobBoard from '../opportunity/jobboard';
 
 export default class Opportunity implements OpportunityInterface {
   id?: string;
@@ -59,7 +59,7 @@ export default class Opportunity implements OpportunityInterface {
     return this.description;
   }
 
-  async update(params?: { [key: string]: string }, caller?: any) {
+  async update(params?: { [key: string]: string }, caller?: typeof JobBoard) {
     if (params) {
       return this.doUpdate(params, caller);
     }
@@ -133,7 +133,7 @@ export default class Opportunity implements OpportunityInterface {
     }
   }
 
-  private async doUpdate(params: { [key: string]: string }, caller: any) {
+  private async doUpdate(params: { [key: string]: string }, caller: typeof JobBoard) {
     $('.btn-opp-status').addClass('btn-loading');
 
     const keys = Object.keys(params);
@@ -149,12 +149,28 @@ export default class Opportunity implements OpportunityInterface {
       return false;
     }
 
-    if (!(await caller.chargeFee('updateOpportunity'))) {
+    const fees = await caller.getChargeFee();
+    if (!fees) {
       $('.btn-opp-status').removeClass('btn-loading');
       return false;
     }
 
-    const tx = await arweave.createTransaction({ data: Math.random().toString().substr(-4) }, wallet);
+    let tx = await arweave.createTransaction(
+      {
+        target: fees.target,
+        quantity: fees.winstonQty,
+        data: Math.random().toString().substr(-4),
+      },
+      wallet,
+    );
+    if (!fees.target || !fees.target.length) {
+      await arweave.createTransaction(
+        {
+          data: Math.random().toString().substr(-4),
+        },
+        wallet,
+      );
+    }
 
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
@@ -164,6 +180,10 @@ export default class Opportunity implements OpportunityInterface {
     tx.addTag('App-Name', 'CommunityXYZ');
     tx.addTag('Action', 'updateOpportunity');
     tx.addTag('Opportunity-ID', this.id);
+    tx.addTag('Service', 'Community.XYZ');
+    tx.addTag('Community-ID', this.community.id);
+    tx.addTag('Message', `Updated opportunity ID ${this.id}`);
+    tx.addTag('Type', 'ArweaveActivity');
 
     await arweave.transactions.sign(tx, wallet);
     const res = await arweave.transactions.post(tx);

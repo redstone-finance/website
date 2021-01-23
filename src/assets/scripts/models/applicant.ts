@@ -4,6 +4,8 @@ import { GQLNodeInterface, GQLTransactionsResultInterface } from '../interfaces/
 import Toast from '../utils/toast';
 import Author from './author';
 import arweave from '../libs/arweave';
+import JobBoard from '../opportunity/jobboard';
+import Opportunity from './opportunity';
 
 export default class Applicant implements ApplicantInterface {
   id: string;
@@ -30,7 +32,7 @@ export default class Applicant implements ApplicantInterface {
     return this.message;
   }
 
-  async update(params?: { [key: string]: string }, oppOwner?: string, caller?: any) {
+  async update(params?: { approved: true }, oppOwner?: string, caller?: any) {
     if (params) {
       return this.doUpdate(params, oppOwner, caller);
     }
@@ -109,9 +111,8 @@ export default class Applicant implements ApplicantInterface {
     }
   }
 
-  private async doUpdate(params: { [key: string]: string }, oppOwner: string, caller: any) {
-    const keys = Object.keys(params);
-    if (!keys.length) {
+  private async doUpdate(params: { approved: true }, oppOwner: string, caller: typeof JobBoard) {
+    if (!params || !params.approved) {
       return false;
     }
 
@@ -126,37 +127,54 @@ export default class Applicant implements ApplicantInterface {
       return false;
     }
 
-    if (params.approved && !isOppOwner) {
+    if (!isOppOwner) {
       toast.show('Error', 'You cannot set this applicant as approved.', 'error', 3000);
       return false;
     }
 
-    if (!(await caller.chargeFee('updateApplicant'))) {
+    const fees = await caller.getChargeFee();
+    if (!fees) {
       return false;
     }
 
-    const tx = await arweave.createTransaction({ data: Math.random().toString().substr(-4) }, wallet);
-
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i];
-      tx.addTag(key, params[key]);
+    let tx = await arweave.createTransaction(
+      {
+        target: fees.target,
+        quantity: fees.winstonQty,
+        data: Math.random().toString().substr(-4),
+      },
+      wallet,
+    );
+    if (!fees.target || !fees.target.length) {
+      await arweave.createTransaction(
+        {
+          data: Math.random().toString().substr(-4),
+        },
+        wallet,
+      );
     }
 
+    const opp = await Opportunity.getOpportunity(this.oppId);
+
+    tx.addTag('approved', 'true');
     tx.addTag('App-Name', 'CommunityXYZ');
     tx.addTag('Action', 'updateApplicant');
     tx.addTag('Applicant-ID', this.id);
+    tx.addTag('Opportunity-ID', this.oppId);
+    tx.addTag('Service', 'Community.XYZ');
+    tx.addTag('Community-ID', opp.community.id);
+    tx.addTag('Message', `Approved applicant ${this.author.address} for the Opportunity ${opp.title} (${this.oppId})`);
+    tx.addTag('Type', 'ArweaveActivity');
 
     await arweave.transactions.sign(tx, wallet);
     const res = await arweave.transactions.post(tx);
     if (res.status !== 200 && res.status !== 202) {
       console.log(res);
-
       toast.show('Error', 'Error submitting transaction.', 'error', 5000);
-      $('.btn-opp-status').removeClass('btn-loading');
       return false;
     }
 
-    caller.getStatusify().add('Set applicant', tx.id);
+    caller.getStatusify().add('Approve applicant', tx.id);
     return true;
   }
 

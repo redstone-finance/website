@@ -143,12 +143,19 @@ export default class PageCreateJob {
     this.tx.addTag('communityName', this.community.name);
     this.tx.addTag('communityTicker', this.community.ticker);
 
+    this.tx.addTag('Service', 'Community.XYZ');
+    this.tx.addTag('Community-ID', this.community.id);
+    this.tx.addTag('Message', `Added opportunity ${title} of ${Utils.formatNumber(amount)} ${this.community.ticker}`);
+    this.tx.addTag('Type', 'ArweaveActivity');
+
     const cost = arweave.ar.winstonToAr(this.tx.reward, { formatted: true, decimals: 5, trim: true });
 
     this.transferFee = Math.round((amount * 2.5) / 100);
 
     $('.fee').text(+cost + +jobboard.getFee());
     $('.comm-fee').text(`${this.transferFee} ${this.community.ticker}`);
+
+    // @ts-ignore
     $('#confirm-modal').modal('show');
   }
 
@@ -200,7 +207,9 @@ export default class PageCreateJob {
         return;
       }
 
-      if (!(await jobboard.chargeFee('addOpportunity'))) {
+      const fees = await jobboard.getChargeFee();
+
+      if (!fees) {
         $(e.target).removeClass('btn-loading');
         toast.show('Error', 'Error while trying to charge the fee for this transaction.', 'error', 5000);
         return;
@@ -219,6 +228,7 @@ export default class PageCreateJob {
         await community.transfer(target, this.transferFee);
       }
 
+      // @ts-ignore
       $('#confirm-modal').modal('hide');
 
       const res = await arweave.transactions.post(this.tx);

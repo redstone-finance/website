@@ -103,7 +103,9 @@ export default class PageJob {
     });
 
     const lock = this.opportunity.lockLength
-      ? `Locked: ${Utils.formatNumber(this.opportunity.lockLength)} blocks (${Utils.formatBlocks(this.opportunity.lockLength)})`
+      ? `Locked: ${Utils.formatNumber(this.opportunity.lockLength)} blocks (${Utils.formatBlocks(
+          this.opportunity.lockLength,
+        )})`
       : '';
 
     $('.opp-title').text(this.opportunity.title);
@@ -252,7 +254,7 @@ export default class PageJob {
 
       const message = $('<div></div>').append($('#apply-message').val().toString().trim()).text();
 
-      if (!(await jobboard.chargeFee('OpportunityApplication'))) {
+      if (!(await jobboard.getChargeFee())) {
         const toast = new Toast();
         toast.show('Error', 'Unable to submit transaction, please try again later.', 'error', 5000);
         return;
@@ -264,6 +266,11 @@ export default class PageJob {
       tx.addTag('App-Name', 'CommunityXYZ');
       tx.addTag('Action', 'Application');
       tx.addTag('Opportunity-ID', this.opportunity.id);
+      tx.addTag('Service', 'Community.XYZ');
+      tx.addTag('Community-ID', this.opportunity.community.id);
+      tx.addTag('Message', `Applied to the Opportunity ${this.opportunity.title} (${this.opportunity.id})`);
+      tx.addTag('Type', 'ArweaveActivity');
+
       await arweave.transactions.sign(tx, wallet);
       const res = await arweave.transactions.post(tx);
       if (res.status !== 200 && res.status !== 202) {
@@ -286,6 +293,7 @@ export default class PageJob {
       e.preventDefault();
 
       // TODO: Select this applicant, but first check the opp to see if it's allowed more than one, and show a warning if not.
+
       const toast = new Toast();
       if ((await jobboard.getAccount().getAddress()) !== this.opportunity.author.address) {
         toast.show('Error', 'You cannot approve an applicant for this opportunity.', 'error', 3000);
@@ -326,7 +334,7 @@ export default class PageJob {
         }
       }
 
-      const res = await applicant.update({ approved: 'true' }, null, jobboard);
+      const res = await applicant.update({ approved: true }, null, jobboard);
       if (res && updateOpp) {
         await this.opportunity.update({ status: 'In progress' }, jobboard);
         await this.syncPageState();

@@ -95,7 +95,9 @@ export default class PageVault {
       html += `<tr data-vault='${JSON.stringify(v)}'>
         <td class="text-muted" data-label="Balance">${Utils.formatNumber(v.balance)}</td>
         <td class="text-muted" data-label="Vote weight">${Utils.formatNumber(voteWeight)}</td>
-        <td class="text-muted" data-label="Ends on">${Utils.formatNumber(endsIn)} blocks (${Utils.formatBlocks(endsIn)})</td>
+        <td class="text-muted" data-label="Ends on">${Utils.formatNumber(endsIn)} blocks (${Utils.formatBlocks(
+        endsIn,
+      )})</td>
         <td class="text-right">
           <button class="btn btn-light align-text-top btn-increase-lock">Increase</button>
         </td>
@@ -115,7 +117,7 @@ export default class PageVault {
     for (let i = 0, j = users.length; i < j; i++) {
       const v = usersAndBalances[users[i]];
 
-      if(!v.weight) {
+      if (!v.weight) {
         continue;
       }
 

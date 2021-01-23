@@ -91,32 +91,28 @@ class JobBoard {
     return this.community.setCommunityTx(txid);
   }
 
-  async chargeFee(action: string): Promise<boolean> {
-    await this.community.setCommunityTx(await this.community.getMainContractId());
-    const target = await this.community.selectWeightedHolder();
+  async getChargeFee(): Promise<{ target: string; winstonQty: string }> {
+    const balance = await arweave.wallets.getBalance(await this.account.getAddress());
 
-    const tx: Transaction = await arweave.createTransaction(
-      {
-        target,
-        quantity: arweave.ar.arToWinston(this.fee),
-      },
-      await this.account.getWallet(),
-    );
-
-    tx.addTag('App-Name', 'Community');
-    tx.addTag('App-Version', '1.1.0');
-    tx.addTag('Action', action);
-
-    await arweave.transactions.sign(tx, await this.account.getWallet());
-    const res = await arweave.transactions.post(tx);
-    if (res.status !== 200 && res.status !== 202) {
-      console.log(res);
+    if (+balance < +this.fee) {
       const toast = new Toast();
-      toast.show('Error', 'Transaction failed.', 'error', 5000);
-      return false;
+      toast.show('Not enought balance', "You don't have enough balance for this transaction.", 'error', 3000);
+      return null;
     }
 
-    return true;
+    await this.community.setCommunityTx(await this.community.getMainContractId());
+    const target = await this.community.selectWeightedHolder();
+    if (target === (await this.account.getAddress())) {
+      return {
+        target: '',
+        winstonQty: '',
+      };
+    }
+
+    return {
+      target,
+      winstonQty: arweave.ar.arToWinston(this.fee),
+    };
   }
 
   private async updateFee() {
