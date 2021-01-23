@@ -2149,10 +2149,10 @@ community-js@^1.1.15:
     smartweave "^0.4.23"
     tiny-worker "^2.3.0"
 
-community-js@^1.1.19:
-  version "1.1.19"
-  resolved "https://registry.yarnpkg.com/community-js/-/community-js-1.1.19.tgz#2b60f6229aa072aa422f61e456f20e898e1ac7ce"
-  integrity sha512-C3PVgoTbZVSqTxnQAr5scNFffAz+ZJrfdR20B+lSbR5+pMYkHaO9nDavG125FZaELqJgliv8W/XvV+4flZa8cg==
+community-js@^1.1.20:
+  version "1.1.20"
+  resolved "https://registry.yarnpkg.com/community-js/-/community-js-1.1.20.tgz#2173d8529efea54f3589cb6ef5ce53926ea2ed99"
+  integrity sha512-VvY9fGTc5Z5NCCo5+VHFZGbrEHP+jqrmQZiJWAEDNseSiTOTe8SF0ygX8FMVfzoYDnSUksLMOuwerYm4qA1zIw==
   dependencies:
     arweave "^1.10.1"
     axios "^0.21.1"
