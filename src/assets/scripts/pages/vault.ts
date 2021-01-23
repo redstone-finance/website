@@ -47,7 +47,7 @@ export default class PageVault {
       state.balances,
       state.vault,
     );
-    $('.user-unlocked-balance').text(Utils.formatMoney(bal.unlocked, 0));
+    $('.user-unlocked-balance').text(Utils.formatNumber(bal.unlocked));
 
     $('.min-lock-length').text(state.settings.get('lockMinLength'));
     $('.max-lock-length').text(state.settings.get('lockMaxLength'));
@@ -93,9 +93,9 @@ export default class PageVault {
       }
 
       html += `<tr data-vault='${JSON.stringify(v)}'>
-        <td class="text-muted" data-label="Balance">${Utils.formatMoney(v.balance, 0)}</td>
-        <td class="text-muted" data-label="Vote weight">${Utils.formatMoney(voteWeight, 0)}</td>
-        <td class="text-muted" data-label="Ends on">${Utils.formatMoney(endsIn, 0)} blocks</td>
+        <td class="text-muted" data-label="Balance">${Utils.formatNumber(v.balance)}</td>
+        <td class="text-muted" data-label="Vote weight">${Utils.formatNumber(voteWeight)}</td>
+        <td class="text-muted" data-label="Ends on">${Utils.formatNumber(endsIn)} blocks (${Utils.formatBlocks(endsIn)})</td>
         <td class="text-right">
           <button class="btn btn-light align-text-top btn-increase-lock">Increase</button>
         </td>
@@ -130,8 +130,8 @@ export default class PageVault {
             </div>
           </div>
         </td>
-        <td class="text-muted" data-label="Balance">${Utils.formatMoney(v.balance, 0)}</td>
-        <td class="text-muted" data-label="Vote weight">${Utils.formatMoney(v.weight, 0)}</td>
+        <td class="text-muted" data-label="Balance">${Utils.formatNumber(v.balance)}</td>
+        <td class="text-muted" data-label="Vote weight">${Utils.formatNumber(v.weight)}</td>
       </tr>`;
     }
 

@@ -103,7 +103,7 @@ export default class PageJob {
     });
 
     const lock = this.opportunity.lockLength
-      ? `Locked: ${Utils.formatMoney(this.opportunity.lockLength, 0)} blocks`
+      ? `Locked: ${Utils.formatNumber(this.opportunity.lockLength)} blocks (${Utils.formatBlocks(this.opportunity.lockLength)})`
       : '';
 
     $('.opp-title').text(this.opportunity.title);
@@ -111,7 +111,7 @@ export default class PageJob {
     $('.opp-experience').text(this.opportunity.experience);
     $('.opp-commitment').text(this.opportunity.commitment);
     $('.opp-type').text(this.opportunity.type);
-    $('.opp-payout').text(Utils.formatMoney(+this.opportunity.payout, 0));
+    $('.opp-payout').text(Utils.formatNumber(+this.opportunity.payout));
     $('.opp-lock-length').text(lock);
     $('.opp-community')
       .text(this.opportunity.community.name)

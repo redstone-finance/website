@@ -73,9 +73,9 @@ export default class PageDashboard {
 
     $('.quorum').text(` ${quorum}%`);
     $('.support').text(` ${support}%`);
-    $('.voteLength').text(` ${voteLength} blocks (${Utils.formatBlocks(voteLength)})`);
-    $('.lockMinLength').text(` ${lockMinLength} blocks (${Utils.formatBlocks(lockMinLength)})`);
-    $('.lockMaxLength').text(` ${lockMaxLength} blocks (${Utils.formatBlocks(lockMaxLength)})`);
+    $('.voteLength').text(` ${Utils.formatNumber(voteLength)} blocks (${Utils.formatBlocks(voteLength)})`);
+    $('.lockMinLength').text(` ${Utils.formatNumber(lockMinLength)} blocks (${Utils.formatBlocks(lockMinLength)})`);
+    $('.lockMaxLength').text(` ${Utils.formatNumber(lockMaxLength)} blocks (${Utils.formatBlocks(lockMaxLength)})`);
 
     const links = state.settings.get('communityDiscussionLinks');
     if (links && links.length) {
@@ -112,9 +112,9 @@ export default class PageDashboard {
     const votesActive = votes.active ? votes.active.length : 0;
     const votesAll = votes.all ? votes.all.length : 0;
 
-    $('.minted').text(Utils.formatMoney(balance + vaultBalance, 0));
+    $('.minted').text(Utils.formatNumber(balance + vaultBalance));
     $('.mint-waiting').text(`${votesMint} `).parents('.dimmer').removeClass('active');
-    $('.vault').text(Utils.formatMoney(vaultBalance, 0));
+    $('.vault').text(Utils.formatNumber(vaultBalance));
     $('.vault-waiting').text(`${votesVault} `).parents('.dimmer').removeClass('active');
     $('.ticker').text(` ${state.ticker} `);
     $('.votes').text(`${votesActive} `);

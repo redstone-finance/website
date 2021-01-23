@@ -57,7 +57,7 @@ export default class PageTokens {
     const { vaultBalance } = await this.balancesWorker.vaultUsersAndBalance(state.vault);
 
     $('.ticker').text(state.ticker);
-    $('.minted').text(Utils.formatMoney(balance + vaultBalance, 0));
+    $('.minted').text(Utils.formatNumber(balance + vaultBalance));
     $('.minted').parents('.dimmer').removeClass('active');
 
     const holdersByBalance = await this.tokensWorker.sortHoldersByBalance(state.balances, state.vault);
@@ -69,8 +69,8 @@ export default class PageTokens {
       state.balances,
       state.vault,
     );
-    $('.user-total-balance').text(Utils.formatMoney(bal.balance, 0));
-    $('.user-unlocked-balance').text(Utils.formatMoney(bal.unlocked, 0));
+    $('.user-total-balance').text(Utils.formatNumber(bal.balance));
+    $('.user-unlocked-balance').text(Utils.formatNumber(bal.unlocked));
 
     const transferFee = await app.getCommunity().getActionCost(true, { formatted: true, decimals: 5, trim: true });
     $('.tx-fee').text(` ${transferFee} `);
@@ -114,10 +114,10 @@ export default class PageTokens {
           </div>
         </td>
         <td class="text-muted" data-label="Balance">
-          ${Utils.formatMoney(balance, 0)}
+          ${Utils.formatNumber(balance)}
         </td>
-        <td class="text-muted" data-label="Vault Balance">${Utils.formatMoney(holder.vaultBalance, 0)}</td>
-        <td class="text-muted" data-label="Total Balance">${Utils.formatMoney(holder.balance, 0)}</td>
+        <td class="text-muted" data-label="Vault Balance">${Utils.formatNumber(holder.vaultBalance)}</td>
+        <td class="text-muted" data-label="Total Balance">${Utils.formatNumber(holder.balance)}</td>
         <td class="text-muted d-none d-lg-table-cell" data-label="Role">${role}</td>
         <td class="text-right">
           <span class="dropdown ml-1">

@@ -128,13 +128,13 @@ class MemberPage {
               </div>
             </td>
             <td class="text-muted" data-label="Balance">
-              ${Utils.formatMoney(user.balance, 0)}
+              ${Utils.formatNumber(user.balance)}
             </td>
             <td class="text-muted" data-label="Vault Balance">
-              ${Utils.formatMoney(user.vaultBalance, 0)}
+              ${Utils.formatNumber(user.vaultBalance)}
             </td>
             <td class="text-muted" data-label="Total Balance">
-              ${Utils.formatMoney(user.balance + user.vaultBalance, 0)}
+              ${Utils.formatNumber(user.balance + user.vaultBalance)}
             </td>
             <td class="text-muted" data-label="Role">
               ${state.roles[address] ? state.roles[address] : '-'}

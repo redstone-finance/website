@@ -22,15 +22,15 @@ export default class Utils {
     return /^[a-z0-9-_]{43}$/i.test(str);
   }
 
-  static formatMoney(amount: number, decimalCount = 2, decimal = '.', thousands = ',') {
+  static formatNumber(amount: number, decimalCount = 0, decimal = '.', thousands = ',') {
     try {
       decimalCount = Math.abs(decimalCount);
       decimalCount = isNaN(decimalCount) ? 2 : decimalCount;
 
       const negativeSign = amount < 0 ? '-' : '';
 
-      let i = parseInt((amount = Math.abs(Number(amount) || 0)).toFixed(decimalCount)).toString();
-      let j = i.length > 3 ? i.length % 3 : 0;
+      const i = parseInt((Math.abs(Number(amount) || 0)).toFixed(decimalCount), 10).toString();
+      const j = i.length > 3 ? i.length % 3 : 0;
 
       return (
         negativeSign +

@@ -122,14 +122,14 @@ export default class Vote implements VoteInterface {
       details += `
       <div class="mb-3">
         <h3 class="mb-0">Quantity</h3>
-        <p class="text-muted">${Utils.formatMoney(this.qty, 0)} ${state.ticker}</p>
+        <p class="text-muted">${Utils.formatNumber(this.qty)} ${state.ticker}</p>
       </div>`;
     }
     if (this.type === 'mintLocked') {
       details += `
       <div class="mb-3">
         <h3 class="mb-0">Lock length</h3>
-        <p class="text-muted">${Utils.formatMoney(this.lockLength, 0)} blocks</p>
+        <p class="text-muted">${Utils.formatNumber(this.lockLength)} blocks (${Utils.formatBlocks(this.lockLength)})</p>
       </div>`;
     }
     if (this.type === 'set') {
@@ -140,6 +140,8 @@ export default class Vote implements VoteInterface {
       } else if (this.key === 'communityLogo') {
         const config = arweave.api.getConfig();
         val = `<img src="${config.protocol}://${config.host}:${config.port}/${this.value}" style="height: 120px; width: auto;">`;
+      } else if (this.key === 'lockMaxLength' || this.key === 'lockMinLength') {
+        val = `${Utils.formatNumber(val)} blocks (${Utils.formatBlocks(val)})`;
       }
 
       details += `
@@ -218,7 +220,7 @@ export default class Vote implements VoteInterface {
     const current = app.getCurrentBlock();
     const endsIn = current < ends ? ends - current : 0;
 
-    const endsInStr = Utils.formatMoney(endsIn, 0);
+    const endsInStr = Utils.formatNumber(endsIn);
 
     const $progress = this.$card.find('.blocks-progress');
     if ($progress.css('width') !== '100%') {

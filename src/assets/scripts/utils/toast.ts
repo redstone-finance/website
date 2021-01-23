@@ -72,7 +72,7 @@ export default class Toast {
         value = tmp.textContent || tmp.innerText || '';
 
         if (typeof value === 'number') {
-          value = await Utils.formatMoney(value, 0);
+          value = await Utils.formatNumber(value);
         } else if (key === 'type' || key === 'key') {
           value = await Utils.capitalize(value);
         }
