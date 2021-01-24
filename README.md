@@ -24,7 +24,7 @@ Starting from version 1.0.2 there's also permaweb versions stored forever on the
 Versions will be updated here as soon as a new one is created, by default it will be pointing to arweave().net but you can use any other gateway available for arweave().
 
 ```
-v1.0.14 - https://arweave.net/P5XdzjUwdwp8iTsXk-ec_-jCzZX4SxRfg_C3jGlPtdI
+v1.0.14 - https://arweave.net/UT0S521EXFayBHXdizzv-FGzmkPvnSOISiBEPE14JtM
 - added: ArweaveActivity for the jobboard
 - added: hide vaults with 0 weight for others
 - added: formatnumber and formatblock on missing UI spots
