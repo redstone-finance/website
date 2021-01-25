@@ -88,11 +88,14 @@ export default class Account {
     this.wallet = wallet;
 
     this.address = await this.community.setWallet(wallet);
-    this.arBalance = +arweave.ar.winstonToAr(await arweave.wallets.getBalance(this.address), {
-      formatted: true,
+
+    const bal = await arweave.wallets.getBalance(this.address);
+    const arBalance = arweave.ar.winstonToAr(bal, {
+      formatted: false,
       decimals: 5,
       trim: true,
     });
+    this.arBalance = +arBalance;
 
     const account = new Author(null, this.address, null);
     const acc = await account.getDetails();
