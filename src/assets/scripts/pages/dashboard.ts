@@ -44,6 +44,7 @@ export default class PageDashboard {
 
   public async syncPageState() {
     if (this.prevCall && new Date().getTime() - this.prevCall < 1000 * 60) {
+      $('.dimmer').removeClass('active');
       return;
     }
     this.prevCall = new Date().getTime();
