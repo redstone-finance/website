@@ -20,7 +20,7 @@ const worker = (id: string, disconnect: any) => {
   console.log(`Started worker ${id}`);
 
   const app = new App({
-    port: 80,
+    port: 5000,
     controllers: [new HomeController(arweave), new CacheController(arweave), new RedirectController()],
     middleWares: [
       morgan('tiny'),
