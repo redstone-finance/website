@@ -218,9 +218,9 @@ export default class Vote implements VoteInterface {
   private async syncBlocksProgress(state: StateInterface): Promise<number> {
     const ends = +this.start + state.settings.get('voteLength');
     const current = app.getCurrentBlock();
-    const endsOn = current < ends ? ends - current : 0;
+    const endsIn = current < ends ? ends - current : 0;
 
-    const endsOnStr = Utils.formatNumber(endsOn);
+    const endsInStr = Utils.formatNumber(endsIn);
 
     const $progress = this.$card.find('.blocks-progress');
     if ($progress.css('width') !== '100%') {
@@ -233,13 +233,13 @@ export default class Vote implements VoteInterface {
       $progress
         .css('width', `${percent}%`)
         .parent()
-        .attr('title', `Ends on ${endsOnStr} blocks (${Utils.formatBlocks(endsOn)})`)
-        .attr('data-original-title', `Ends on ${endsOn} blocks (${Utils.formatBlocks(endsOn)})`)
+        .attr('title', `Vote ends in ${endsInStr} blocks`)
+        .attr('data-original-title', `Vote ends in ${endsIn} blocks`)
         .find('.sr-only')
-        .text(`Ends on ${endsOn} blocks (${Utils.formatBlocks(endsOn)})`);
+        .text(`Vote ends in ${endsIn} blocks`);
     }
 
-    return endsOn;
+    return endsIn;
   }
   private async syncAvatarList(state: StateInterface) {
     let avatarList = '';
