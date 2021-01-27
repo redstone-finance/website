@@ -7,7 +7,7 @@
     "dev": "parcel src/*.pug",
     "format": "prettier --write \"src/**/*.ts\"",
     "devServer": "node -r dotenv/config server.js",
-    "build": "parcel build src/*.pug --public-url ./"
+    "build": "gulp build"
   },
   "license": "MIT",
   "repository": {
@@ -49,6 +49,17 @@
     "browserslist": "^4.16.1",
     "caniuse-lite": "^1.0.30001173",
     "dotenv": "^8.2.0",
+    "gulp": "^4.0.2",
+    "gulp-esbuild": "^0.3.17",
+    "gulp-hash-filename": "^3.0.0",
+    "gulp-htmlmin": "^5.0.1",
+    "gulp-imagemin": "^7.1.0",
+    "gulp-pug": "^4.0.1",
+    "gulp-sass": "^4.1.0",
+    "gulp-sourcemaps": "^3.0.0",
+    "gulp-svgmin": "^3.0.0",
+    "gulp-uglify-es": "^2.0.0",
+    "node-sass": "^5.0.0",
     "parcel-bundler": "^1.12.4",
     "parcel-plugin-clean-dist": "^0.0.6",
     "postcss-modules": "^3.2.2",
