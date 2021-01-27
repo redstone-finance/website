@@ -1,6 +1,6 @@
 import express from 'express';
 import { Application } from 'express';
-
+import path from 'path';
 export default class App {
   app: Application;
   port: number;
@@ -33,7 +33,7 @@ export default class App {
   }
 
   private assets() {
-    this.app.use(express.static('dist'));
+    this.app.use(express.static(path.join(__dirname, '../dist')));
   }
 
   private onError() {

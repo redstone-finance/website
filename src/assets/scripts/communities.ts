@@ -96,6 +96,11 @@ const getAllCommunities = async (): Promise<{id: string, state: StateInterface}[
       await community.setCommunityTx(id);
       state = await community.getState(true);
 
+      // @ts-ignore
+      state.settings = Array.from(state.settings).reduce((obj, [key, value]) => (
+        Object.assign(obj, { [key]: value }) // Be careful! Maps can have non-String keys; object literals can't.
+      ), {});
+
       states.push({id, state});
     } catch(e) {}
 
@@ -108,7 +113,8 @@ const getAllCommunities = async (): Promise<{id: string, state: StateInterface}[
   }
 
   await Promise.all(gos);
-  return states;
+
+  return JSON.parse(JSON.stringify(states));
 };
 
 const getAllOpportunities = async (commIds: string[]): Promise<{ [key: string]: number }> => {
@@ -131,7 +137,7 @@ const loadCards = async () => {
   const tokensWorker: ModuleThread<TokensWorker> = await spawn<TokensWorker>(new Worker('./workers/tokens.ts'));
 
   const communities: {id: string, state: StateInterface}[] = await getAllCommunities();
-  console.log(communities.map(i => i.id))
+  console.log(communities)
   const opps: { [key: string]: number } = await getAllOpportunities(communities.map(i => i.id));
 
   $('.total').text(communities.length);
@@ -162,7 +168,7 @@ const loadCards = async () => {
 
     const oppsTotal = opps[id] ? opps[id] : 0;
 
-    let logo = state.settings.get('communityLogo');
+    let logo = state.settings['communityLogo'];
     if (logo && logo.length) {
       const config = arweave.api.getConfig();
       logo = `${config.protocol}://${config.host}:${config.port}/${logo}`;

@@ -63,6 +63,11 @@ export default class CacheController {
         await community.setCommunityTx(id);
         state = await community.getState(true);
 
+        // @ts-ignore
+        state.settings = Array.from(state.settings).reduce((obj, [key, value]) => (
+          Object.assign(obj, { [key]: value }) // Be careful! Maps can have non-String keys; object literals can't.
+        ), {});
+
         states.push({id, state});
       } catch(e) {}
       return go(++current);

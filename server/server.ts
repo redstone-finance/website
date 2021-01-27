@@ -27,7 +27,9 @@ const worker = (id: string, disconnect: any) => {
       bodyParser.json(),
       bodyParser.urlencoded({ extended: true }),
       compression(),
-      helmet()
+      helmet({
+        contentSecurityPolicy: false,
+      })
     ],
   });
 
