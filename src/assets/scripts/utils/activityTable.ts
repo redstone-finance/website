@@ -209,9 +209,6 @@ export default class ActivityTable {
       }
     `;
 
-    console.log(query);
-    console.log(this.vars);
-
     const res = await run(query, this.vars);
     const edges = res.data.transactions.edges;
     if (!edges.length) {
@@ -233,13 +230,18 @@ export default class ActivityTable {
       let name = tx.node.owner.address;
       let avatar = Utils.generateIcon(tx.node.owner.address);
 
+      let d = new Date();
+      if(tx.node.block && tx.node.block.timestamp) {
+        d = new Date(tx.node.block.timestamp * 1000);
+      }
+
       this.items.push({
         avatar,
         name,
         community: comm,
         address: this.isMembersPage ? comm : tx.node.owner.address,
         message: message.replace(/[a-z0-9_-]{43}/gi, `<a href="./member.html#$&" target="_blank"><code>$&</code></a>`),
-        date: new Date(tx.node.block.timestamp * 1000).toLocaleString(),
+        date: d.toLocaleString(),
       });
 
       this.cursor = tx.cursor;

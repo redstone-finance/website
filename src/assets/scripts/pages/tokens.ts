@@ -90,6 +90,9 @@ export default class PageTokens {
 
     for (let i = 0, j = holders.length; i < j; i++) {
       const holder = holders[i];
+
+      if(!/[a-z0-9_-]{43}/i.test(holder.address)) continue;
+
       const acc = new Author(null, holder.address, null);
       const arId = await acc.getDetails();
       const avatar = arId.avatar;

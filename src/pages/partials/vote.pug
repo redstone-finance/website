@@ -69,6 +69,7 @@
             option(value="communityAppUrl") App URL
             option(value="communityLogo") Community logo
             option(value="communityDiscussionLinks") Discussion links
+            option(value="communityHide") Hide Community
             option(value="other") Other
 
         .vote-set-name.mb-3(style="display: none")
@@ -86,6 +87,9 @@
             |  Numeric value
           input#vote-set-value.form-control(type="text")
           textarea#vote-set-value2.form-control(style="display: none")
+          select#vote-set-value3.form-select(style="display: none")
+            option(value="disable") Hide
+            option(value="enable") Show
           .lock-set-value-invalid.invalid-feedback
           #vote-set-value-links-container(style="display: none")
             table(style="width: 100%")

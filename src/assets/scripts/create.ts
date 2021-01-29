@@ -8,6 +8,7 @@ import './global';
 import arweave from './libs/arweave';
 import Dropbox from './utils/dropbox';
 import Account from './models/account';
+import Utils from './utils/utils';
 
 const community = new Community(arweave);
 const account = new Account(community);
@@ -69,7 +70,7 @@ const validate = async (e: any) => {
   if (currentStep === 1) {
     if (!e) {
       $('.addy').text(await account.getAddress());
-      $('.bal').text(await account.getArBalance());
+      $('.bal').text(Utils.formatNumber(await account.getArBalance(), 5));
 
       allowContinue();
     } else if (e.target && e.target.files) {

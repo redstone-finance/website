@@ -286,7 +286,7 @@ export default class PageVotes {
       $('.vote-set-name').hide();
       $('#vote-set-value-is-number-label').hide();
       if (setKey !== 'communityDescription') {
-        $('#vote-set-value2').hide();
+        $('#vote-set-value2, #vote-set-value3').hide();
       }
       if (setKey !== 'communityAppUrl') {
         $('#vote-set-value2').removeClass('url');
@@ -314,7 +314,7 @@ export default class PageVotes {
           $target.addClass('input-number percent');
           break;
         case 'communityDescription':
-          $('#vote-set-value').hide();
+          $('#vote-set-value, #vote-set-value3').hide();
           $('#vote-set-value2').show();
           break;
         case 'communityAppUrl':
@@ -326,8 +326,12 @@ export default class PageVotes {
           $target.trigger('input');
           break;
         case 'communityDiscussionLinks':
-          $('#vote-set-value').hide();
+          $('#vote-set-value, #vote-set-value3').hide();
           $('#vote-set-value-links-container').show();
+          break;
+        case 'communityHide':
+          $('#vote-set-value, #vote-set-value2').hide();
+          $('#vote-set-value3').show();
           break;
         case 'other':
           updateOtherIsNumber();
@@ -471,6 +475,8 @@ export default class PageVotes {
           .get();
       } else if ($('#vote-set-value2').css('display') !== 'none') {
         setValue = $('#vote-set-value2').val().toString().trim();
+      } else if($('#vote-set-value3').css('display') !== 'none') {
+        setValue = $('#vote-set-value3').val().toString().trim();
       } else {
         setValue = $('#vote-set-value').val().toString().trim();
       }

@@ -13,8 +13,19 @@ import Author from './models/author';
 import AuthorInterface from './interfaces/author';
 import Opportunities from './models/opportunities';
 import Utils from './utils/utils';
+import axios from 'axios';
 
-const getAllCommunityIds = async (): Promise<string[]> => {
+const getAllCommunities = async (): Promise<{id: string, state: StateInterface}[]> => {
+
+  try {
+    const res = await axios.get('./caching/communities');
+    if(res && res.data) {
+      return res.data;
+    }
+  } catch(e) {
+    console.log(e);
+  }
+
   let cursor = '';
   let hasNextPage = true;
 
@@ -70,7 +81,40 @@ const getAllCommunityIds = async (): Promise<string[]> => {
     }
   }
 
-  return ids;
+  const states: {id: string, state: StateInterface}[] = [];
+  let current = -1;
+  const go = async (i = 0) => {
+    if(i >= ids.length) {
+      return true;
+    }
+
+    const id = ids[i];
+    let state: StateInterface;
+
+    try {
+      const community = new Community(arweave);
+      await community.setCommunityTx(id);
+      state = await community.getState(true);
+
+      // @ts-ignore
+      state.settings = Array.from(state.settings).reduce((obj, [key, value]) => (
+        Object.assign(obj, { [key]: value }) // Be careful! Maps can have non-String keys; object literals can't.
+      ), {});
+
+      states.push({id, state});
+    } catch(e) {}
+
+    return go(++current);
+  };
+
+  const gos = [];
+  for (let i = 0, j = 5; i < j; i++) {
+    gos.push(go(++current));
+  }
+
+  await Promise.all(gos);
+
+  return JSON.parse(JSON.stringify(states));
 };
 
 const getAllOpportunities = async (commIds: string[]): Promise<{ [key: string]: number }> => {
@@ -92,10 +136,11 @@ const getAllOpportunities = async (commIds: string[]): Promise<{ [key: string]: 
 const loadCards = async () => {
   const tokensWorker: ModuleThread<TokensWorker> = await spawn<TokensWorker>(new Worker('./workers/tokens.ts'));
 
-  const commIds: string[] = await getAllCommunityIds();
-  const opps: { [key: string]: number } = await getAllOpportunities(commIds);
+  const communities: {id: string, state: StateInterface}[] = await getAllCommunities();
+  console.log(communities)
+  const opps: { [key: string]: number } = await getAllOpportunities(communities.map(i => i.id));
 
-  $('.total').text(commIds.length);
+  $('.total').text(communities.length);
   $('.loaded').show();
 
   let list: { html: string; members: number; opportunities: number }[] = [];
@@ -103,20 +148,13 @@ const loadCards = async () => {
   let completed = 0;
 
   const go = async (i = 0) => {
-    if (i >= commIds.length) {
+    if (i >= communities.length) {
       return true;
     }
 
-    const comm = commIds[i];
-    let state: StateInterface;
-
-    try {
-      const community = new Community(arweave);
-      await community.setCommunityTx(comm);
-      state = await community.getState(true);
-    } catch (e) {
-      return go(++current);
-    }
+    const community = communities[i];
+    const id = community.id;
+    const state: StateInterface = community.state;
 
     const users = await tokensWorker.sortHoldersByBalance(state.balances, state.vault);
 
@@ -128,27 +166,27 @@ const loadCards = async () => {
       avatarList += `<span class="avatar" data-toggle="tooltip" data-placement="top" title="${aDetails.address}" data-original-title="${aDetails.address}" style="background-image: url(${aDetails.avatar})"></span>`;
     }
 
-    const oppsTotal = opps[commIds[i]] ? opps[commIds[i]] : 0;
+    const oppsTotal = opps[id] ? opps[id] : 0;
 
-    let logo = state.settings.get('communityLogo');
+    let logo = state.settings['communityLogo'];
     if (logo && logo.length) {
       const config = arweave.api.getConfig();
       logo = `${config.protocol}://${config.host}:${config.port}/${logo}`;
     } else {
-      logo = Utils.generateIcon(comm, 72);
+      logo = Utils.generateIcon(id, 72);
     }
 
     const oppTxt = oppsTotal === 1 ? 'Opportunity' : 'Opportunities';
     list.push({
       html: `
       <div class="col-md-6">
-        <a class="card" href="./index.html#${comm}" data-community="${comm}" target="_blank">
+        <a class="card" href="./index.html#${id}" data-community="${id}" target="_blank">
           <div class="card-body text-center">
             <div class="mb-3">
               <span class="avatar avatar-lg rounded" style="background-image: url(${logo})"></span>
             </div>
             <h4 class="card-title m-0">${state.name} (${state.ticker})</h4>
-            <div class="text-muted">${comm}</div>
+            <div class="text-muted">${id}</div>
             <small class="opps">${oppsTotal} ${oppTxt}</small> | 
             <small class="members">${users.length} Members</small><br>
             <div class="avatar-list avatar-list-stacked mt-3 mb-3">
@@ -163,7 +201,7 @@ const loadCards = async () => {
     });
 
     $('.completed').text(++completed);
-    $('.progress-bar').width(`${Math.floor((completed / commIds.length) * 100)}%`);
+    $('.progress-bar').width(`${Math.floor((completed / communities.length) * 100)}%`);
 
     return go(++current);
   };
