@@ -1,0 +1,98 @@
+include mixins/mixins.pug
+.page-tokens(style="display: none")
+  .page-header: .row.align-items-center
+    .col-auto
+      .page-pretitle Tokens
+      .page-title 
+
+    .col-auto.ml-auto.d-print-none
+      +marketSellBtn(false)
+
+      a.btn.btn-primary.d-none.d-sm-inline-block.ml-1(href="#", data-toggle="modal", data-target="#modal-transfer")
+        i.icon(data-feather="plus") 
+        | Transfer tokens
+      a.btn.btn-primary.d-sm-none.btn-icon(href="#", data-toggle="modal", data-target="#modal-transfer", aria-label="Transfer tokens")
+        i.icon(data-feather="plus")
+
+  .row
+    .col-md-6
+      .card
+        .card-header
+          .card-title Token info
+        .card-body
+          .dimmer.active
+            .loader
+            .dimmer-content            
+              .mb-3.d-flex.align-items-center
+                .strong Token name
+                .ticker.ml-auto
+
+              .mb-3.d-flex.align-items-center
+                .strong Total supply
+                .minted.ml-auto 0
+
+              .mb-3.d-flex.align-items-center
+                .strong My total balance
+                .user-total-balance.ml-auto 0
+
+              .mb-3.d-flex.align-items-center
+                .strong My unlocked balance
+                .user-unlocked-balance.ml-auto 0
+
+    .col-md-6
+      .card
+        .card-body
+          .dimmer.active
+            .loader
+            .dimmer-content
+              #chart-total-tokens
+
+
+  .card
+    .card-header
+      .card-title Community members #[span#total-holders]
+    .dimmer.active
+      .loader
+      .dimmer-content
+        .table-responsive: table.token-holders.table.table-mobile-md.table-vcenter.card-table
+          thead
+            tr
+              th Token Holder
+              th Balance
+              th Vault Balance
+              th Total Balance
+              th.d-none.d-lg-table-cell Role
+              th.w-1
+
+          tbody
+            tr
+
+#modal-transfer.modal.modal-blur.fade(role="dialog")
+  .modal-dialog(role="document"): .modal-content
+    .modal-header
+      h5.modal-title Transfer tokens
+      button.close(data-dismiss="modal" aria-label="Close")
+        i.icon(data-feather="x")
+
+    .modal-body
+      .mb-3
+        label.form-label Recipient
+        input#transfer-target.form-control(type="text")
+        .invalid-feedback Invalid recipient
+        small.form-hint Enter the Arweave wallet address of the recipient.
+
+      .mb-3
+        .form-label Transfer amount ( #[span.text-muted.user-unlocked-balance 0] #[span.text-muted.ticker] )
+        .input-group
+          input#transfer-balance.input-max-balance.input-number.form-control(type="text")
+          a.btn-max-balance.btn.btn-success(href="#") MAX
+
+    .modal-footer
+      div
+        span.strong Fee:
+        span.text-muted 
+          span.tx-fee
+          | AR
+      a.do-transfer-tokens.btn.btn-primary.ml-auto(href="#") Transfer tokens
+
+include partials/verto

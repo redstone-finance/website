@@ -1,0 +1,97 @@
+include pages/mixins/mixins
+
+<!DOCTYPE html>
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Member - CommunityXYZ
+    include pages/partials/favicon
+    link(rel="stylesheet", href="assets/styles/style.css")
+  body.antialised: .page
+    .content
+      .container-xl
+        .text-center: a(href="./")
+          img(src="assets/images/logo.svg" alt="CommunityXYZ", width="250px")
+
+        .empty
+          .row(style="width: 80%")
+            .col-md-12.col-lg-4.mb-3
+              a.btn.btn-outline-primary.btn-block.home(href='#')
+                i.icon(data-feather="home")
+                | Home
+            .col-md-6.col-lg-4.mb-3
+              a.btn.btn-outline-primary.btn-block.create(href='#')
+                i.icon(data-feather="zap")
+                | Create Community
+            .col-md-6.col-lg-4.mb-5
+              a.btn.btn-outline-primary.btn-block.opp(href='#')
+                i.icon(data-feather="briefcase")
+                | Opportunities
+
+        .empty
+          .row
+            .col-auto
+              span.avatar.avatar-lg.mb-3(style="background-image: src()")
+            .col-auto
+              h1.mb-3
+              h3.text-muted.text-left.mb-3
+              .row
+                .col-auto: a.copy.btn.btn-light.btn-sm(href="#") Copy address
+                .col-auto: a.viewblock.btn.btn-light.btn-sm(href="#", target="_blank") View on Viewblock
+
+        .container
+          .row
+            .col-auto: a.act-btn.btn.btn-square.btn-primary(href="#") Activity
+            .col-auto: a.psc-btn.btn.btn-square.btn-secondary(href="#") Community tokens
+      
+        .container
+          .row.act-cards: .col-12
+            .card
+              .card-header
+                .card-title Activity
+                .card-actions.row
+                  .col-auto Governance only
+                  .col-auto
+                    label.form-check.form-switch.m-0
+                      input.act-filter.form-check-input.position-static(type="checkbox", checked)
+                  .col-auto All
+              .dimmer.active
+                .loader
+                .dimmer-content
+                  .table-responsive
+                      table.comm-activity.table.table-mobile-md.table-vcenter.card-table
+                        thead
+                          tr
+                            th Community
+                            th Action
+                            th Date
+
+                  .card-footer.d-flex.align-items-center
+                    
+
+          .row.comm-cards(style="display: none"): .col-12
+            .card
+              .card-header
+                .card-title Community tokens
+                  span#total-psc
+              #loading.card-body
+                h4 
+                  span.loaded(style="display: none") [#[span.completed 0]/#[span.total]]  
+                  | Please wait while we load the communities...
+                .progress: .progress-bar(style="width: 0%")
+              #psc.table-responsive
+                table(style="display: none")#balance.table.table-mobile-md.table-vcenter.card-table
+                  thead
+                    tr
+                      th Community
+                      th Balance
+                      th Vault Balance
+                      th Total Balance
+                      th Role
+
+      include pages/partials/footer
+
+    div(aria-live="polite", aria-atomic="true", style="position: fixed; min-height: 200px;")
+      .toast-container(style="position: fixed; top: 20px; right: 20px;")
+    script(src="assets/scripts/member.js")

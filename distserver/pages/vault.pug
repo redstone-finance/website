@@ -1,0 +1,119 @@
+.page-vault(style="display: none")
+  .page-header: .row.align-items-center
+    .col-auto
+      .page-pretitle My Vault
+      .page-title 
+
+    .col-auto.ml-auto.d-print-none
+      span.d-none.d-sm-inline
+        a.btn-unlock-vault.btn.btn-light(href="#") Unlock vault
+      a.btn-unlock-vault.btn.btn-light.d-sm-none.btn-icon(href="#")
+        i.icon(data-feather="unlock")
+      a.ml-3.btn.btn-primary.d-none.d-sm-inline-block(href="#", data-toggle="modal", data-target="#modal-lock")
+        i.icon(data-feather="lock") 
+        | Lock tokens
+      a.ml-3.btn.btn-primary.d-sm-none.btn-icon(href="#", data-toggle="modal", data-target="#modal-lock", aria-label="Lock tokens")
+        i.icon(data-feather="lock")
+
+  .row
+    .col-lg-6.order-lg-2
+      .card
+        .card-body
+          .dimmer.active
+            .loader
+            .dimmer-content
+              #chart-vault
+
+    .col-lg-6.order-lg-1
+      .card
+        .card-header
+          .card-title My Vault
+        .dimmer.active
+          .loader
+          .dimmer-content
+            .table-responsive: table.table-my-vault.table.table-mobile-md.table-vcenter.card-table
+              thead
+                tr
+                  th Balance
+                  th Vote weight
+                  th Ends on
+                  th.w-1
+
+              tbody
+                tr
+  .card
+    .card-header
+      .card-title Locked tokens in vault
+    .dimmer.active
+      .loader
+      .dimmer-content
+        .table-responsive: table.table-vault.table.table-mobile-md.table-vcenter.card-table
+          thead
+            tr
+              th Holder
+              th Total Balance
+              th Total Vote weight
+
+          tbody
+            tr
+
+#modal-increase-lock.modal.modal-blur.fade(role="dialog")
+  .modal-dialog(role="document"): .modal-content
+    .modal-header
+      h5.modal-title Increase lock
+      button.close(data-dismiss="modal" aria-label="close")
+        i.icon(data-feather="x")
+
+    .modal-body
+      .mb-3
+        .form-label Vault ID
+        .form-control-plaintext.vault-id
+        input#lock-vault-id.vault-id(type="hidden")
+
+      .mb-3
+        .form-label Lock length in blocks
+        .input-group
+          input#increase-lock-length.input-max-lock.input-number.form-control(type="text")
+          a.btn-max-lock.btn.btn-success(href="#") MAX
+
+        small.form-hint Minimum length is #[span.min-lock-length.strong] and maximum is #[span.max-lock-length.strong] blocks.
+       
+    .modal-footer
+      div
+        span.strong Fee:
+        span.text-muted 
+          span.tx-fee
+          | AR
+      a.do-increase-lock.btn.btn-primary.ml-auto(href="#") Increase lock
+
+#modal-lock.modal.modal-blur.fade(role="dialog")
+  .modal-dialog(role="document"): .modal-content
+    .modal-header
+      h5.modal-title Lock tokens
+      button.close(data-dismiss="modal" aria-label="Close")
+        i.icon(data-feather="x")
+
+    .modal-body
+      p.mb-3 Lock your tokens in a new vault to increase your vote weight.
+      
+      .mb-3
+        .form-label Vault amount ( #[span.text-muted.user-unlocked-balance 0] #[span.text-muted.ticker] )
+        .input-group
+          input#lock-balance.input-max-balance.input-number.form-control(type="text")
+          a.btn-max-balance.btn.btn-success(href="#") MAX
+      
+      .mb-3
+        .form-label Lock length in blocks
+        .input-group
+          input#lock-length.input-max-lock.input-number.form-control(type="text")
+          a.btn-max-lock.btn.btn-success(href="#") MAX
+
+        small.form-hint Minimum length is #[span.min-lock-length.strong] and maximum is #[span.max-lock-length.strong] blocks.
+        
+    .modal-footer
+      div
+        span.strong Fee:
+        span.text-muted 
+          span.tx-fee
+          | AR
+      a.do-lock-tokens.btn.btn-primary.ml-auto(href="#") Lock tokens

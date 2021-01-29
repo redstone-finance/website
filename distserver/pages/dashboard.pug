@@ -1,0 +1,120 @@
+include mixins/mixins.pug
+.page-dashboard(style="display: none;")
+  .page-header: .row.align-items-center
+    .col-auto
+      .page-pretitle Dashboard
+
+  .row
+    .col-12
+      .card
+        .card-body: .row.align-items-start
+          .col-auto
+            span.comm-logo.avatar.avatar-xl.rounded(style="background-image: url()")
+          .col-12.col-md
+            h4.card-title.m-0.comm-title
+            .row.small.mb-3
+              .col-12
+                strong Community ID: 
+                span.commId 
+              .col-auto
+                strong Quorum: 
+                span.quorum
+              .col-auto
+                strong Support:
+                span.support
+              .col-auto
+                strong Vote Length: 
+                span.voteLength
+              .col-auto
+                strong Lock minimum length: 
+                span.lockMinLength
+              .col-auto
+                strong Lock maximum length: 
+                span.lockMaxLength
+
+            .mb-3
+              +marketBuyBtn(false)
+
+            .comm-description
+            .row.small
+              .col-12
+                a.app-link(href="#!", target="_blank")
+              .col-12.comm-links
+
+  .row
+    .col-md-6: a.card(href="#/tokens"): .card-body: .dimmer.active
+      .loader
+      .dimmer-content.d-flex.align-items-center
+        span.bg-blue.text-white.stamp.mr-3
+          i.icon(data-feather="users")
+        .mr-3.lh-sm
+          .strong
+            span.users
+            |  Community members
+          .text-muted
+            span.users-vault
+            |  with voting power
+
+    .col-md-6: a.card(href="#/tokens"): .card-body: .dimmer.active
+      .loader
+      .dimmer-content.d-flex.align-items-center
+        span.bg-green.text-white.stamp.stamp-lg.mr-3
+          i.icon(data-feather="bar-chart-2")
+        .mr-3.lh-sm
+          .strong
+            span.minted
+            span.ticker
+            |  minted
+          .text-muted
+            span.mint-waiting
+            |  waiting in votes
+
+    .col-md-6: a.card(href="#/vault"): .card-body: .dimmer.active
+      .loader
+      .dimmer-content.d-flex.align-items-center
+        span.bg-dark.text-white.stamp.mr-3
+          i.icon(data-feather="lock")
+        .mr-3.lh-sm
+          .strong
+            span.vault
+            span.ticker
+            |  locked
+          .text-muted
+            span.vault-waiting
+            |  waiting in votes
+
+    .col-md-6: a.card(href="#/votes"): .card-body: .dimmer.active
+      .loader
+      .dimmer-content.d-flex.align-items-center
+        span.bg-yellow.text-white.stamp.mr-3
+          i.icon(data-feather="check-circle")
+        .mr-3.lh-sm
+          .strong
+            span.votes 
+            |  Active votes
+          .text-muted
+            span.votes-completed
+            |  completed
+
+  .row.act-cards: .col-12
+    .card
+      .card-header
+        .card-title Activity
+        .card-actions.row
+          .col-auto Governance only
+          .col-auto
+            label.form-check.form-switch.m-0
+              input.act-filter.form-check-input.position-static(type="checkbox", checked)
+          .col-auto All
+      .table-responsive.dimmer.active
+        .loader
+        .dimmer-content
+          table.comm-activity.table.table-mobile-md.table-vcenter.card-table
+            thead
+              tr
+                th Member
+                th Action
+                th Date
+      .card-footer.d-flex.align-items-center
+        
+include partials/verto

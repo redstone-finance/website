@@ -1,0 +1,79 @@
+.alert-version.alert.alert-warning.alert-dismissible.mb-0.d-none
+  | You're using an older version of the Community contract, it is recommended to create a new Community to enjoy all its benefits.
+  a(href="#", class="close", data-dismiss="alert", aria-label="close") &times;
+  
+header.navbar.navbar-expand-md.navbar-light
+  .container-xl
+    button.navbar-toggler(data-toggle="collapse", data-target="#navbar-menu")
+      span.navbar-toggler-icon
+
+    a.navbar-brand.navbar-brand-autodark.d-none-navbar-horizontal.pr-0.pr-md-3(href="/")
+      img.navbar-brand-image(src="assets/images/logo.svg", alt="Community")
+
+    .navbar-nav.flex-row.order-md-last
+      .statusify.nav-item.dropdown.d-none.d-md-flex.mr-3
+        a.nav-link.px-0(href="#", data-toggle="dropdown", tabindex="-1")
+          i(data-feather="bell")
+          span.status-bg
+        .dropdown-menu.dropdown-menu-right.dropdown-menu-card.dropdown-menu-arrow
+          .card.card-sm
+            .card-body.empty Nothing to show.
+
+      .loggedin.nav-item.dropdown(style="display: none")
+        a.nav-link.d-flex.lh-1.text-reset.p-0(href="#" data-toggle="dropdown")
+          span.avatar.user-avatar
+          .d-none.d-xl-block.pl-2
+            div.user-name
+            .mt-1.small.text-muted.user-role
+
+        .dropdown-menu.dropdown-menu-right.dropdown-menu-arrow
+          a.member-ar.dropdown-item(href='#!')
+            i.icon.dropdown-item-icon(data-feather="dollar-sign")
+            | 0 AR
+          a.member-profile.dropdown-item(href="#!", target="_blank") 
+            i.icon.dropdown-item-icon(data-feather="user")
+            | Profile
+          .dropdown-divider
+          a.logout.dropdown-item(href="#!")
+            i.icon.dropdown-item-icon(data-feather="log-out")
+            | Logout
+          
+      .loggedout.nav-item
+        a.btn.btn-primary(href="#", data-toggle="modal", data-target="#login-modal")
+          i.icon(data-feather="user")
+          | Login
+
+    #navbar-menu.collapse.navbar-collapse
+      .d-flex.flex-column.flex-md-row.flex-fill.align-items-stretch.align-items-md-center
+        ul.navbar-nav
+          li.nav-item.link-home
+            a.nav-link(href="#")
+              span.nav-link-icon.d-md-none.d-lg-inline-block
+                i.icon(data-feather="home")
+              span.nav-link-title Dashboard
+
+          li.nav-item.link-tokens
+            a.nav-link(href="#/tokens")
+              span.nav-link-icon.d-md-none.d-lg-inline-block
+                i.icon(data-feather="users")
+              span.nav-link-title Tokens
+
+          li.nav-item.link-votes
+            a.nav-link(href="#/votes")
+              span.nav-link-icon.d-md-none.d-lg-inline-block
+                i.icon(data-feather="check-circle")
+              span.nav-link-title Votes
+
+          li.nav-item.link-vault
+            a.nav-link(href="#/vault")
+              span.nav-link-icon.d-md-none.d-lg-inline-block
+                i.icon(data-feather="lock")
+              span.nav-link-title Vault
+
+          li.nav-item.link-opportunity
+            a.nav-link(href="#/opportunity")
+              span.nav-link-icon.d-md-none.d-lg-inline-block
+                i.icon(data-feather="briefcase")
+              span.nav-link-title Opportunities
+
+include login

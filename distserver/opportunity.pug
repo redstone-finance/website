@@ -1,0 +1,23 @@
+include pages/mixins/mixins
+
+<!DOCTYPE html>
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Opportunities - CommunityXYZ
+    include pages/partials/favicon
+    link(rel="stylesheet", href="assets/styles/style.css")
+  body.antialised(style="display: none"): .page
+    include pages/opportunities/header
+
+    .content: .container-xl
+      include pages/opportunities/create
+      include pages/opportunities/jobs
+      include pages/opportunities/job
+      include pages/partials/footer
+
+    div(aria-live="polite", aria-atomic="true", style="position: fixed; min-height: 200px;")
+      .toast-container(style="position: fixed; top: 20px; right: 20px;")
+
+    script(src="assets/scripts/opportunity/jobboard.js")

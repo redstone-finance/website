@@ -1,0 +1,20 @@
+.page-opportunity(style="display: none;")
+  .page-header: .row.align-items-center
+    .col-auto
+      .page-pretitle Opportunities
+      .page-title
+
+    .col-auto.ml-auto.d-print-none
+      a.opps-link.btn.btn-primary.d-none.d-sm-inline-block(href="#!", target="_blank")
+        i.icon(data-feather="briefcase") 
+        | Go to Opportunities
+      a.opps-link.btn.btn-primary.d-sm-none.btn-icon(href="#!", target="_blank")
+        i.icon(data-feather="briefcase")
+
+  .row
+    .col
+      .card.dimmer.active
+        .loader
+        .dimmer-content
+          .card-header: .card-title Opportunities
+          .list.list-row.list-hoverable.jobs-list

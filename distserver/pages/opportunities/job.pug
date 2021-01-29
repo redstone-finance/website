@@ -1,0 +1,138 @@
+include ../mixins/mixins.pug
+.jobboard-job(style="display: none")
+  .page-header: .row.align-items-center
+    .col-auto
+      .page-title Opportunity
+    .col-auto.ml-auto: a.btn.btn-light(href="#")
+      i.icon(data-feather="arrow-left")
+      | Go back
+
+  
+  .row
+    .col-lg-3.mb-3.order-lg-last
+      .sidebar.dimmer.active
+        .loader
+        .dimmer-content
+          .dropdown
+            a.btn-opp-status.d-flex.btn.btn-square.btn-success.mb-3(href="#", data-toggle="dropdown") Active
+            .dropdown-menu.change-status
+              a.dropdown-item(href="#") Active
+              a.dropdown-item(href="#") In progress
+              a.dropdown-item(href="#") Finished
+              a.dropdown-item(href="#") Closed
+
+          .card
+            .card-body
+              .row.mb-3
+                .col-auto.mb-3
+                  h5.subheader Community
+                  .d-flex.align-items-center
+                    .float-left.mr-3
+                      span.community-logo.avatar.rounded(style="background-image: url()")
+                    a.text-dark.opp-community.text-truncate.d-block(target="_blank", data-toggle="tooltip", data-placement="top") Community Name
+                .col-12.mb-3
+                  +marketBuyBtn
+
+                .col-auto.mb-3
+                  h5.subheader Creator
+                  .d-flex.align-items-center
+                    .float-left.mr-3.mt-1
+                      span.creator-avatar.avatar(style="background-image: url()")
+                    a.creator-addy.text-dark.d-inline.strong.text-truncate(href="#!", target="_blank", data-toggle="tooltip" data-placement="top")
+                .col-12.mb-3.is-not-owner
+                  a.btn-contact-creator.d-flex.btn.btn-light(href="#", target="_blank") Contact on WeveMail
+              
+          .card
+            .card-body
+              .row
+                .col-auto.col-lg-12
+                  h5.subheader Payout
+                  h3 #[span.opp-payout] #[span.opp-community-ticker]
+                  h5.opp-lock-length
+                .col-auto
+                  h5.subheader Project type
+                  h3.opp-project
+                .col-auto
+                  h5.subheader Experience level
+                  h3.opp-experience
+                .col-auto
+                  h5.subheader Time commitment
+                  h3.opp-commitment
+                .col-auto
+                  h5.subheader Bounty type
+                  h3.opp-type
+                .col-auto
+                  h5.subheader Published
+                  h3.opp-timestamp
+
+    .col-lg-9.order-lg-first
+      .card.mb-5.dimmer.active
+        .loader
+        .dimmer-content
+          .card-header: .card-title.opp-title
+          .card-body.opp-description
+          
+
+  .row.align-items-center.mb-3
+    .col-auto
+      h3.m-0 Applications
+      .total-applications.text-muted.text-h5 0 applicants
+    .col-auto.ml-auto.is-not-ended
+      a.btn-apply.is-not-owner.btn.btn-primary.btn-square.mb-3(href="#") Apply
+  .dimmer.active
+    .loader
+    .opp-applicants.dimmer-content
+      
+#modal-apply.modal.modal-blur.fade(role="dialog")
+  .modal-dialog(role="document"): .modal-content
+    .modal-header
+      h5.modal-title Apply
+      button.close(data-dismiss="modal")
+        i.icon(data-feather="x")
+  
+    .modal-body
+      .mb-3 You're about to apply for the opportunity "#[strong.opp-title ]".
+        br
+        | Please fill in the following details.
+      
+      .mb-3
+        label.form-label Message #[strong.text-danger *]
+        textarea#apply-message.form-control
+
+    .modal-footer
+      div
+        span.strong Fee:
+        span.text-muted 
+          span.tx-fee 0
+          | AR
+      a.do-apply.btn.btn-primary.ml-auto(href="#") Apply
+
+#modal-applicant.modal.modal-blur.fade(role="dialog")
+  .modal-dialog(role="document"): .modal-content
+    .modal-header
+      h5.modal-title Approve applicant
+      button.close(data-dismiss="modal")
+        i.icon(data-feather="x")
+  
+    .modal-body
+      .mb-3 You're about to highlight an applicant as approved.
+      .mb-5 
+        label.form-label Applicant Address
+        input#opp-app-approve.form-control(disabled="disabled")
+
+      div
+        label.form-check
+          input#opp-update-status.form-check-input(type="checkbox")
+          span.form-check-label Update the opportunity to "#[strong In progress]".
+
+      input#opp-app-id(type="hidden")
+      
+    .modal-footer
+      div
+        span.strong Fee:
+        span.text-muted 
+          span.tx-app-fee 0
+          | AR
+      a.do-app-update.btn.btn-primary.ml-auto(href="#") Approve
+
+include ../partials/verto

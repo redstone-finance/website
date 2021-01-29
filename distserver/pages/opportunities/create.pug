@@ -1,0 +1,134 @@
+.jobboard-create(style="display: none")
+  .row.d-flex.justify-content-center: .col-12.col-lg-10
+    .page-header: .row.align-items-center
+      .col-auto
+        .page-title Add opportunity
+        .page-pretitle Create a new opportunity
+      .col-auto.ml-auto: a.btn.btn-light(href="#")
+        i.icon(data-feather="arrow-left")
+        | Go back
+
+  .d-flex.justify-content-center: .col-12.col-lg-10: .card: .card-body
+    .mb-3
+      label.form-label Title
+      input#job-title.form-control(type="text")
+      .invalid-feedback The title doesn't explain what is this opportunity.
+
+    .row
+      .col-md-6.mb-3
+        label.form-label Community ID ( #[span.community-name.text-yellow ] )
+        .input-icon
+          input#job-community.form-control(type="text")
+          span.input-icon-addon(style="display: none")
+            .spinner-border.spinner-border-sm(role="status")
+        .invalid-feedback Community not defined.
+
+      .col-md-3.mb-3
+        label.form-label Amount to be paid
+        .input-group
+          input#job-amount.input-number.form-control(type="text", value="0")
+          span.input-group-text.ticker
+        .invalid-feedback Payout must be higher than 0.
+      
+      .col-md-3.mb-3
+        label.form-label Lock length in blocks
+        input#job-lock-length.input-number.form-control(type="text", value="0")
+        .invalid-feedback Payout must be higher than 0.
+
+    .mb-5
+      label.form-label Description
+      #quill-editor
+      .invalid-feedback The description is required.
+
+    .mb-5
+      label.form-label Opportunity type
+      .form-selectgroup
+        each val in ['Bug', 'Feature', 'Improvement', 'Security', 'Documentation', 'Design', 'Code review', 'Other']
+          label.form-selectgroup-item
+            input.form-selectgroup-input(type="radio", name="job-type", value=val, checked=val==='Bug')
+            span.form-selectgroup-label= val
+
+    .row
+      .col-md-6.mb-5
+        label.form-label Experience level
+        .form-selectgroup
+          each val in ['Beginner', 'Intermediate', 'Advanced']
+            label.form-selectgroup-item
+              input.form-selectgroup-input(type="radio", name="job-exp", value=val, checked=val==='Beginner')
+              span.form-selectgroup-label= val
+
+      .col-md-6.mb-5
+        label.form-label Time commitment
+        .form-selectgroup
+          each val in ['Hours', 'Days', 'Weeks', 'Months']
+            label.form-selectgroup-item
+              input.form-selectgroup-input(type="radio", name="job-commitment", value=val, checked=val==='Hours')
+              span.form-selectgroup-label= val
+
+    .mb-3
+      label.form-label Project
+      .form-selectgroup.form-selectgroup-boxes.d-flex.flex-column.flex-lg-row
+        label.form-selectgroup-item.flex-fill
+          input.form-selectgroup-input(type="radio", name="job-project", value="Bounty", checked)
+          .form-selectgroup-label.d-flex.align-items-center.p-3
+            .mr-3
+              span.form-selectgroup-check
+            div
+              h4.m-0 Bounty
+              h5.m-0 One contributor, one paid
+
+        label.form-selectgroup-item.flex-fill
+          input.form-selectgroup-input(type="radio", name="job-project", value="Contest")
+          .form-selectgroup-label.d-flex.align-items-center.p-3
+            .mr-3
+              span.form-selectgroup-check
+            div
+              h4.m-0 Contest
+              h5.m-0 Multiple contributors, one paid
+
+        label.form-selectgroup-item.flex-fill
+          input.form-selectgroup-input(type="radio", name="job-project", value="Cooperative")
+          .form-selectgroup-label.d-flex.align-items-center.p-3
+            .mr-3
+              span.form-selectgroup-check
+            div
+              h4.m-0 Cooperative
+              h5.m-0 Multiple contributors, multiple paid
+
+    .mb-5
+      label.form-label Permission
+      .form-selectgroup.form-selectgroup-boxes.d-flex.flex-column.flex-lg-row
+        label.form-selectgroup-item.flex-fill
+          input.form-selectgroup-input(type="radio", name="permission", value="Permission", checked)
+          .form-selectgroup-label.d-flex.align-items-center.p-3
+            .mr-3
+              span.form-selectgroup-check
+            div
+              h4.m-0 Approval required
+              h5.m-0 I need to approve and contact before starting work.
+
+        label.form-selectgroup-item.flex-fill
+          input.form-selectgroup-input(type="radio", name="permission", value="Permissionless")
+          .form-selectgroup-label.d-flex.align-items-center.p-3
+            .mr-3
+              span.form-selectgroup-check
+            div
+              h4.m-0 Permissionless
+              h5.m-0 The worker can start on the project right away.
+
+    .row
+      .col-auto.ml-auto
+        a.submit-job.btn.btn-primary(href="#") Submit opportunity
+
+#confirm-modal.modal.modal-blur.fade
+  .modal-dialog.modal-sm.modal-dialog-centered
+    .modal-content
+      .modal-body
+        .modal-title Confirm transactions
+        .modal-message Before approving, make sure the details are right. 
+          p This transaction will cost #[span.fee] AR + #[span.comm-fee].
+          p Make sure you have enough AR and #[span.ticker] for this transaction to be approved.
+
+      .modal-footer
+        a.btn.btn-link.link-secondary.mr-auto(data-dismiss="modal", href="#") Cancel
+        a.confirm-tx.btn.btn-success(href="#") Submit transaction

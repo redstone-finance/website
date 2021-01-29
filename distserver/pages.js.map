@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../server/pages.ts"],
+  "sourcesContent": ["export const pages = [\r\n  'create',\r\n  'home',\r\n  'opportunity',\r\n  'communities',\r\n  'claim',\r\n  'member'\r\n];"],
+  "mappings": ";;;;;;;AAAA;AAAA;AAAA;AAAO,MAAM,QAAQ;AAAA,EACnB;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA,EACA;AAAA;",
+  "names": []
+}

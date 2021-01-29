@@ -1,0 +1,19 @@
+.page-votes(style="display: none")
+  .page-header: .row.align-items-center
+    .col-auto
+      .page-pretitle Votes
+      .page-title 
+
+    .col-auto.ml-auto.d-print-none
+      a.btn.btn-primary.d-none.d-sm-inline-block(href="#", data-toggle="modal", data-target="#modal-new-vote")
+        i.icon(data-feather="plus") 
+        | New vote
+      a.btn.btn-primary.d-sm-none.btn-icon(href="#", data-toggle="modal", data-target="#modal-new-vote", aria-label="New vote")
+        i.icon(data-feather="plus")
+
+  .dimmer.active
+    .loader
+    .dimmer-content
+      .row.proposals
+
+include partials/vote
