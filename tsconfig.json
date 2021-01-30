@@ -3,14 +3,15 @@
     "sourceMap": true,
     "target": "es6",
     "module": "commonjs",
-    "outDir": "./distserver",
-    "baseUrl": "./server",
+    "outDir": "./dist",
+    "baseUrl": "./src",
     "esModuleInterop": true
   },
   "include": [
-    "server/**/*.ts"
+    "src"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "server"
   ]
 }

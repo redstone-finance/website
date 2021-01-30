@@ -1,5 +1,3 @@
-import '../styles/style.scss';
-
 import Community from 'community-js';
 import $ from './libs/jquery';
 import 'bootstrap/dist/js/bootstrap.bundle';

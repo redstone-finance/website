@@ -1,4 +1,4 @@
-import jdenticon from 'jdenticon';
+import * as jdenticon from 'jdenticon';
 import Toast from './toast';
 
 export default class Utils {

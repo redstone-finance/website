@@ -7,11 +7,12 @@ html(lang="en")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
     title Communities - CommunityXYZ
     include pages/partials/favicon
+    link(rel="stylesheet", href="assets/styles/style.css")
   body.antialised: .page
     .content
       .container-xl
         .text-center: a(href="./")
-          img(src="./assets/images/logo.svg" alt="CommunityXYZ", width="250px")
+          img(src="assets/images/logo.svg" alt="CommunityXYZ", width="250px")
 
         .empty
           h1.mb-3 Communities
@@ -41,4 +42,4 @@ html(lang="en")
                   .progress-bar(style="width: 0%")
 
       include pages/partials/footer
-    script(src="./assets/scripts/communities.ts")
+    script(src="assets/scripts/communities.js")
