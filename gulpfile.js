@@ -43,7 +43,16 @@ task('scripts', (done) => {
 
 task('images', (done) => {
   src(['src/**/*.{png,svg,jpg,jpeg,gif}'])
-    .pipe(imagemin())
+    .pipe(imagemin([
+      imagemin.gifsicle({interlaced: true}),
+      imagemin.mozjpeg({quality: 75, progressive: true}),
+      imagemin.optipng({optimizationLevel: 5}),
+      imagemin.svgo({
+        plugins: [
+          {removeViewBox: false}
+        ]
+      })
+    ]))
     .pipe(dest('dist'));
 
   done();
