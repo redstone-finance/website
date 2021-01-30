@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../server/controllers/redirection.ts"],
-  "sourcesContent": ["import express from 'express';\r\nimport { pages } from '../pages';\r\n\r\nexport default class RedirectController {\r\n  path = '/';\r\n  router = express.Router();\r\n\r\n  constructor() {\r\n    this.initRoutes();\r\n  }\r\n\r\n  private initRoutes() {\r\n    this.router.get(`${this.path}index.html`, (_, res) => {\r\n      res.redirect('/');\r\n    });\r\n\r\n    for(const page of pages) {\r\n      this.router.get(`${this.path}${page}.html`, (_, res) => {\r\n        res.redirect(`./${page}`);\r\n      });\r\n    }\r\n  }\r\n\r\n  private index(req: express.Request, res: express.Response) {\r\n    res.send('hello-world');\r\n  }\r\n}"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA,qBAAoB;AACpB,mBAAsB;AADtB;AAAA,EAOE;AAHA,gBAAO;AACP,kBAAS,uBAAQ;AAGf,SAAK;AAAA;AAAA,EAGC;AACN,SAAK,OAAO,IAAI,GAAG,KAAK,kBAAkB,CAAC,GAAG;AAC5C,UAAI,SAAS;AAAA;AAGf,eAAU,QAAQ;AAChB,WAAK,OAAO,IAAI,GAAG,KAAK,OAAO,aAAa,CAAC,GAAG;AAC9C,YAAI,SAAS,KAAK;AAAA;AAAA;AAAA;AAAA,EAKhB,MAAM,KAAsB;AAClC,QAAI,KAAK;AAAA;AAAA;",
-  "names": []
-}

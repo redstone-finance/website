@@ -100,4 +100,4 @@ ArweaveApps.iml
 # Dist files
 public
 dist
-distServer
+distserver
