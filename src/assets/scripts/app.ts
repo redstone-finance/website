@@ -1,5 +1,3 @@
-import '../styles/board.scss';
-
 import 'threads/register';
 import Community from 'community-js';
 import $ from './libs/jquery';

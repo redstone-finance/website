@@ -1,65 +1,81 @@
-const { series, dest, watch, src } = require('gulp');
-const gulp = require('gulp');
+const { series, dest, src, task, parallel } = require('gulp');
 const gulpEsbuild = require('gulp-esbuild');
 const pug = require('gulp-pug');
-const minHtml = require('gulp-htmlmin');
 const rev = require('gulp-rev');
 const sourcemaps = require('gulp-sourcemaps');
 const imagemin = require('gulp-imagemin');
-const svgmin = require('gulp-svgmin');
+//const svgmin = require('gulp-svgmin');
 const sass = require('gulp-sass');
 const nodemon = require('gulp-nodemon');
 const revRewrite = require('gulp-rev-rewrite');
+const del = require('del');
+const revDel = require('rev-del');
+const replace = require('gulp-replace');
 
 sass.compiler = require('node-sass');
 
-gulp.task('build', function (done) {
-    gulp.src(['src/**/*.pug'], { base: 'src/' })
-        .pipe(pug({}))
-        .pipe(minHtml({ collapseWhitespace: true }))
-        .pipe(gulp.dest('dist'));
-
-    gulp.src(['src/**/*.ts'], { base: 'src/' })
-        .pipe(sourcemaps.init())
-        .pipe(gulpEsbuild({}))
-        .pipe(sourcemaps.write('.'))
-        .pipe(rev())
-        .pipe(src('dist/**/*.html'))
-        .pipe(revRewrite())
-        .pipe(gulp.dest('dist/assets/scripts'));
-
-    gulp.src(['src/**/*.png'], { base: 'src/' })
-        .pipe(imagemin())
-        .pipe(rev())
-        .pipe(src('dist/**/*.html'))
-        .pipe(revRewrite())
-        .pipe(gulp.dest('dist'));
-
-    gulp.src(['src/**/*.svg'], { base: 'src/' })
-        .pipe(sourcemaps.init())
-        .pipe(svgmin())
-        .pipe(sourcemaps.write('.'))
-        .pipe(rev())
-        .pipe(src('dist/**/*.html'))
-        .pipe(revRewrite())
-        .pipe(gulp.dest('dist'));
-
-    gulp.src(['src/**/*.scss'], { base: 'src/' })
-        .pipe(sass().on('error', sass.logError))
-        .pipe(rev())
-        .pipe(src('dist/**/*.html'))
-        .pipe(revRewrite())
-        .pipe(gulp.dest('dist'));
-
+task('clean', (done) => {
+    del.sync(['dist/**', '.rev/**']);
     done();
 });
-gulp.task('watch', gulp.series('build', function (done) {
-    var stream = nodemon({
+
+task('html', (done) => {
+  src(['src/*.pug'])
+    .pipe(pug({
+      pretty: true
+    }))
+    .pipe(dest('dist'));
+
+  done();
+});
+
+task('scripts', (done) => {
+  src(['src/assets/scripts/{app,claim,communities,create,home,member}.ts', 'src/assets/scripts/opportunity/jobboard.ts'])
+    .pipe(gulpEsbuild({
+      platform: 'browser',
+      bundle: true
+    }))
+    .pipe(replace('@APP_VERSION', '@' + process.env.npm_package_version))
+    .pipe(dest('dist/assets/scripts'));
+
+  done();
+});
+
+task('images', (done) => {
+  src(['src/**/*.{png,svg,jpg,jpeg,gif}'])
+    .pipe(imagemin())
+    .pipe(dest('dist'));
+
+  done();
+});
+
+task('styles', function (done) {
+  src(['src/**/*.scss'])
+    .pipe(sass().on('error', sass.logError))
+    .pipe(dest('dist'));
+
+  done();
+});
+
+task('revision', (done) => {
+  src('dist/**/*.{css,js,svg,png,gif,jpeg,jpg}')
+    .pipe(rev())
+    .pipe(src('dist/**/*.html'))
+    .pipe(revRewrite())
+    .pipe(dest('dist'));
+
+  done();
+});
+
+task('build', series('clean', parallel('html', 'scripts', 'images', 'styles')));
+
+task('watch', series('build', (done) => {
+    const stream = nodemon({
         script: 'server.js'
         , watch: 'build'
         , tasks: ['build']
-        , done: done
-    })
+        , done
+    });
 
-    return stream
+    return stream;
 }))

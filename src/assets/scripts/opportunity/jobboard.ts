@@ -1,5 +1,3 @@
-import '../../styles/style.scss';
-
 import 'threads/register';
 import $ from '../libs/jquery';
 import 'bootstrap/dist/js/bootstrap.bundle';

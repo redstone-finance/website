@@ -1,6 +1,5 @@
 import 'threads/register';
 
-import '../styles/style.scss';
 import $ from './libs/jquery';
 import './global';
 import arweave from './libs/arweave';

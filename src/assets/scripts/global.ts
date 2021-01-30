@@ -9,7 +9,7 @@ Sentry.init({
   dsn: 'https://797cc582ba794c93934d01bf44722e96@o440904.ingest.sentry.io/5410617',
 
   // To set your release version
-  release: 'community-website@' + process.env.npm_package_version,
+  release: 'community-website@APP_VERSION',
   integrations: [new Integrations.BrowserTracing()],
 
   // Set tracesSampleRate to 1.0 to capture 100%
