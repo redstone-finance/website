@@ -8,10 +8,9 @@
     "esModuleInterop": true
   },
   "include": [
-    "server/**/*.js"
+    "server/**/*.ts"
   ],
   "exclude": [
-    "node_modules",
-    "src"
+    "node_modules"
   ]
 }
