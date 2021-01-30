@@ -60,7 +60,7 @@ export default class Vote implements VoteInterface {
     }
 
     this.syncYaysNays();
-    this.syncAvatarList(state);
+    this.syncAvatarList();
 
     const endsIn = await this.syncBlocksProgress(state);
     this.syncFooterButtons(state, endsIn);
@@ -241,7 +241,7 @@ export default class Vote implements VoteInterface {
 
     return endsOn;
   }
-  private async syncAvatarList(state: StateInterface) {
+  private async syncAvatarList() {
     let avatarList = '';
     if (this.voted.length) {
       const maxLength = this.voted.length > 5 ? 5 : this.voted.length;
@@ -249,7 +249,7 @@ export default class Vote implements VoteInterface {
         const acc = new Author(null, this.voted[i], null);
         const arId = await acc.getDetails();
         const avatar = arId.avatar;
-        avatarList += `<span class="avatar" style="background-image: url(${avatar})"></span>`;
+        avatarList += `<span class="avatar" style="background-image: url(${avatar})" title="${arId.address}" data-original-title="${arId.address}" data-toggle="tooltip" data-placement="top"></span>`;
       }
 
       if (this.voted.length > 5) {
