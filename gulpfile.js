@@ -7,7 +7,6 @@ const imagemin = require('gulp-imagemin');
 const sass = require('gulp-sass');
 const revRewrite = require('gulp-rev-rewrite');
 const del = require('del');
-const revDel = require('rev-del');
 const replace = require('gulp-replace');
 
 sass.compiler = require('node-sass');
@@ -21,15 +20,13 @@ const sources = {
 }
 
 task('clean', (done) => {
-    del.sync(['dist/**', '.rev/**']);
+    del.sync(['dist/**']);
     done();
 });
 
 task('html', (done) => {
   src(sources.html)
-    .pipe(pug({
-      pretty: true
-    }))
+    .pipe(pug())
     .pipe(dest('dist'));
 
   done();
@@ -74,25 +71,23 @@ task('styles', function (done) {
 
 task('revision', (done) => {
   src(sources.revision)
-    .pipe(rev())
-    .pipe(revDel())
-    .pipe(src('dist/**/*.html'))
-    .pipe(revRewrite())
-    .pipe(dest('dist'));
+  .pipe(rev())
+  .pipe(src('dist/**/*.html'))
+  .pipe(revRewrite())
+  .pipe(dest('dist'));
 
   done();
 });
 
 // Build
-task('build', series('clean', parallel('html', 'scripts', 'images', 'styles')));
-task('buildServer', (done) => {
-
-});
+task('build', series('clean', parallel('html', 'scripts', 'images', 'styles'), 'revision'));
 
 // Dev
-task('watch', series('build', () => {
+task('watch', series('build', (done) => {
   watch(sources.html, series('html', 'revision'));
   watch(sources.scripts, series('scripts', 'revision'));
   watch(sources.images, series('images', 'revision'));
   watch(sources.styles, series('styles', 'revision'));
-}))
+
+  done();
+}));
