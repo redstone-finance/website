@@ -146,14 +146,10 @@ const loadCards = async () => {
     }
 
     const community = communities[i];
-    if(community.state.settings['communityHide'] && community.state.settings['communityHide'] === 'disable') {
+    if(community.state.settings['communityHide'] && community.state.settings['communityHide'] === 'hide') {
       $('.completed').text(++completed);
       $('.progress-bar').width(`${Math.floor((completed / communities.length) * 100)}%`);
       return go(++current);
-    }
-
-    if(community.id === '1N1vykh587_y5vbDw87mKI03Ij5flmd8UtT8xH_zntc') {
-      console.log(community);
     }
 
     const id = community.id;

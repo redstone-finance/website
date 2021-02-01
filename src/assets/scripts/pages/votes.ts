@@ -314,9 +314,12 @@ export default class PageVotes {
           $target.addClass('input-number percent');
           break;
         case 'communityDescription':
-          $('#vote-set-value').hide();
+          $('#vote-set-value, #vote-set-value3').hide();
           $('#vote-set-value2').show();
           break;
+        case 'communityHide':
+          $('#vote-set-value, #vote-set-value2').hide();
+          $('#vote-set-value3').show();
         case 'communityAppUrl':
           $target.addClass('url');
           break;
@@ -326,7 +329,7 @@ export default class PageVotes {
           $target.trigger('input');
           break;
         case 'communityDiscussionLinks':
-          $('#vote-set-value').hide();
+          $('#vote-set-value, #vote-set-value3').hide();
           $('#vote-set-value-links-container').show();
           break;
         case 'other':
@@ -471,6 +474,8 @@ export default class PageVotes {
           .get();
       } else if ($('#vote-set-value2').css('display') !== 'none') {
         setValue = $('#vote-set-value2').val().toString().trim();
+      } else if($('#vote-set-value3').css('display') !== 'none') {
+        setValue = $('#vote-set-value3').val().toString().trim();
       } else {
         setValue = $('#vote-set-value').val().toString().trim();
       }
