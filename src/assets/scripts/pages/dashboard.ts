@@ -1,8 +1,6 @@
-import { spawn, ModuleThread } from 'threads';
-
 import $ from '../libs/jquery';
-import { BalancesWorker } from '../workers/balances';
-import { VotesWorker } from '../workers/votes';
+import BalancesWorker from '../workers/balances';
+import VotesWorker from '../workers/votes';
 import Utils from '../utils/utils';
 import app from '../app';
 import arweave from '../libs/arweave';
@@ -10,34 +8,16 @@ import Market from '../models/market';
 import ActivityTable from '../utils/activityTable';
 
 export default class PageDashboard {
-  private firstCall: boolean = true;
   private prevCall: number;
-
-  // workers
-  private balancesWorker: ModuleThread<BalancesWorker>;
-  private votesWorker: ModuleThread<VotesWorker>;
-
-  constructor() {}
 
   async open() {
     $('.page-dashboard').show();
 
-    if (this.firstCall) {
-      this.balancesWorker = await spawn<BalancesWorker>(new Worker('../workers/balances.ts'));
-      this.votesWorker = await spawn<VotesWorker>(new Worker('../workers/votes.ts'));
-
-      this.firstCall = false;
-    }
-
     $('.link-home').addClass('active');
     this.syncPageState();
-
-    this.events();
   }
 
   async close() {
-    await this.removeEvents();
-
     $('.link-home').removeClass('active');
     $('.page-dashboard').hide();
   }
@@ -57,6 +37,7 @@ export default class PageDashboard {
     }
 
     const state = await app.getCommunity().getState();
+    console.log(state);
 
     const commDesc = state.settings.get('communityDescription') || '';
     const commAppUrl = state.settings.get('communityAppUrl') || '';
@@ -98,8 +79,8 @@ export default class PageDashboard {
     }
     $('.comm-logo').css('background-image', `url(${logo})`);
 
-    const { users, balance } = await this.balancesWorker.usersAndBalance(state.balances);
-    const { vaultUsers, vaultBalance } = await this.balancesWorker.vaultUsersAndBalance(state.vault);
+    const { users, balance } = await BalancesWorker.usersAndBalance(state.balances);
+    const { vaultUsers, vaultBalance } = await BalancesWorker.vaultUsersAndBalance(state.vault);
 
     let nbUsers = users.length;
     nbUsers += vaultUsers.filter((user) => !users.includes(user)).length;
@@ -107,7 +88,7 @@ export default class PageDashboard {
     $('.users').text(nbUsers).parents('.dimmer').removeClass('active');
     $('.users-vault').text(`${vaultUsers.length} `);
 
-    const votes = await this.votesWorker.activeVotesByType(state.votes);
+    const votes = await VotesWorker.activeVotesByType(state.votes);
     const votesMint = votes.mint ? votes.mint.length : 0;
     const votesVault = votes.mintLocked ? votes.mintLocked.length : 0;
     const votesActive = votes.active ? votes.active.length : 0;
@@ -135,7 +116,4 @@ export default class PageDashboard {
     );
     activity.show();
   }
-
-  private async events() {}
-  private async removeEvents() {}
 }

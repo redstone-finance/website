@@ -7,11 +7,12 @@ html(lang="en")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
     title Member - CommunityXYZ
     include pages/partials/favicon
+    link(rel="stylesheet", href="assets/styles/style.css")
   body.antialised: .page
     .content
       .container-xl
         .text-center: a(href="./")
-          img(src="./assets/images/logo.svg" alt="CommunityXYZ", width="250px")
+          img(src="assets/images/logo.svg" alt="CommunityXYZ", width="250px")
 
         .empty
           .row(style="width: 80%")
@@ -93,4 +94,4 @@ html(lang="en")
 
     div(aria-live="polite", aria-atomic="true", style="position: fixed; min-height: 200px;")
       .toast-container(style="position: fixed; top: 20px; right: 20px;")
-    script(src="./assets/scripts/member.ts")
+    script(src="assets/scripts/member.js")

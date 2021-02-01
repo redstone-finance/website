@@ -1,34 +1,18 @@
 import ApexCharts from 'apexcharts';
-import { ModuleThread, spawn } from 'threads';
-
 import $ from '../libs/jquery';
-import { BalancesWorker } from '../workers/balances';
-import { TokensWorker } from '../workers/tokens';
 import { StateInterface } from 'community-js/lib/faces';
 import Utils from '../utils/utils';
 import Toast from '../utils/toast';
 import app from '../app';
 import Author from '../models/author';
 import Market from '../models/market';
+import BalancesWorker from '../workers/balances';
+import TokensWorker from '../workers/tokens';
 
 export default class PageTokens {
   private chart: ApexCharts;
 
-  // workers
-  private firstCall = true;
-  private balancesWorker: ModuleThread<BalancesWorker>;
-  private tokensWorker: ModuleThread<TokensWorker>;
-
-  constructor() {}
-
   async open() {
-    if (this.firstCall) {
-      this.balancesWorker = await spawn<BalancesWorker>(new Worker('../workers/balances.ts'));
-      this.tokensWorker = await spawn<TokensWorker>(new Worker('../workers/tokens.ts'));
-
-      this.firstCall = false;
-    }
-
     $('.link-tokens').addClass('active');
     $('.page-tokens').show();
     this.syncPageState();
@@ -53,18 +37,18 @@ export default class PageTokens {
 
     const state = await app.getCommunity().getState();
 
-    const { balance } = await this.balancesWorker.usersAndBalance(state.balances);
-    const { vaultBalance } = await this.balancesWorker.vaultUsersAndBalance(state.vault);
+    const { balance } = await BalancesWorker.usersAndBalance(state.balances);
+    const { vaultBalance } = await BalancesWorker.vaultUsersAndBalance(state.vault);
 
     $('.ticker').text(state.ticker);
     $('.minted').text(Utils.formatNumber(balance + vaultBalance));
     $('.minted').parents('.dimmer').removeClass('active');
 
-    const holdersByBalance = await this.tokensWorker.sortHoldersByBalance(state.balances, state.vault);
+    const holdersByBalance = await TokensWorker.sortHoldersByBalance(state.balances, state.vault);
     this.createOrUpdateCharts(holdersByBalance);
     this.createOrUpdateTable(holdersByBalance, state);
 
-    const bal = await this.balancesWorker.getAddressBalance(
+    const bal = await BalancesWorker.getAddressBalance(
       await app.getAccount().getAddress(),
       state.balances,
       state.vault,
@@ -90,6 +74,9 @@ export default class PageTokens {
 
     for (let i = 0, j = holders.length; i < j; i++) {
       const holder = holders[i];
+
+      if(!/[a-z0-9_-]{43}/i.test(holder.address)) continue;
+
       const acc = new Author(null, holder.address, null);
       const arId = await acc.getDetails();
       const avatar = arId.avatar;
@@ -201,7 +188,7 @@ export default class PageTokens {
       e.preventDefault();
 
       const state = await app.getCommunity().getState();
-      const bal = await this.balancesWorker.getAddressBalance(
+      const bal = await BalancesWorker.getAddressBalance(
         await app.getAccount().getAddress(),
         state.balances,
         state.vault,

@@ -1,12 +1,10 @@
-import { expose } from 'threads/worker';
 import { GQLNodeInterface } from '../interfaces/gqlResult';
 import OpportunityInterface from '../interfaces/opportunity';
-
-const worker = {
-  nodeToOpportunity: async (node: GQLNodeInterface): Promise<OpportunityInterface> => {
+export default class OpportunitiesWorker {
+  static async nodeToOpportunity(node: GQLNodeInterface): Promise<OpportunityInterface> {
     function stripTags(str: any) {
       if (typeof str === 'object') {
-        for (let key in str) {
+        for (const key in str) {
           str[this.stripTags(key)] = this.stripTags(str[key]);
         }
       }
@@ -41,8 +39,5 @@ const worker = {
       timestamp: node.block && node.block.timestamp ? node.block.timestamp * 1000 : new Date().getTime(),
       applicants: [],
     };
-  },
-};
-
-export type OpportunitiesWorker = typeof worker;
-expose(worker);
+  }
+}

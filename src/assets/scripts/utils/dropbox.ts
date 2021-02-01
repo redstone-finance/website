@@ -15,7 +15,7 @@ export default class Dropbox {
   }
 
   async show(
-    text: string = 'Drag and drop a file or click to deploy.',
+    text = 'Drag and drop a file or click to deploy.',
     icon = 'upload-cloud',
     isWallet = false,
     accept = [],

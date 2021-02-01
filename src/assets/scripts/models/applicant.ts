@@ -17,7 +17,7 @@ export default class Applicant implements ApplicantInterface {
   constructor(params: ApplicantInterface) {
     if (Object.keys(params).length) {
       params = Utils.stripTags(params);
-      for (let key in params) {
+      for (const key in params) {
         this[key] = params[key];
       }
     }
@@ -137,7 +137,7 @@ export default class Applicant implements ApplicantInterface {
       return false;
     }
 
-    let tx = await arweave.createTransaction(
+    const tx = await arweave.createTransaction(
       {
         target: fees.target,
         quantity: fees.winstonQty,

@@ -7,11 +7,12 @@ html(lang="en")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
     title Create a Community - CommunityXYZ
     include pages/partials/favicon
+    link(rel="stylesheet", href="assets/styles/style.css")
   body.antialised.border-top-wide.border-primary.d-flex.flex-column
     .flex-fill.d-flex.flex-column.justify-content-center
       .container-tight.py-6
         .text-center.mb-4
-          img(src="./assets/images/logo.svg", width="300")
+          img(src="assets/images/logo.svg", width="300")
 
         .mining(style="display: none")
           .card
@@ -252,4 +253,4 @@ html(lang="en")
               a.back.btn.btn-link Back
               button.continue.btn.btn-primary.ml-auto(disabled) Continue
 
-    script(src="./assets/scripts/create.ts")
+    script(src="assets/scripts/create.js")

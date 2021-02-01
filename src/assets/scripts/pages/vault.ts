@@ -1,28 +1,17 @@
 import ApexCharts from 'apexcharts';
-import { ModuleThread, spawn } from 'threads';
-
 import Utils from '../utils/utils';
 import $ from '../libs/jquery';
 import { StateInterface } from 'community-js/lib/faces';
 import Toast from '../utils/toast';
-import { VaultWorker } from '../workers/vault';
-import { BalancesWorker } from '../workers/balances';
 import app from '../app';
 import Author from '../models/author';
+import BalancesWorker from '../workers/balances';
+import VaultWorker from '../workers/vault';
 
 export default class PageVault {
   private chart: ApexCharts;
 
-  // workers
-  private vaultWorker: ModuleThread<VaultWorker>;
-  private balancesWorker: ModuleThread<BalancesWorker>;
-
   async open() {
-    if (!this.balancesWorker) {
-      this.balancesWorker = await spawn<BalancesWorker>(new Worker('../workers/balances.ts'));
-      this.vaultWorker = await spawn<VaultWorker>(new Worker('../workers/vault.ts'));
-    }
-
     $('.link-vault').addClass('active');
     $('.page-vault').show();
     this.syncPageState();
@@ -42,7 +31,7 @@ export default class PageVault {
 
     $('.ticker').text(state.ticker);
 
-    const bal = await this.balancesWorker.getAddressBalance(
+    const bal = await BalancesWorker.getAddressBalance(
       await app.getAccount().getAddress(),
       state.balances,
       state.vault,
@@ -58,7 +47,7 @@ export default class PageVault {
     if ((await app.getAccount().isLoggedIn()) && myVault && myVault.length) {
       this.createOrUpdateMyTable(state);
 
-      const { me, others } = await this.vaultWorker.meVsOthersWeight(state.vault, await app.getAccount().getAddress());
+      const { me, others } = await VaultWorker.meVsOthersWeight(state.vault, await app.getAccount().getAddress());
       this.createOrUpdateCharts(me, others);
     } else {
       $('.table-vault').find('tbody').html('');
@@ -86,7 +75,7 @@ export default class PageVault {
     for (let i = 0, j = vault.length; i < j; i++) {
       const v = vault[i];
 
-      let voteWeight = v.balance * (v.end - v.start);
+      const voteWeight = v.balance * (v.end - v.start);
       let endsIn = v.end - app.getCurrentBlock();
       if (endsIn < 0) {
         endsIn = 0;
@@ -110,7 +99,7 @@ export default class PageVault {
   private async createOrUpdateTable(state: StateInterface): Promise<void> {
     let html = '';
 
-    const usersAndBalances = await this.vaultWorker.totalVaults(state.vault, app.getCurrentBlock());
+    const usersAndBalances = await VaultWorker.totalVaults(state.vault, app.getCurrentBlock());
     console.log(usersAndBalances);
 
     const users = Object.keys(usersAndBalances);
@@ -203,7 +192,7 @@ export default class PageVault {
       e.preventDefault();
 
       const state = await app.getCommunity().getState();
-      const bal = await this.balancesWorker.getAddressBalance(
+      const bal = await BalancesWorker.getAddressBalance(
         await app.getAccount().getAddress(),
         state.balances,
         state.vault,
@@ -236,7 +225,7 @@ export default class PageVault {
       }
 
       const state = await app.getCommunity().getState();
-      const bal = await this.balancesWorker.getAddressBalance(
+      const bal = await BalancesWorker.getAddressBalance(
         await app.getAccount().getAddress(),
         state.balances,
         state.vault,

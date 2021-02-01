@@ -1,8 +1,7 @@
-import { expose } from 'threads/worker';
 import { VaultInterface } from 'community-js/lib/faces';
 
-const worker = {
-  meVsOthersBalances: (v: VaultInterface, address: string) => {
+export default class VaultWorker {
+  static meVsOthersBalances(v: VaultInterface, address: string) {
     const vaultUsers = Object.keys(v);
     let me = 0;
     let others = 0;
@@ -15,8 +14,9 @@ const worker = {
     }
 
     return { me, others };
-  },
-  meVsOthersWeight: (v: VaultInterface, address: string) => {
+  }
+  
+  static meVsOthersWeight(v: VaultInterface, address: string) {
     const vaultUsers = Object.keys(v);
     let me = 0;
     let others = 0;
@@ -29,8 +29,9 @@ const worker = {
     }
 
     return { me, others };
-  },
-  totalVaults: (v: VaultInterface, currentHeight: number) => {
+  }
+
+  static totalVaults(v: VaultInterface, currentHeight: number) {
     const vaultUsers = Object.keys(v);
 
     const users: { [key: string]: { weight: number; balance: number } } = {};
@@ -61,8 +62,5 @@ const worker = {
     }
 
     return users;
-  },
-};
-
-export type VaultWorker = typeof worker;
-expose(worker);
+  }
+}

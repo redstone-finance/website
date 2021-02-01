@@ -1,5 +1,3 @@
-import '../styles/style.scss';
-
 import Community from 'community-js';
 import $ from './libs/jquery';
 import 'bootstrap/dist/js/bootstrap.bundle';
@@ -126,7 +124,7 @@ const validate = async (e: any) => {
       // add each holders and their balances
       let html = '';
       let i = 0;
-      for (let acc in create.balances) {
+      for (const acc in create.balances) {
         html += `<tr>
           <td data-label="Wallet #${++i}">${acc}</td>
           <td data-label="Balance">${create.balances[acc]}</td>

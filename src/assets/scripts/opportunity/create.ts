@@ -18,7 +18,7 @@ export default class PageCreateJob {
     name: '',
     ticker: '',
   };
-  private transferFee: number = 0;
+  private transferFee = 0;
 
   async open() {
     if (!this.quill) {

@@ -1,0 +1,6 @@
+{
+  "watch": ["./server"],
+  "ext": "ts,mjs,js,json,graphql",
+  "exec": "etsc && node -r dotenv/config distserver/server.js",
+  "legacyWatch": true
+}

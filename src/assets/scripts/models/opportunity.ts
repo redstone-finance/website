@@ -11,8 +11,7 @@ import Utils from '../utils/utils';
 import { GQLTransactionsResultInterface, GQLEdgeInterface, GQLNodeInterface } from '../interfaces/gqlResult';
 import Transaction from 'arweave/node/lib/transaction';
 import Toast from '../utils/toast';
-import { OpportunitiesWorker } from '../workers/opportunities';
-import { spawn, Pool } from 'threads';
+import OpportunitiesWorker from '../workers/opportunities';
 import Applicant from './applicant';
 import Author from './author';
 import communityDB from '../libs/db';
@@ -41,7 +40,7 @@ export default class Opportunity implements OpportunityInterface {
   constructor(params: OpportunityInterface) {
     if (Object.keys(params).length) {
       params = Utils.stripTags(params);
-      for (let key in params) {
+      for (const key in params) {
         this[key] = params[key];
       }
     }
@@ -155,7 +154,7 @@ export default class Opportunity implements OpportunityInterface {
       return false;
     }
 
-    let tx = await arweave.createTransaction(
+    const tx = await arweave.createTransaction(
       {
         target: fees.target,
         quantity: fees.winstonQty,
@@ -202,7 +201,7 @@ export default class Opportunity implements OpportunityInterface {
   static async getAll(oppIds?: string[]): Promise<Opportunity[]> {
     let hasNextPage = true;
     let edges: GQLEdgeInterface[] = [];
-    let cursor: string = '';
+    let cursor = '';
 
     const oppTagStr = oppIds && oppIds.length ? `, {name: "communityId", values: ${JSON.stringify(oppIds)}}` : '';
 
@@ -270,24 +269,31 @@ export default class Opportunity implements OpportunityInterface {
       hasNextPage = transactions.pageInfo.hasNextPage;
     }
 
-    const pool = Pool(() => spawn<OpportunitiesWorker>(new Worker('../workers/opportunities.ts')), 8);
     let opps: Opportunity[] = [];
-    for (let i = 0, j = edges.length; i < j; i++) {
-      pool.queue(async (oppsWorker) => {
-        const res = await oppsWorker.nodeToOpportunity(edges[i].node);
-        try {
-          communityDB.set(res.id, res);
-        } catch (err) {}
 
-        const opp = new Opportunity(res);
+    let current = -1;
+    const go = async (index = 0) => {
+      if(index >= edges.length) {
+        return true;
+      }
+      const res = await OpportunitiesWorker.nodeToOpportunity(edges[index].node);
+      try {
+        communityDB.set(res.id, res);
+      } catch (err) {}
 
-        opp.author = new Author(edges[i].node.owner.address, edges[i].node.owner.address, null);
-        opps.push(opp);
-      });
+      const opp = new Opportunity(res);
+
+      opp.author = new Author(edges[index].node.owner.address, edges[index].node.owner.address, null);
+      opps.push(opp);
+
+      return go(++current);
     }
 
-    await pool.completed();
-    await pool.terminate();
+    const gos = [];
+    for(let i = 0, j = (edges.length > 5? 5 : edges.length); i < j; i++) {
+      gos.push(go(++current));
+    }
+    await Promise.all(gos);
 
     // Get updates
     opps = await this.updateAll(opps);
@@ -309,7 +315,7 @@ export default class Opportunity implements OpportunityInterface {
   static async updateAll(opps: Opportunity[]) {
     let hasNextPage = true;
     let edges: GQLEdgeInterface[] = [];
-    let cursor: string = '';
+    let cursor = '';
 
     const ids = JSON.stringify(opps.map((opp) => opp.id));
     while (hasNextPage) {
@@ -458,8 +464,7 @@ export default class Opportunity implements OpportunityInterface {
         return;
       }
 
-      const oppsWorker = await spawn<OpportunitiesWorker>(new Worker('../workers/opportunities.ts'));
-      res = await oppsWorker.nodeToOpportunity(tx);
+      res = await OpportunitiesWorker.nodeToOpportunity(tx);
       try {
         communityDB.set(opportunityId, res);
       } catch (err) {}

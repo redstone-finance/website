@@ -27,12 +27,12 @@ export default class Vote implements VoteInterface {
 
   private voteId: number;
   private $card: any;
-  private keepSync: boolean = true;
+  private keepSync = true;
 
   constructor(params: VoteInterface = {}, voteId: number) {
     if (Object.keys(params).length) {
       params = Utils.stripTags(params);
-      for (let key in params) {
+      for (const key in params) {
         this[key] = params[key];
       }
     }
@@ -47,20 +47,20 @@ export default class Vote implements VoteInterface {
     return this.$card;
   }
 
-  async sync(cached: boolean = true, recall = false) {
+  async sync(cached = true, recall = false) {
     // TODO: Continue
     const state = await app.getCommunity().getState(cached);
 
     let params = state.votes[this.voteId];
     if (Object.keys(params).length) {
       params = Utils.stripTags(params);
-      for (let key in params) {
+      for (const key in params) {
         this[key] = params[key];
       }
     }
 
     this.syncYaysNays();
-    this.syncAvatarList(state);
+    this.syncAvatarList();
 
     const endsIn = await this.syncBlocksProgress(state);
     this.syncFooterButtons(state, endsIn);
@@ -241,7 +241,7 @@ export default class Vote implements VoteInterface {
 
     return endsIn;
   }
-  private async syncAvatarList(state: StateInterface) {
+  private async syncAvatarList() {
     let avatarList = '';
     if (this.voted.length) {
       const maxLength = this.voted.length > 5 ? 5 : this.voted.length;
@@ -249,7 +249,7 @@ export default class Vote implements VoteInterface {
         const acc = new Author(null, this.voted[i], null);
         const arId = await acc.getDetails();
         const avatar = arId.avatar;
-        avatarList += `<span class="avatar" style="background-image: url(${avatar})"></span>`;
+        avatarList += `<span class="avatar" style="background-image: url(${avatar})" title="${arId.address}" data-original-title="${arId.address}" data-toggle="tooltip" data-placement="top"></span>`;
       }
 
       if (this.voted.length > 5) {
