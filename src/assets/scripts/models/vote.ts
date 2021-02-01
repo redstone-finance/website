@@ -27,12 +27,12 @@ export default class Vote implements VoteInterface {
 
   private voteId: number;
   private $card: any;
-  private keepSync: boolean = true;
+  private keepSync = true;
 
   constructor(params: VoteInterface = {}, voteId: number) {
     if (Object.keys(params).length) {
       params = Utils.stripTags(params);
-      for (let key in params) {
+      for (const key in params) {
         this[key] = params[key];
       }
     }
@@ -47,14 +47,14 @@ export default class Vote implements VoteInterface {
     return this.$card;
   }
 
-  async sync(cached: boolean = true, recall = false) {
+  async sync(cached = true, recall = false) {
     // TODO: Continue
     const state = await app.getCommunity().getState(cached);
 
     let params = state.votes[this.voteId];
     if (Object.keys(params).length) {
       params = Utils.stripTags(params);
-      for (let key in params) {
+      for (const key in params) {
         this[key] = params[key];
       }
     }

@@ -1,8 +1,6 @@
-import { expose } from 'threads/worker';
-import { BalancesInterface, VaultInterface, VoteInterface } from 'community-js/lib/faces';
-
-const worker = {
-  activeVotesByType: (votes) => {
+import { VoteInterface } from 'community-js/lib/faces';
+export default class VotesWorker {
+  static activeVotesByType(votes) {
     const res: { [key: string]: VoteInterface[] } = {};
 
     function addVote(type: string, vote: VoteInterface) {
@@ -24,8 +22,5 @@ const worker = {
     }
 
     return res;
-  },
+  }
 };
-
-export type VotesWorker = typeof worker;
-expose(worker);

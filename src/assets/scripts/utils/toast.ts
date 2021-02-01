@@ -9,7 +9,7 @@ import arweave from '../libs/arweave';
 export default class Toast {
   private t: any;
 
-  show(title: string, message: string, type: 'error' | 'success' | 'none' | 'login', duration: number = 500) {
+  show(title: string, message: string, type: 'error' | 'success' | 'none' | 'login', duration = 500) {
     const autohide: boolean = duration > 0;
 
     const bg = type === 'error' || type === 'login' ? 'bg-red' : type === 'success' ? 'bg-green' : 'bg-yellow';

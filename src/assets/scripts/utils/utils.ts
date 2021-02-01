@@ -1,8 +1,7 @@
 import * as jdenticon from 'jdenticon';
 import Toast from './toast';
-
 export default class Utils {
-  static async pause(timeout: number = 500) {
+  static async pause(timeout = 500) {
     return new Promise((resolve) => {
       setTimeout(() => resolve(true), timeout);
     });
@@ -48,7 +47,7 @@ export default class Utils {
     }
   }
 
-  static formatBlocks(len: number = 720): string {
+  static formatBlocks(len = 720): string {
     const hour = 30;
     const day = 720;
     const week = 720 * 7;
@@ -77,7 +76,7 @@ export default class Utils {
 
   static stripTags(str: any) {
     if (typeof str === 'object') {
-      for (let key in str) {
+      for (const key in str) {
         str[this.stripTags(key)] = this.stripTags(str[key]);
       }
     }
@@ -85,7 +84,7 @@ export default class Utils {
     return str;
   }
 
-  static generateIcon(str: string, size: number = 32) {
+  static generateIcon(str: string, size = 32) {
     const canvas = document.createElement('canvas');
     canvas.width = size;
     canvas.height = size;

@@ -1,8 +1,6 @@
-import { expose } from 'threads/worker';
 import { BalancesInterface, VaultInterface } from 'community-js/lib/faces';
-
-const worker = {
-  sortHoldersByBalance: (balances: BalancesInterface, vault: VaultInterface) => {
+export default class TokensWorker {
+  static async sortHoldersByBalance(balances: BalancesInterface, vault: VaultInterface) {
     const holders: Map<string, { address: string; balance: number; vaultBalance: number }> = new Map();
 
     const users = Object.keys(balances);
@@ -12,7 +10,7 @@ const worker = {
 
     const vaultUsers = Object.keys(vault);
     vaultUsers.forEach((u) => {
-      let total = vault[u].map((a) => a.balance).reduce((a, b) => a + b, 0);
+      const total = vault[u].map((a) => a.balance).reduce((a, b) => a + b, 0);
 
       let holder = {
         address: u,
@@ -31,8 +29,5 @@ const worker = {
       .map((a) => a[1])
       .sort((a, b) => b.balance - a.balance);
     return res;
-  },
-};
-
-export type TokensWorker = typeof worker;
-expose(worker);
+  }
+}

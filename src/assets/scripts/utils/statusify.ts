@@ -27,17 +27,17 @@ export default class Statusify {
     }
   > = new Map();
 
-  private updateMS: number = 0;
+  private updateMS = 0;
   private globalStatus: statusType = 'none';
 
-  constructor(statusifyParent: JQuery<HTMLElement> = $('.statusify'), updateMS: number = 10000) {
+  constructor(statusifyParent: JQuery<HTMLElement> = $('.statusify'), updateMS = 10000) {
     this.$elem = statusifyParent;
 
     setTimeout(() => this.update(), updateMS);
     this.updateMS = updateMS;
   }
 
-  async add(title: string, txid: string, error: boolean = false) {
+  async add(title: string, txid: string, error = false) {
     let stamp = `
     <span class="bg-yellow text-white stamp mr-3">
       <div class="spinner-border spinner-border-sm" role="status"></div>
@@ -104,7 +104,7 @@ export default class Statusify {
       return;
     }
 
-    let keys = Array.from(this.statuses.keys());
+    const keys = Array.from(this.statuses.keys());
     const txids = [];
     for (let i = 0; i < keys.length; i++) {
       const status = this.statuses.get(keys[i]);
@@ -189,7 +189,7 @@ export default class Statusify {
 
     this.$elem.on('hidden.bs.dropdown', () => {
       // Remove all confirmed and error elements
-      let keys = Array.from(this.statuses.keys());
+      const keys = Array.from(this.statuses.keys());
       for (let i = 0; i < keys.length; i++) {
         const status = this.statuses.get(keys[i]);
         if (status.status !== 'pending') {

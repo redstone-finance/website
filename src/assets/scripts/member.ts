@@ -1,4 +1,4 @@
-import 'threads/register';
+
 
 import $ from './libs/jquery';
 import './global';
@@ -6,8 +6,7 @@ import arweave from './libs/arweave';
 import Community from 'community-js';
 import GQLResultInterface from './interfaces/gqlResult';
 import { StateInterface } from 'community-js/lib/faces';
-import { ModuleThread, spawn } from 'threads';
-import { TokensWorker } from './workers/tokens';
+import TokensWorker from './workers/tokens';
 import Utils from './utils/utils';
 import ActivityTable from './utils/activityTable';
 
@@ -67,13 +66,12 @@ class MemberPage {
   private async loadCommunities() {
     $('#balance').find('tbody').remove();
 
-    const tokensWorker: ModuleThread<TokensWorker> = await spawn<TokensWorker>(new Worker('./workers/tokens.ts'));
     const commIds: string[] = await this.getAllCommunityIds();
     const address = this.hashes[0];
 
     $('.loaded').show();
 
-    let list: { html: string; balance: number; vault: number }[] = [];
+    const list: { html: string; balance: number; vault: number }[] = [];
     let current = -1;
     let completed = 0;
     $('.total').text(commIds.length);
@@ -96,7 +94,7 @@ class MemberPage {
         return go(++current);
       }
 
-      const users = (await tokensWorker.sortHoldersByBalance(state.balances, state.vault)).filter(
+      const users = (await TokensWorker.sortHoldersByBalance(state.balances, state.vault)).filter(
         (u) => u.address === address,
       );
       if (!users.length) {
@@ -174,7 +172,7 @@ class MemberPage {
     let cursor = '';
     let hasNextPage = true;
 
-    let ids: string[] = [];
+    const ids: string[] = [];
     while (hasNextPage) {
       const query = {
         query: `query {

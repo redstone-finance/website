@@ -61,7 +61,7 @@ export default class Market {
     await this.community.setCommunityTx(this.communityId);
     const state = await this.community.getState();
 
-    let avg = +(sellOrders.reduce((a, b) => a + b, 0) / sellOrders.length).toFixed(5);
+    const avg = +(sellOrders.reduce((a, b) => a + b, 0) / sellOrders.length).toFixed(5);
 
     if (avg) {
       $('.avg-price').html(`
@@ -175,6 +175,7 @@ export default class Market {
       return;
     }
 
+    // @ts-ignore
     await this.client.sendOrder(order.txs);
     toast.show('Submitted', 'The order was successfully submitted.', 'success', 3000);
     return true;
@@ -204,6 +205,7 @@ export default class Market {
       return;
     }
 
+    // @ts-ignore
     await this.client.sendOrder(order.txs);
     toast.show('Submitted', 'The order was successfully submitted.', 'success', 3000);
     return true;

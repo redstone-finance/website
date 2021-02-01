@@ -1,4 +1,4 @@
-import 'threads/register';
+
 import Community from 'community-js';
 import $ from './libs/jquery';
 import 'bootstrap/dist/js/bootstrap.bundle';
@@ -19,7 +19,7 @@ class App {
   private community: Community;
   private account: Account;
   private statusify: Statusify;
-  private currentBlock: number = 0;
+  private currentBlock = 0;
 
   private firstCall = true;
 
@@ -90,7 +90,8 @@ class App {
 
     await this.updateNetworkInfo();
     this.checkVersion();
-    const t = await this.community.setCommunityTx(this.hashes[0]);
+    
+    await this.community.setCommunityTx(this.hashes[0]);
 
     $('.navbar-brand').attr('href', '/index.html');
     $('body').show();
@@ -140,7 +141,7 @@ class App {
       return;
     }
 
-    let contracts = [];
+    const contracts = [];
     const communityTags = res.data.data.community.tags;
     const mainTags = res.data.data.main.tags;
 
@@ -257,10 +258,7 @@ class App {
 
     $(document).on('input', '.input-float', (e: any) => {
       const $target = $(e.target);
-      const newVal = +$target
-        .val()
-        .toString()
-        .replace(/[^0-9\.]/g, '');
+      const newVal = +$target.val().toString().replace(/[^0-9.]/g, '');
       $target.val(newVal);
 
       // Needed?

@@ -40,7 +40,7 @@ export default class Opportunities {
     return res;
   }
 
-  async get(id: string, reload: boolean = false): Promise<Opportunity> {
+  async get(id: string, reload = false): Promise<Opportunity> {
     let opp = this.oppsMap.get(id);
     if (!opp) {
       opp = await Opportunity.getOpportunity(id);
@@ -65,7 +65,7 @@ export default class Opportunities {
    * @returns The removed opportunity
    */
   async remove(id: string): Promise<Opportunity> {
-    let removed: Opportunity = this.oppsMap.get(id);
+    const removed: Opportunity = this.oppsMap.get(id);
     if (removed) {
       this.oppsMap.delete(id);
       this.oppsArr = Array.from(this.oppsMap.values());

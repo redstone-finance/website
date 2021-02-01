@@ -1,13 +1,10 @@
-import 'threads/register';
-
 import $ from './libs/jquery';
 import './global';
 import arweave from './libs/arweave';
 import Community from 'community-js';
 import GQLResultInterface from './interfaces/gqlResult';
 import { StateInterface } from 'community-js/lib/faces';
-import { ModuleThread, spawn } from 'threads';
-import { TokensWorker } from './workers/tokens';
+import TokensWorker from './workers/tokens';
 import Author from './models/author';
 import AuthorInterface from './interfaces/author';
 import Opportunities from './models/opportunities';
@@ -28,7 +25,7 @@ const getAllCommunities = async (): Promise<{id: string, state: StateInterface}[
   let cursor = '';
   let hasNextPage = true;
 
-  let ids: string[] = [];
+  const ids: string[] = [];
   while (hasNextPage) {
     const query = {
       query: `query {
@@ -133,8 +130,6 @@ const getAllOpportunities = async (commIds: string[]): Promise<{ [key: string]: 
 };
 
 const loadCards = async () => {
-  const tokensWorker: ModuleThread<TokensWorker> = await spawn<TokensWorker>(new Worker('./workers/tokens.ts'));
-
   const communities: {id: string, state: StateInterface}[] = await getAllCommunities();
   console.log(communities)
   const opps: { [key: string]: number } = await getAllOpportunities(communities.map(i => i.id));
@@ -142,7 +137,7 @@ const loadCards = async () => {
   $('.total').text(communities.length);
   $('.loaded').show();
 
-  let list: { html: string; members: number; opportunities: number }[] = [];
+  const list: { html: string; members: number; opportunities: number }[] = [];
   let current = -1;
   let completed = 0;
 
@@ -155,7 +150,7 @@ const loadCards = async () => {
     const id = community.id;
     const state: StateInterface = community.state;
 
-    const users = await tokensWorker.sortHoldersByBalance(state.balances, state.vault);
+    const users = await TokensWorker.sortHoldersByBalance(state.balances, state.vault);
 
     let avatarList = '';
     const max = users.length > 5 ? 5 : users.length;

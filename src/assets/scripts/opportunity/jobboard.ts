@@ -1,4 +1,4 @@
-import 'threads/register';
+
 import $ from '../libs/jquery';
 import 'bootstrap/dist/js/bootstrap.bundle';
 
@@ -138,7 +138,7 @@ class JobBoard {
       this.currentPage.close();
     }
 
-    let page = await this.getPageStr();
+    const page = await this.getPageStr();
     if (page === 'create' && !(await this.account.isLoggedIn())) {
       window.location.hash = '';
     }

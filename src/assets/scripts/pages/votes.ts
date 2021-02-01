@@ -9,7 +9,7 @@ import Dropbox from '../utils/dropbox';
 
 export default class PageVotes {
   private votes: Vote[] = [];
-  private firstCall: boolean = true;
+  private firstCall = true;
 
   async open() {
     $('.link-votes').addClass('active');
@@ -171,7 +171,7 @@ export default class PageVotes {
       }
     } else if (setKey === 'communityLogo') {
       this.setLogoInvalid(); // not yet validated
-      let setValue: string = $('#vote-set-value').val().toString().trim();
+      const setValue: string = $('#vote-set-value').val().toString().trim();
       if (setValue === '') {
         // TODO: more wide condition
         this.setLogoInvalid(); // don't query the network in this case
@@ -233,7 +233,7 @@ export default class PageVotes {
   private modifyVotes() {
     // Disallow spaces
     $('#vote-set-name').on('input', (e) => {
-      let setName: string = $('#vote-set-name').val().toString().replace(' ', '-');
+      const setName: string = $('#vote-set-name').val().toString().replace(' ', '-');
       $('#vote-set-name').val(setName);
     });
   }
@@ -479,7 +479,7 @@ export default class PageVotes {
       }
       const note = $('#vote-note').val().toString().trim();
 
-      let voteParams: VoteInterface = {
+      const voteParams: VoteInterface = {
         type: voteType,
       };
 

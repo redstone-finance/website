@@ -12,13 +12,13 @@ import Dropbox from '../utils/dropbox';
 export default class Account {
   private community: Community;
 
-  private loggedIn: boolean = false;
+  private loggedIn = false;
   private wallet: JWKInterface;
-  private username: string = '';
-  private avatar: string = '';
-  private address: string = '';
-  private arBalance: number = -1;
-  private isInitialized: boolean = false;
+  private username = '';
+  private avatar = '';
+  private address = '';
+  private arBalance = -1;
+  private isInitialized = false;
 
   constructor(community: Community) {
     this.community = community;
@@ -69,7 +69,7 @@ export default class Account {
     return this.arBalance;
   }
 
-  async showLoginError(duration: number = 5000) {
+  async showLoginError(duration = 5000) {
     const toast = new Toast();
     toast.show('Login first', 'Before being able to do this action you need to login.', 'login', duration);
   }

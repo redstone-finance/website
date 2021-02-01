@@ -7,13 +7,13 @@ import arweave from '../libs/arweave';
 import Utils from './utils';
 
 export default class ActivityTable {
-  private currentPage: number = 1;
-  private limit: number = 10;
-  private isMembersPage: boolean = true;
-  private isAll: boolean = true;
+  private currentPage = 1;
+  private limit = 10;
+  private isMembersPage = true;
+  private isAll = true;
 
-  private hasNextPage: boolean = false;
-  private cursor: string = '';
+  private hasNextPage = false;
+  private cursor = '';
 
   private items: {
     avatar: string;
@@ -32,8 +32,8 @@ export default class ActivityTable {
 
   constructor(
     gqlVariables: { commId: string[]; owners: string[]; cursor: string },
-    isMembersPage: boolean = true,
-    limit: number = 10,
+    isMembersPage = true,
+    limit = 10,
   ) {
     this.isMembersPage = isMembersPage;
     this.limit = limit;
@@ -41,7 +41,7 @@ export default class ActivityTable {
     this.vars.cursor = '';
   }
 
-  async show(forceUpdate: boolean = false) {
+  async show(forceUpdate = false) {
     await this.removeEvents();
 
     $('.act-cards').find('.dimmer').addClass('active');
@@ -171,7 +171,7 @@ export default class ActivityTable {
   private async request() {
     this.items = [];
 
-    let query = `
+    const query = `
       query(${this.vars.commId.length ? '$commId: [String!]!, ' : ''}${
       this.vars.owners.length ? '$owners: [String!]!, ' : ''
     } $cursor: String!) {
@@ -227,8 +227,8 @@ export default class ActivityTable {
         }
       }
 
-      let name = tx.node.owner.address;
-      let avatar = Utils.generateIcon(tx.node.owner.address);
+      const name = tx.node.owner.address;
+      const avatar = Utils.generateIcon(tx.node.owner.address);
 
       let d = new Date();
       if(tx.node.block && tx.node.block.timestamp) {

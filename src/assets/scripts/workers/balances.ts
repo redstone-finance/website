@@ -1,14 +1,13 @@
-import { expose } from 'threads/worker';
-import { BalancesInterface, VaultInterface } from 'community-js/lib/faces';
-
-const worker = {
-  usersAndBalance: (bal: BalancesInterface) => {
+import { BalancesInterface, VaultInterface } from "community-js/lib/faces";
+export default class BalancesWorker {
+  static async usersAndBalance(bal: BalancesInterface): Promise<{users: string[], balance: number}> {
     const users = Object.keys(bal);
     const balance = users.map((u) => bal[u]).reduce((a, b) => a + b, 0);
 
     return { users, balance };
-  },
-  vaultUsersAndBalance: (v: VaultInterface) => {
+  }
+
+  static vaultUsersAndBalance(v: VaultInterface) {
     const vaultUsers = Object.keys(v);
     let vaultBalance = 0;
     for (let i = 0, j = vaultUsers.length; i < j; i++) {
@@ -16,9 +15,10 @@ const worker = {
     }
 
     return { vaultUsers, vaultBalance };
-  },
-  getAddressBalance: (address: string, balances: BalancesInterface, vault: VaultInterface) => {
-    let unlocked = balances[address];
+  }
+
+  static getAddressBalance(address: string, balances: BalancesInterface, vault: VaultInterface) {
+    const unlocked = balances[address];
 
     let locked = 0;
     const userVault = vault[address];
@@ -29,8 +29,5 @@ const worker = {
     }
 
     return { balance: unlocked + locked, unlocked, vault: locked };
-  },
-};
-
-export type BalancesWorker = typeof worker;
-expose(worker);
+  }
+}
