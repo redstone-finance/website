@@ -1,12 +1,10 @@
-const { series, dest, src, task, parallel } = require('gulp');
+const { series, dest, src, task, parallel, watch } = require('gulp');
 const gulpEsbuild = require('gulp-esbuild');
 const pug = require('gulp-pug');
 const rev = require('gulp-rev');
 const sourcemaps = require('gulp-sourcemaps');
 const imagemin = require('gulp-imagemin');
-//const svgmin = require('gulp-svgmin');
 const sass = require('gulp-sass');
-const nodemon = require('gulp-nodemon');
 const revRewrite = require('gulp-rev-rewrite');
 const del = require('del');
 const revDel = require('rev-del');
@@ -14,13 +12,21 @@ const replace = require('gulp-replace');
 
 sass.compiler = require('node-sass');
 
+const sources = {
+  html: 'src/*.pug',
+  scripts: ['src/assets/scripts/{app,claim,communities,create,home,member}.ts', 'src/assets/scripts/opportunity/jobboard.ts'],
+  images: 'src/**/*.{png,svg,jpg,jpeg,gif}',
+  styles: 'src/**/*.scss',
+  revision: 'dist/**/*.{css,js,svg,png,gif,jpeg,jpg}'
+}
+
 task('clean', (done) => {
     del.sync(['dist/**', '.rev/**']);
     done();
 });
 
 task('html', (done) => {
-  src(['src/*.pug'])
+  src(sources.html)
     .pipe(pug({
       pretty: true
     }))
@@ -30,7 +36,7 @@ task('html', (done) => {
 });
 
 task('scripts', (done) => {
-  src(['src/assets/scripts/{app,claim,communities,create,home,member}.ts', 'src/assets/scripts/opportunity/jobboard.ts'])
+  src(sources.scripts)
     .pipe(gulpEsbuild({
       platform: 'browser',
       bundle: true
@@ -42,7 +48,7 @@ task('scripts', (done) => {
 });
 
 task('images', (done) => {
-  src(['src/**/*.{png,svg,jpg,jpeg,gif}'])
+  src(sources.images)
     .pipe(imagemin([
       imagemin.gifsicle({interlaced: true}),
       imagemin.mozjpeg({quality: 75, progressive: true}),
@@ -59,7 +65,7 @@ task('images', (done) => {
 });
 
 task('styles', function (done) {
-  src(['src/**/*.scss'])
+  src(sources.styles)
     .pipe(sass().on('error', sass.logError))
     .pipe(dest('dist'));
 
@@ -67,8 +73,9 @@ task('styles', function (done) {
 });
 
 task('revision', (done) => {
-  src('dist/**/*.{css,js,svg,png,gif,jpeg,jpg}')
+  src(sources.revision)
     .pipe(rev())
+    .pipe(revDel())
     .pipe(src('dist/**/*.html'))
     .pipe(revRewrite())
     .pipe(dest('dist'));
@@ -76,15 +83,16 @@ task('revision', (done) => {
   done();
 });
 
+// Build
 task('build', series('clean', parallel('html', 'scripts', 'images', 'styles')));
+task('buildServer', (done) => {
 
-task('watch', series('build', (done) => {
-    const stream = nodemon({
-        script: 'server.js'
-        , watch: 'build'
-        , tasks: ['build']
-        , done
-    });
+});
 
-    return stream;
+// Dev
+task('watch', series('build', () => {
+  watch(sources.html, series('html', 'revision'));
+  watch(sources.scripts, series('scripts', 'revision'));
+  watch(sources.images, series('images', 'revision'));
+  watch(sources.styles, series('styles', 'revision'));
 }))

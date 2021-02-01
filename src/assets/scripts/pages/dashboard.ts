@@ -37,6 +37,7 @@ export default class PageDashboard {
     }
 
     const state = await app.getCommunity().getState();
+    console.log(state);
 
     const commDesc = state.settings.get('communityDescription') || '';
     const commAppUrl = state.settings.get('communityAppUrl') || '';

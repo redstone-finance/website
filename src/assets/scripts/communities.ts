@@ -131,7 +131,6 @@ const getAllOpportunities = async (commIds: string[]): Promise<{ [key: string]: 
 
 const loadCards = async () => {
   const communities: {id: string, state: StateInterface}[] = await getAllCommunities();
-  console.log(communities)
   const opps: { [key: string]: number } = await getAllOpportunities(communities.map(i => i.id));
 
   $('.total').text(communities.length);
@@ -147,6 +146,16 @@ const loadCards = async () => {
     }
 
     const community = communities[i];
+    if(community.state.settings['communityHide'] && community.state.settings['communityHide'] === 'disable') {
+      $('.completed').text(++completed);
+      $('.progress-bar').width(`${Math.floor((completed / communities.length) * 100)}%`);
+      return go(++current);
+    }
+
+    if(community.id === '1N1vykh587_y5vbDw87mKI03Ij5flmd8UtT8xH_zntc') {
+      console.log(community);
+    }
+
     const id = community.id;
     const state: StateInterface = community.state;
 
