@@ -9,6 +9,8 @@ const revRewrite = require('gulp-rev-rewrite');
 const del = require('del');
 const replace = require('gulp-replace');
 const postcss = require('gulp-postcss');
+const purgeCSS = require('gulp-purgecss');
+const cleanCSS = require('gulp-clean-css');
 const autoprefixer = require('autoprefixer');
 const cssnano = require('cssnano');
 
@@ -78,6 +80,19 @@ task('styles', function (done) {
 });
 
 task('revision', (done) => {
+
+  src('dist/**/*.css')
+    .pipe(purgeCSS({
+      content: ['dist/**/*.{html,js}'],
+      defaultExtractor: content => {
+        const broadMatches = content.match(/[^<>"'`\s]*[^<>"'`\s:]/g) || []
+        const innerMatches = content.match(/[^<>"'`\s.()]*[^<>"'`\s.():]/g) || []
+        return broadMatches.concat(innerMatches)
+      }
+    }))
+    .pipe(cleanCSS({compatibility: 'ie8'}))
+    .pipe(dest('dist'));
+
   src(sources.revision)
   .pipe(rev())
   .pipe(src('dist/**/*.html'))
