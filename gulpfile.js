@@ -42,10 +42,11 @@ task('scripts', (done) => {
     .pipe(sourcemaps.init())
     .pipe(gulpEsbuild({
       platform: 'browser',
-      bundle: true
+      bundle: true,
+      sourcemap: true
     }))
     .pipe(replace('@APP_VERSION', '@' + process.env.npm_package_version))
-    .pipe(sourcemaps.write('.'))
+    .pipe(sourcemaps.write())
     .pipe(dest('dist/assets/scripts'));
 
   done();
@@ -73,17 +74,8 @@ task('styles', function (done) {
     .pipe(sourcemaps.init())
     .pipe(sass().on('error', sass.logError))
     .pipe(postcss([autoprefixer(), cssnano()]))
-    .pipe(sourcemaps.write('.'))
-    .pipe(dest('dist'));
-
-  done();
-});
-
-task('revision', (done) => {
-
-  src('dist/**/*.css')
     .pipe(purgeCSS({
-      content: ['dist/**/*.{html,js}'],
+      content: ['src/**/*.{pug,ts}'],
       defaultExtractor: content => {
         const broadMatches = content.match(/[^<>"'`\s]*[^<>"'`\s:]/g) || []
         const innerMatches = content.match(/[^<>"'`\s.()]*[^<>"'`\s.():]/g) || []
@@ -91,8 +83,13 @@ task('revision', (done) => {
       }
     }))
     .pipe(cleanCSS({compatibility: 'ie8'}))
+    .pipe(sourcemaps.write('.'))
     .pipe(dest('dist'));
 
+  done();
+});
+
+task('revision', (done) => {
   src(sources.revision)
   .pipe(rev())
   .pipe(src('dist/**/*.html'))
