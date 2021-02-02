@@ -49,7 +49,9 @@ export default class HomeController {
       res.redirect('./claim');
     });
 
-    this.router.post(`${this.path}completeclaim`, this.completeClaim);
+    this.router.post(`${this.path}completeclaim`, (req, res) => {
+      return this.completeClaim(req, res);
+    });
   }
 
   private async completeClaim(req: express.Request, res: express.Response) {
