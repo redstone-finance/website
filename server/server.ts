@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import throng from 'throng';
 import memored from 'memored';
 import Arweave from 'arweave';
+import mongoose from 'mongoose';
 import App from './app';
 import HomeController from './controllers/home';
 import CacheController from './controllers/caching';
@@ -16,8 +17,10 @@ const arweave = Arweave.init({
   port: 443
 });
 
-const worker = (id: string, disconnect: any) => {
+const worker = async (id: string, disconnect: any) => {
   console.log(`Started worker ${id}`);
+  await mongoose.connect(process.env.MONGO_URL, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true});
+
 
   const app = new App({
     port: 5000,
