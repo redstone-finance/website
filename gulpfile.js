@@ -8,6 +8,9 @@ const sass = require('gulp-sass');
 const revRewrite = require('gulp-rev-rewrite');
 const del = require('del');
 const replace = require('gulp-replace');
+const postcss = require('gulp-postcss');
+const autoprefixer = require('autoprefixer');
+const cssnano = require('cssnano');
 
 sass.compiler = require('node-sass');
 
@@ -34,11 +37,13 @@ task('html', (done) => {
 
 task('scripts', (done) => {
   src(sources.scripts)
+    .pipe(sourcemaps.init())
     .pipe(gulpEsbuild({
       platform: 'browser',
       bundle: true
     }))
     .pipe(replace('@APP_VERSION', '@' + process.env.npm_package_version))
+    .pipe(sourcemaps.write('.'))
     .pipe(dest('dist/assets/scripts'));
 
   done();
@@ -63,7 +68,10 @@ task('images', (done) => {
 
 task('styles', function (done) {
   src(sources.styles)
+    .pipe(sourcemaps.init())
     .pipe(sass().on('error', sass.logError))
+    .pipe(postcss([autoprefixer(), cssnano()]))
+    .pipe(sourcemaps.write('.'))
     .pipe(dest('dist'));
 
   done();
