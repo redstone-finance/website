@@ -50,12 +50,9 @@ $(() => {
     const tx = await arweave.createTransaction({ data: await account.getAddress() }, wallet);
     await arweave.transactions.sign(tx, wallet);
 
-    const address = await account.getAddress();
-
     $.post(
       './completeclaim',
       {
-        address,
         tx: JSON.stringify(tx),
         ref,
       },
