@@ -55,16 +55,20 @@ export default class HomeController {
   }
 
   private async completeClaim(req: express.Request, res: express.Response) {
-    if(!req.body || !req.body.wallet) {
+    if(!req.body || !req.body.address || !req.body.tx) {
       return res.send('Invalid data.');
     }
   
-    let address = '';
+    let address = req.body.address;
     let referrer = req.body.ref || '';
   
     try {
-      address = await this.arweave.wallets.jwkToAddress(req.body.wallet);
+      const tx = this.arweave.transactions.fromRaw(JSON.parse(req.body.tx));
+      if(!(await this.arweave.transactions.verify(tx))) {
+        return res.send('You do not own this wallet address.');
+      }
     } catch (err) {
+      console.log(err);
       return res.send('Invalid params.');
     }
   
