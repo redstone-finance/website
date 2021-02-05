@@ -104,10 +104,10 @@ task('build', series('clean', parallel('html', 'scripts', 'images', 'styles'), '
 
 // Dev
 task('watch', series('build', (done) => {
-  watch(sources.html, series('html', 'revision'));
-  watch(sources.scripts, series('scripts', 'revision'));
-  watch(sources.images, series('images', 'revision'));
-  watch(sources.styles, series('styles', 'revision'));
+  watch('src/**/*.pug', series('html', 'revision'));
+  watch('src/**/*.ts', series('html', 'scripts', 'revision'));
+  watch(sources.images, series('html', 'images', 'revision'));
+  watch(sources.styles, series('html', 'styles', 'revision'));
 
   done();
 }));
