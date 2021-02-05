@@ -1841,6 +1841,13 @@ aproba@^1.0.3:
   resolved "https://registry.yarnpkg.com/aproba/-/aproba-1.2.0.tgz#6802e6264efd18c790a1b0d517f0f2627bf2c94a"
   integrity sha512-Y9J6ZjXtoYh8RnXVCMOU/ttDmk1aBjunq9vO0ta5x85WDQiQfUF9sIPBITdbiiIVcBo03Hi3jMxigBtsddlXRw==
 
+ar-gql@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/ar-gql/-/ar-gql-0.0.1.tgz#66b4b1fcba928dee634a0b9c76a9534a41eb4a55"
+  integrity sha512-ky7kOIfs5lYr3cN3movieHbzm45xeUb1q42kZN4nvb3FB712UQ939q3I48WCpcrBeZXygSDfLvNvUxOZZjylrA==
+  dependencies:
+    node-fetch "^2.6.1"
+
 ar-gql@^0.0.3:
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/ar-gql/-/ar-gql-0.0.3.tgz#3c0734e572a26842ffbdb6bb343182f96e2a711f"
@@ -1995,6 +2002,16 @@ articles@~0.2.1:
   resolved "https://registry.yarnpkg.com/articles/-/articles-0.2.2.tgz#cc6b429f8cfa811f41e7a08505abbb4e45503197"
   integrity sha512-S3Y4MPp+LD/l0HHm/4yrr6MoXhUkKT98ZdsV2tkTuBNywqUXEtvJT+NBO3KTSQEttc5EOwEJe2Xw8cZ9TI5Hrw==
 
+arverify@^0.0.5:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/arverify/-/arverify-0.0.5.tgz#249f2c25cb7ca8133c82dfe133c5225932f76476"
+  integrity sha512-N5U0ppf65+omaNBJtZjxr0whnQnu63Hx1xUdhrY8BIWBoPyc/xZg40E4mF6wKz/N2cg0mLR67jC28Awh2QF3yg==
+  dependencies:
+    ar-gql "^0.0.1"
+    arweave "^1.9.1"
+    node-fetch "^2.6.1"
+    smartweave "^0.4.10"
+
 arweave@^1.10.0, arweave@^1.10.2:
   version "1.10.3"
   resolved "https://registry.yarnpkg.com/arweave/-/arweave-1.10.3.tgz#70bb21ba14ba564aaea7d4c2f9e220beca4d5032"
@@ -2004,6 +2021,16 @@ arweave@^1.10.0, arweave@^1.10.2:
     axios "^0.21.1"
     base64-js "^1.3.1"
     bignumber.js "^8.1.1"
+
+arweave@^1.9.1:
+  version "1.10.6"
+  resolved "https://registry.yarnpkg.com/arweave/-/arweave-1.10.6.tgz#7e710212139120430807d2a0d9f9389d2032d873"
+  integrity sha512-xkRHvTnCduK3HKlmCHGpMmHG1SSzJc0as9ogPw7bcYSzP0/DTkarTQkLIDi3AG2lV7IQQx4LrcqFP/rGa10v4Q==
+  dependencies:
+    asn1.js "^5.4.1"
+    axios "^0.21.1"
+    base64-js "^1.3.1"
+    bignumber.js "^9.0.1"
 
 asap@~2.0.3:
   version "2.0.6"
@@ -9886,7 +9913,7 @@ sliced@1.0.1:
   resolved "https://registry.yarnpkg.com/sliced/-/sliced-1.0.1.tgz#0b3a662b5d04c3177b1926bea82b03f837a2ef41"
   integrity sha1-CzpmK10Ewxd7GSa+qCsD+Dei70E=
 
-smartweave@^0.4.21, smartweave@^0.4.23, smartweave@^0.4.25:
+smartweave@^0.4.10, smartweave@^0.4.21, smartweave@^0.4.23, smartweave@^0.4.25:
   version "0.4.25"
   resolved "https://registry.yarnpkg.com/smartweave/-/smartweave-0.4.25.tgz#71ba8843117589fa73b3cdbc8a0415476fdc6afa"
   integrity sha512-tJaqgAEA7Vky7w4lKYnoaNDXO5vZsQiOIolsjwjXFDQStg96A+9ZKH647qUoHiaDKcg/1/p/5wA4XOov5MM8IQ==

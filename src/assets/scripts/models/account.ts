@@ -8,6 +8,7 @@ import arweave from '../libs/arweave';
 import communityDB from '../libs/db';
 import Author from './author';
 import Dropbox from '../utils/dropbox';
+import { getVerification, verify } from "arverify";
 
 export default class Account {
   private community: Community;
@@ -19,6 +20,7 @@ export default class Account {
   private address = '';
   private arBalance = -1;
   private isInitialized = false;
+  private verified = null;
 
   constructor(community: Community) {
     this.community = community;
@@ -53,6 +55,11 @@ export default class Account {
 
     return this.loggedIn;
   }
+  async getVerify() {
+    this.verified = await getVerification(this.address);
+    return this.verified
+  }
+
   async getWallet(): Promise<JWKInterface> {
     return this.wallet;
   }
@@ -105,6 +112,7 @@ export default class Account {
     $('.user-name').text(this.username);
     $('.user-avatar').css('background-image', `url(${this.avatar})`);
     $('.member-profile').attr('href', `./member.html#${this.address}`);
+    this.loadVerify();
     arweave.wallets.getBalance(this.address).then((bal) => {
       $('.member-ar').removeAttr('href').html(`
       ${feather.icons['dollar-sign'].toSvg({ class: 'icon' })} 
@@ -124,6 +132,19 @@ export default class Account {
 
     // @ts-ignore
     window.currentPage.syncPageState();
+  }
+
+  private async loadVerify() {
+    const verifys = await this.getVerify();
+    if (verifys.verified) {
+      $('.member-verify').html(verifys.icon + 'verified');
+      $('.member-verify:first').addClass('icon.dropdown-item-icon');
+    } else {
+      $('.member-verify').html(verifys.icon + '&nbsp' + ' Verify');
+      $('.member-verify:first').addClass('icon.dropdown-item-icon');
+      const uri = await verify(this.wallet, window.location.href, this.address);
+      console.log(uri);
+    }
   }
 
   private async login(e: any) {
