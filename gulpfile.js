@@ -9,6 +9,8 @@ const revRewrite = require('gulp-rev-rewrite');
 const del = require('del');
 const replace = require('gulp-replace');
 const postcss = require('gulp-postcss');
+const purgeCSS = require('gulp-purgecss');
+const cleanCSS = require('gulp-clean-css');
 const autoprefixer = require('autoprefixer');
 const cssnano = require('cssnano');
 
@@ -40,10 +42,11 @@ task('scripts', (done) => {
     .pipe(sourcemaps.init())
     .pipe(gulpEsbuild({
       platform: 'browser',
-      bundle: true
+      bundle: true,
+      sourcemap: true
     }))
     .pipe(replace('@APP_VERSION', '@' + process.env.npm_package_version))
-    .pipe(sourcemaps.write('.'))
+    .pipe(sourcemaps.write())
     .pipe(dest('dist/assets/scripts'));
 
   done();
@@ -71,6 +74,15 @@ task('styles', function (done) {
     .pipe(sourcemaps.init())
     .pipe(sass().on('error', sass.logError))
     .pipe(postcss([autoprefixer(), cssnano()]))
+    .pipe(purgeCSS({
+      content: ['src/**/*.{pug,ts}'],
+      defaultExtractor: content => {
+        const broadMatches = content.match(/[^<>"'`\s]*[^<>"'`\s:]/g) || []
+        const innerMatches = content.match(/[^<>"'`\s.()]*[^<>"'`\s.():]/g) || []
+        return broadMatches.concat(innerMatches)
+      }
+    }))
+    .pipe(cleanCSS({compatibility: 'ie8'}))
     .pipe(sourcemaps.write('.'))
     .pipe(dest('dist'));
 
@@ -92,10 +104,10 @@ task('build', series('clean', parallel('html', 'scripts', 'images', 'styles'), '
 
 // Dev
 task('watch', series('build', (done) => {
-  watch(sources.html, series('html', 'revision'));
-  watch(sources.scripts, series('scripts', 'revision'));
-  watch(sources.images, series('images', 'revision'));
-  watch(sources.styles, series('styles', 'revision'));
+  watch('src/**/*.pug', series('html', 'revision'));
+  watch('src/**/*.ts', series('html', 'scripts', 'revision'));
+  watch(sources.images, series('html', 'images', 'revision'));
+  watch(sources.styles, series('html', 'styles', 'revision'));
 
   done();
 }));

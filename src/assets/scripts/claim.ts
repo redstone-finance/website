@@ -44,10 +44,16 @@ $(() => {
     $claim.addClass('btn-loading disabled');
 
     const ref = document.location.hash.replace('#', '').trim();
+
+    const wallet = await account.getWallet();
+
+    const tx = await arweave.createTransaction({ data: await account.getAddress() }, wallet);
+    await arweave.transactions.sign(tx, wallet);
+
     $.post(
       './completeclaim',
       {
-        wallet: await account.getWallet(),
+        tx: JSON.stringify(tx),
         ref,
       },
       (res) => {

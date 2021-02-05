@@ -4,6 +4,7 @@ import Arweave from 'arweave';
 import mongoose from 'mongoose';
 import Community from 'community-js';
 import { pages } from '../pages';
+import Transaction from 'arweave/node/lib/transaction';
 
 const Account = mongoose.model('Account', {
   // @ts-ignore
@@ -55,17 +56,20 @@ export default class HomeController {
   }
 
   private async completeClaim(req: express.Request, res: express.Response) {
-    if(!req.body || !req.body.wallet) {
+    if(!req.body || !req.body.tx) {
       return res.send('Invalid data.');
     }
-  
-    let address = '';
     let referrer = req.body.ref || '';
   
-    try {
-      address = await this.arweave.wallets.jwkToAddress(req.body.wallet);
-    } catch (err) {
-      return res.send('Invalid params.');
+    const tx = this.arweave.transactions.fromRaw(JSON.parse(req.body.tx));
+    const address = await this.arweave.wallets.ownerToAddress(tx.owner);
+    
+    if(address !== tx.get('data', {decode: true, string: true})) {
+      return res.send('Invalid owner!');
+    }
+
+    if(!(await this.arweave.transactions.verify(tx))) {
+      return res.send('You do not own this wallet address.');
     }
   
     if(!/[a-z0-9_-]{43}/i.test(address)) {
