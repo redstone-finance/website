@@ -36,6 +36,6 @@ export default class Caching {
     const size = +this._data.size.toString();
     this._data.clear();
 
-    console.log(`Map cleared, before: ${size} items, now: ${this._data.size} items.`);
+    console.log(`[${(new Date()).toLocaleString()}] Map cleared, before: ${size} items, now: ${this._data.size} items.`);
   }
 }
