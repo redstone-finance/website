@@ -81,7 +81,7 @@ export default class Market {
           $('#verto-modal').modal('hide');
         });
     } else {
-      $('.avg-price').html("<strong>There aren't any sell orders open.</strong>");
+      $('.avg-price').html("<strong>There aren't any buy orders open.</strong>");
     }
   }
 
