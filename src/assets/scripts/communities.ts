@@ -10,108 +10,8 @@ import AuthorInterface from './interfaces/author';
 import Opportunities from './models/opportunities';
 import Utils from './utils/utils';
 import axios from 'axios';
+import Communities from './workers/communities'
 
-const getAllCommunities = async (): Promise<{id: string, state: StateInterface}[]> => {
-
-  try {
-    const res = await axios.get('./caching/communities');
-    if(res && res.data) {
-      return res.data;
-    }
-  } catch(e) {
-    console.log(e);
-  }
-
-  let cursor = '';
-  let hasNextPage = true;
-
-  const ids: string[] = [];
-  while (hasNextPage) {
-    const query = {
-      query: `query {
-        transactions(
-          tags: [
-            {name: "App-Name", values: ["SmartWeaveContract"]},
-            {name: "Contract-Src", values: ["ngMml4jmlxu0umpiQCsHgPX2pb_Yz6YDB8f7G6j-tpI"]}
-          ]
-          after: "${cursor}"
-          first: 100
-        ) {
-          pageInfo {
-            hasNextPage
-          }
-          edges {
-            cursor
-            node {
-              id
-              recipient
-              quantity {
-                ar
-              }
-              owner {
-                address
-              },
-              tags {
-                name,
-                value
-              }
-              block {
-                timestamp
-                height
-              }
-            }
-          }
-        }
-      }`,
-    };
-    const res = await arweave.api.post('/graphql', query);
-    const data: GQLResultInterface = res.data;
-
-    for (let i = 0, j = data.data.transactions.edges.length; i < j; i++) {
-      ids.push(data.data.transactions.edges[i].node.id);
-    }
-    hasNextPage = data.data.transactions.pageInfo.hasNextPage;
-
-    if (hasNextPage) {
-      cursor = data.data.transactions.edges[data.data.transactions.edges.length - 1].cursor;
-    }
-  }
-
-  const states: {id: string, state: StateInterface}[] = [];
-  let current = -1;
-  const go = async (i = 0) => {
-    if(i >= ids.length) {
-      return true;
-    }
-
-    const id = ids[i];
-    let state: StateInterface;
-
-    try {
-      const community = new Community(arweave);
-      await community.setCommunityTx(id);
-      state = await community.getState(true);
-
-      // @ts-ignore
-      state.settings = Array.from(state.settings).reduce((obj, [key, value]) => (
-        Object.assign(obj, { [key]: value }) // Be careful! Maps can have non-String keys; object literals can't.
-      ), {});
-
-      states.push({id, state});
-    } catch(e) {}
-
-    return go(++current);
-  };
-
-  const gos = [];
-  for (let i = 0, j = 5; i < j; i++) {
-    gos.push(go(++current));
-  }
-
-  await Promise.all(gos);
-
-  return JSON.parse(JSON.stringify(states));
-};
 
 const getAllOpportunities = async (commIds: string[]): Promise<{ [key: string]: number }> => {
   const res: { [key: string]: number } = {};
@@ -130,7 +30,7 @@ const getAllOpportunities = async (commIds: string[]): Promise<{ [key: string]: 
 };
 
 const loadCards = async () => {
-  const communities: {id: string, state: StateInterface}[] = await getAllCommunities();
+  const communities: { id: string, state: StateInterface }[] = await Communities.getAllCommunities();
   const opps: { [key: string]: number } = await getAllOpportunities(communities.map(i => i.id));
 
   $('.total').text(communities.length);
@@ -146,7 +46,7 @@ const loadCards = async () => {
     }
 
     const community = communities[i];
-    if(community.state.settings['communityHide'] && community.state.settings['communityHide'] === 'hide') {
+    if (community.state.settings['communityHide'] && community.state.settings['communityHide'] === 'hide') {
       $('.completed').text(++completed);
       $('.progress-bar').width(`${Math.floor((completed / communities.length) * 100)}%`);
       return go(++current);

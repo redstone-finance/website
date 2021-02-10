@@ -9,6 +9,7 @@ import { StateInterface } from 'community-js/lib/faces';
 import TokensWorker from './workers/tokens';
 import Utils from './utils/utils';
 import ActivityTable from './utils/activityTable';
+import Communities from './workers/communities'
 
 class MemberPage {
   private hash: string;
@@ -66,7 +67,7 @@ class MemberPage {
   private async loadCommunities() {
     $('#balance').find('tbody').remove();
 
-    const commIds: string[] = await this.getAllCommunityIds();
+    const commIds: { id: string, state: StateInterface }[] = await Communities.getAllCommunities();
     const address = this.hashes[0];
 
     $('.loaded').show();
@@ -81,35 +82,32 @@ class MemberPage {
         return true;
       }
 
-      const comm = commIds[i];
-      let state: StateInterface;
-
-      try {
-        const community = new Community(arweave);
-        await community.setCommunityTx(comm);
-        state = await community.getState(true);
-      } catch (e) {
+      const community = commIds[i];
+      const state: StateInterface = community.state;
+      if (community.state.settings['communityHide'] && community.state.settings['communityHide'] === 'hide') {
         $('.completed').text(++completed);
         $('.progress-bar').width(`${Math.floor((completed / commIds.length) * 100)}%`);
         return go(++current);
       }
 
+      const id = community.id;
       const users = (await TokensWorker.sortHoldersByBalance(state.balances, state.vault)).filter(
         (u) => u.address === address,
       );
       if (!users.length) {
+        console.log('esta es el user.leght :::' + users.length);
         $('.completed').text(++completed);
         $('.progress-bar').width(`${Math.floor((completed / commIds.length) * 100)}%`);
         return go(++current);
       }
       const user = users[0];
 
-      let logo = state.settings.get('communityLogo');
+      let logo = state.settings['communityLogo'];
       if (logo && logo.length) {
         const config = arweave.api.getConfig();
         logo = `${config.protocol}://${config.host}:${config.port}/${logo}`;
       } else {
-        logo = Utils.generateIcon(comm, 32);
+        logo = Utils.generateIcon(id, 32);
       }
 
       list.push({
@@ -120,7 +118,7 @@ class MemberPage {
                 <span class="avatar mr-2" style="background-image: url(${logo})"></span>
                 <div class="flex-fill">
                   <div class="strong">${state.name} (${state.ticker})</div>
-                  <a class="text-muted text-h5" href="./index.html#${comm}" data-community="${comm}" target="_blank">${comm}</a>
+                  <a class="text-muted text-h5" href="./index.html#${community}" data-community="${community}" target="_blank">${community}</a>
                 </div>
               </div>
             </td>
@@ -166,65 +164,6 @@ class MemberPage {
       .show();
 
     $('#total-psc').text(` (${list.length})`);
-  }
-
-  private async getAllCommunityIds(): Promise<string[]> {
-    let cursor = '';
-    let hasNextPage = true;
-
-    const ids: string[] = [];
-    while (hasNextPage) {
-      const query = {
-        query: `query {
-          transactions(
-            tags: [
-              {name: "App-Name", values: ["SmartWeaveContract"]},
-              {name: "Contract-Src", values: ["ngMml4jmlxu0umpiQCsHgPX2pb_Yz6YDB8f7G6j-tpI"]}
-            ]
-            after: "${cursor}"
-            first: 100
-          ) {
-            pageInfo {
-              hasNextPage
-            }
-            edges {
-              cursor
-              node {
-                id
-                recipient
-                quantity {
-                  ar
-                }
-                owner {
-                  address
-                },
-                tags {
-                  name,
-                  value
-                }
-                block {
-                  timestamp
-                  height
-                }
-              }
-            }
-          }
-        }`,
-      };
-      const res = await arweave.api.post('/graphql', query);
-      const data: GQLResultInterface = res.data;
-
-      for (let i = 0, j = data.data.transactions.edges.length; i < j; i++) {
-        ids.push(data.data.transactions.edges[i].node.id);
-      }
-      hasNextPage = data.data.transactions.pageInfo.hasNextPage;
-
-      if (hasNextPage) {
-        cursor = data.data.transactions.edges[data.data.transactions.edges.length - 1].cursor;
-      }
-    }
-
-    return ids;
   }
 
   private async events() {
