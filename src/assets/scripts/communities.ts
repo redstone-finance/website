@@ -1,16 +1,13 @@
 import $ from './libs/jquery';
 import './global';
 import arweave from './libs/arweave';
-import Community from 'community-js';
-import GQLResultInterface from './interfaces/gqlResult';
 import { StateInterface } from 'community-js/lib/faces';
 import TokensWorker from './workers/tokens';
 import Author from './models/author';
 import AuthorInterface from './interfaces/author';
 import Opportunities from './models/opportunities';
 import Utils from './utils/utils';
-import axios from 'axios';
-import Communities from './workers/communities'
+import CommunitiesWorker from './workers/communitiesWorker';
 
 
 const getAllOpportunities = async (commIds: string[]): Promise<{ [key: string]: number }> => {
@@ -30,7 +27,7 @@ const getAllOpportunities = async (commIds: string[]): Promise<{ [key: string]: 
 };
 
 const loadCards = async () => {
-  const communities: { id: string, state: StateInterface }[] = await Communities.getAllCommunities();
+  const communities: { id: string, state: StateInterface }[] = await CommunitiesWorker.getAllCommunities();
   const opps: { [key: string]: number } = await getAllOpportunities(communities.map(i => i.id));
 
   $('.total').text(communities.length);
@@ -46,11 +43,6 @@ const loadCards = async () => {
     }
 
     const community = communities[i];
-    if (community.state.settings['communityHide'] && community.state.settings['communityHide'] === 'hide') {
-      $('.completed').text(++completed);
-      $('.progress-bar').width(`${Math.floor((completed / communities.length) * 100)}%`);
-      return go(++current);
-    }
 
     const id = community.id;
     const state: StateInterface = community.state;

@@ -3,13 +3,11 @@
 import $ from './libs/jquery';
 import './global';
 import arweave from './libs/arweave';
-import Community from 'community-js';
-import GQLResultInterface from './interfaces/gqlResult';
 import { StateInterface } from 'community-js/lib/faces';
 import TokensWorker from './workers/tokens';
 import Utils from './utils/utils';
 import ActivityTable from './utils/activityTable';
-import Communities from './workers/communities'
+import CommunitiesWorker from './workers/communitiesWorker'
 
 class MemberPage {
   private hash: string;
@@ -67,7 +65,7 @@ class MemberPage {
   private async loadCommunities() {
     $('#balance').find('tbody').remove();
 
-    const commIds: { id: string, state: StateInterface }[] = await Communities.getAllCommunities();
+    const commIds: { id: string, state: StateInterface }[] = await CommunitiesWorker.getAllCommunities();
     const address = this.hashes[0];
 
     $('.loaded').show();
@@ -84,18 +82,12 @@ class MemberPage {
 
       const community = commIds[i];
       const state: StateInterface = community.state;
-      if (community.state.settings['communityHide'] && community.state.settings['communityHide'] === 'hide') {
-        $('.completed').text(++completed);
-        $('.progress-bar').width(`${Math.floor((completed / commIds.length) * 100)}%`);
-        return go(++current);
-      }
 
       const id = community.id;
       const users = (await TokensWorker.sortHoldersByBalance(state.balances, state.vault)).filter(
         (u) => u.address === address,
       );
       if (!users.length) {
-        console.log('esta es el user.leght :::' + users.length);
         $('.completed').text(++completed);
         $('.progress-bar').width(`${Math.floor((completed / commIds.length) * 100)}%`);
         return go(++current);
