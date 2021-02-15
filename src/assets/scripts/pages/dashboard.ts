@@ -112,8 +112,8 @@ export default class PageDashboard {
         cursor: '',
       },
       false,
-      5,
+      10,
     );
-    activity.show();
+    activity.show(true);
   }
 }
