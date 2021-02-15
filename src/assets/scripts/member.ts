@@ -110,7 +110,7 @@ class MemberPage {
                 <span class="avatar mr-2" style="background-image: url(${logo})"></span>
                 <div class="flex-fill">
                   <div class="strong">${state.name} (${state.ticker})</div>
-                  <a class="text-muted text-h5" href="./index.html#${community}" data-community="${community}" target="_blank">${community}</a>
+                  <a class="text-muted text-h5" href="./index.html#${community.id}" data-community="${community.id}" target="_blank">${community.id}</a>
                 </div>
               </div>
             </td>
