@@ -144,8 +144,8 @@ export default class Account {
     } else {
       $('.member-verify').html(verifys.icon + '&nbsp' + ' Verify');
       $('.member-verify:first').addClass('icon.dropdown-item-icon');
-      const uri = await verify(this.wallet, window.location.href, this.address);
-      console.log(uri);
+      //const uri = await verify(this.wallet, window.location.href, this.address);
+      //console.log(uri);
     }
   }
 
