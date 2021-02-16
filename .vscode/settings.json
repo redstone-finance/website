@@ -1,3 +1,5 @@
 {
-  "editor.tabSize": 2
+  "editor.tabSize": 2,
+  "ponicode.testSettings.testLocation.locationType": "Same folder as source file",
+  "ponicode.testSettings.testLocation.path": "{rootDir}/{filePath}/{fileName}.test.{ext}"
 }

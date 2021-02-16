@@ -8,9 +8,13 @@ import Author from '../models/author';
 import Market from '../models/market';
 import BalancesWorker from '../workers/balances';
 import TokensWorker from '../workers/tokens';
+import Pager from '../utils/pager';
 
 export default class PageTokens {
   private chart: ApexCharts;
+  private limit: number = 10;
+  private state: StateInterface;
+  private currentPage: number = 1;
 
   async open() {
     $('.link-tokens').addClass('active');
@@ -35,23 +39,30 @@ export default class PageTokens {
       market.hideSellButton();
     }
 
-    const state = await app.getCommunity().getState();
+    this.state = await app.getCommunity().getState();
 
-    const { balance } = await BalancesWorker.usersAndBalance(state.balances);
-    const { vaultBalance } = await BalancesWorker.vaultUsersAndBalance(state.vault);
+    const { balance } = await BalancesWorker.usersAndBalance(this.state.balances);
+    const { vaultBalance } = await BalancesWorker.vaultUsersAndBalance(this.state.vault);
 
-    $('.ticker').text(state.ticker);
+    $('.ticker').text(this.state.ticker);
     $('.minted').text(Utils.formatNumber(balance + vaultBalance));
     $('.minted').parents('.dimmer').removeClass('active');
 
-    const holdersByBalance = await TokensWorker.sortHoldersByBalance(state.balances, state.vault);
-    this.createOrUpdateCharts(holdersByBalance);
-    this.createOrUpdateTable(holdersByBalance, state);
+    const holdersByBalance = await TokensWorker.sortHoldersByBalance(this.state.balances, this.state.vault);
+    const holders = holdersByBalance.filter(holder => /[a-z0-9_-]{43}/i.test(holder.address));
+
+    this.createOrUpdateCharts(holders);
+    const pager = new Pager(holders, $('.tokens-list').find('.card-footer'), 10);
+    pager.onUpdate((p) => {
+      console.log(p);
+      this.createOrUpdateTable(p.items);
+    });
+    pager.setPage(1);
 
     const bal = await BalancesWorker.getAddressBalance(
       await app.getAccount().getAddress(),
-      state.balances,
-      state.vault,
+      this.state.balances,
+      this.state.vault,
     );
     $('.user-total-balance').text(Utils.formatNumber(bal.balance));
     $('.user-unlocked-balance').text(Utils.formatNumber(bal.unlocked));
@@ -60,23 +71,16 @@ export default class PageTokens {
     $('.tx-fee').text(` ${transferFee} `);
   }
 
-  private async createOrUpdateTable(
-    holders: {
-      address: string;
-      balance: number;
-      vaultBalance: number;
-    }[],
-    state: StateInterface,
-  ): Promise<void> {
+  private async createOrUpdateTable(holders: {
+    address: string;
+    balance: number;
+    vaultBalance: number;
+  }[]): Promise<void> {
     let html = '';
 
     $('#total-holders').text(`(${holders.length})`);
 
-    for (let i = 0, j = holders.length; i < j; i++) {
-      const holder = holders[i];
-
-      if(!/[a-z0-9_-]{43}/i.test(holder.address)) continue;
-
+    for (const holder of holders) {
       const acc = new Author(null, holder.address, null);
       const arId = await acc.getDetails();
       const avatar = arId.avatar;
@@ -86,8 +90,8 @@ export default class PageTokens {
           : holder.vaultBalance - holder.balance;
 
       let role = '-';
-      if (holder.address in state.roles) {
-        role = state.roles[holder.address];
+      if (holder.address in this.state.roles) {
+        role = this.state.roles[holder.address];
       }
 
       html += `<tr data-holder='${JSON.stringify(holder)}'>

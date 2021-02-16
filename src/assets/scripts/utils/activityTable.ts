@@ -13,7 +13,6 @@ export default class ActivityTable {
   private isAll = true;
 
   private hasNextPage = false;
-  private cursor = '';
 
   private items: {
     avatar: string;
@@ -46,10 +45,17 @@ export default class ActivityTable {
 
     $('.act-cards').find('.dimmer').addClass('active');
 
+    // console.log(
+    //   this.hasNextPage,
+    //   this.currentPage,
+    //   this.limit,
+    //   this.currentPage * this.limit, 
+    //   this.items.length,
+    //   (this.currentPage * this.limit >= this.items.length && this.hasNextPage));
+
     if (
       forceUpdate ||
-      (this.currentPage * this.limit >= this.items.length && this.hasNextPage) ||
-      !this.cursor.length
+      (this.currentPage * this.limit >= this.items.length && this.hasNextPage)
     ) {
       await this.request();
     }
@@ -243,9 +249,8 @@ export default class ActivityTable {
         message: message.replace(/[a-z0-9_-]{43}/gi, `<a href="./member.html#$&" target="_blank"><code>$&</code></a>`),
         date: d.toLocaleString(),
       });
-
-      this.cursor = tx.cursor;
     }
+    this.vars.cursor = res.data.transactions.edges[0].cursor;
 
     return this.items;
   }
@@ -270,7 +275,7 @@ export default class ActivityTable {
         this.currentPage++;
         this.show();
       } else if ($(e.target).hasClass('prev-page')) {
-        this.cursor = '';
+        this.vars.cursor = '';
         this.currentPage = 1;
         this.hasNextPage = false;
         this.show();

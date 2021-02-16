@@ -53,7 +53,7 @@ include mixins/mixins.pug
       .card-title Community members #[span#total-holders]
     .dimmer.active
       .loader
-      .dimmer-content
+      .dimmer-content.tokens-list
         .table-responsive: table.token-holders.table.table-mobile-md.table-vcenter.card-table
           thead
             tr
@@ -66,6 +66,7 @@ include mixins/mixins.pug
 
           tbody
             tr
+        .card-footer.d-flex.align-items-center
 
 #modal-transfer.modal.modal-blur.fade(role="dialog")
   .modal-dialog(role="document"): .modal-content
