@@ -48,6 +48,10 @@ const loadCards = async () => {
     const state: StateInterface = community.state;
 
     const users = await TokensWorker.sortHoldersByBalance(state.balances, state.vault);
+    const oppsTotal = opps[id] ? opps[id] : 0;
+    if((users.length === 1 && !oppsTotal)) {
+      return go(++current);
+    }
 
     let avatarList = '';
     const max = users.length > 5 ? 5 : users.length;
@@ -57,16 +61,16 @@ const loadCards = async () => {
       avatarList += `<span class="avatar" data-toggle="tooltip" data-placement="top" title="${aDetails.address}" data-original-title="${aDetails.address}" style="background-image: url(${aDetails.avatar})"></span>`;
     }
 
-    const oppsTotal = opps[id] ? opps[id] : 0;
 
     let logo = state.settings['communityLogo'];
     if (logo && logo.length) {
       const config = arweave.api.getConfig();
       logo = `${config.protocol}://${config.host}:${config.port}/${logo}`;
     } else {
-      logo = Utils.generateIcon(id, 72);
+      return go(++current);
     }
 
+    const memberTxt = users.length === 1 ? 'Member' : 'Members';
     const oppTxt = oppsTotal === 1 ? 'Opportunity' : 'Opportunities';
     list.push({
       html: `
@@ -79,7 +83,7 @@ const loadCards = async () => {
             <h4 class="card-title m-0">${state.name} (${state.ticker})</h4>
             <div class="text-muted">${id}</div>
             <small class="opps">${oppsTotal} ${oppTxt}</small> | 
-            <small class="members">${users.length} Members</small><br>
+            <small class="members">${users.length} ${memberTxt}</small><br>
             <div class="avatar-list avatar-list-stacked mt-3 mb-3">
               ${avatarList}
             </div>
