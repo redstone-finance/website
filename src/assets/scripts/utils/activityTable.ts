@@ -5,10 +5,10 @@ import feather from 'feather-icons';
 import { StateInterface } from 'community-js/lib/faces';
 import arweave from '../libs/arweave';
 import Utils from './utils';
+import Pager from './pager';
 
 export default class ActivityTable {
   private currentPage = 1;
-  private limit = 10;
   private isMembersPage = true;
   private isAll = true;
 
@@ -35,7 +35,6 @@ export default class ActivityTable {
     limit = 10,
   ) {
     this.isMembersPage = isMembersPage;
-    this.limit = limit;
     this.vars = gqlVariables;
     this.vars.cursor = '';
   }
@@ -45,28 +44,22 @@ export default class ActivityTable {
 
     $('.act-cards').find('.dimmer').addClass('active');
 
-    // console.log(
-    //   this.hasNextPage,
-    //   this.currentPage,
-    //   this.limit,
-    //   this.currentPage * this.limit, 
-    //   this.items.length,
-    //   (this.currentPage * this.limit >= this.items.length && this.hasNextPage));
-
     if (
       forceUpdate ||
-      (this.currentPage * this.limit >= this.items.length && this.hasNextPage)
+      (this.currentPage >= this.items.length && this.hasNextPage)
     ) {
       await this.request();
     }
 
-    const res = await Promise.all([this.showHeader(), this.showContent()]);
-    $('.act-cards').find('.comm-activity').html(res.join(''));
-    $('.act-cards')
-      .find('.card-footer')
-      .html(await this.showFooter());
-    $('.act-cards').find('.dimmer.active').removeClass('active');
-
+    const pager = new Pager(this.items, $('.act-cards').find('.card-footer'), 10);
+    pager.onUpdate(async (p) => {
+      console.log(p);
+      this.currentPage = p.currentPage;
+      const res = await Promise.all([this.showHeader(), this.showContent(p.items)]);
+      $('.act-cards').find('.comm-activity').html(res.join(''));
+      $('.act-cards').find('.dimmer.active').removeClass('active');
+  });
+  pager.setPage(1);
     this.events();
   }
 
@@ -80,7 +73,7 @@ export default class ActivityTable {
       </tr>
     </thead>`;
   }
-  private async showContent(): Promise<string> {
+  private async showContent(itemss): Promise<string> {
     let html = '<tbody>';
 
     if (!this.items.length) {
@@ -89,8 +82,8 @@ export default class ActivityTable {
       }</td></tr>`;
     }
 
-    const items = this.items.slice((this.currentPage - 1) * this.limit, this.currentPage * this.limit);
-
+    const items = itemss;
+    
     for (let i = 0, j = items.length; i < j; i++) {
       const item = items[i];
 
@@ -137,46 +130,15 @@ export default class ActivityTable {
         </td>
       </tr>`;
     }
-
     html += '</tbody>';
-    return html;
-  }
-  private async showFooter(): Promise<string> {
-    if (!this.items.length) return '';
-
-    const pages = Math.ceil(this.items.length / this.limit);
-
-    let html = `
-    <ul class="pagination m-0 ml-auto">
-      <li class="page-item ${this.currentPage === 1 ? 'disabled' : ''}">
-        <a class="prev-page page-link" href="#">
-          ${feather.icons['chevron-left'].toSvg()} First
-        </a>
-      </li>`;
-
-    for (let i = 0, j = pages; i < j; i++) {
-      const page = i + 1;
-      html += `
-      <li class="page-item ${this.currentPage === page ? 'active' : ''}">
-        <a href="#" class="page-link page-number">${page}</a>
-      </li>`;
-    }
-
-    html += `
-      <li class="page-item ${pages > this.currentPage ? '' : 'disabled'}">
-        <a class="next-page page-link" href="#">
-          Next 
-          ${feather.icons['chevron-right'].toSvg()}
-        </a>
-      </li>
-    </ul>`;
-
     return html;
   }
 
   private async request() {
+    let hasNextPage = true;
     this.items = [];
 
+    while (hasNextPage) {
     const query = `
       query(${this.vars.commId.length ? '$commId: [String!]!, ' : ''}${
       this.vars.owners.length ? '$owners: [String!]!, ' : ''
@@ -189,7 +151,7 @@ export default class ActivityTable {
             ${this.vars.commId.length ? '{ name: "Community-ID", values: $commId }' : ''}
           ]
           ${this.vars.owners.length ? 'owners: $owners' : ''}
-          first: 50
+          first: 100
           after: $cursor
         ) {
           pageInfo {
@@ -221,7 +183,6 @@ export default class ActivityTable {
       return;
     }
 
-    this.hasNextPage = res.data.transactions.pageInfo.hasNextPage;
     for (const tx of res.data.transactions.edges) {
       let comm: string;
       let message: string;
@@ -232,15 +193,15 @@ export default class ActivityTable {
           message = tag.value;
         }
       }
-
+      
       const name = tx.node.owner.address;
       const avatar = Utils.generateIcon(tx.node.owner.address);
-
+      
       let d = new Date();
       if(tx.node.block && tx.node.block.timestamp) {
         d = new Date(tx.node.block.timestamp * 1000);
       }
-
+      
       this.items.push({
         avatar,
         name,
@@ -250,10 +211,11 @@ export default class ActivityTable {
         date: d.toLocaleString(),
       });
     }
-    this.vars.cursor = res.data.transactions.edges[0].cursor;
-
-    return this.items;
+    this.vars.cursor=res.data.transactions.edges[res.data.transactions.edges.length-1].cursor
+    hasNextPage = res.data.transactions.pageInfo.hasNextPage;
   }
+  return this.items;
+}
 
   private async events() {
     $('.act-cards').on('change', '.act-filter', (e) => {
@@ -265,27 +227,8 @@ export default class ActivityTable {
       }
       this.show(true);
     });
-
-    $('.act-cards').on('click', '.page-link', (e) => {
-      e.preventDefault();
-
-      if ($(e.target).hasClass('disabled')) return;
-
-      if ($(e.target).hasClass('next-page')) {
-        this.currentPage++;
-        this.show();
-      } else if ($(e.target).hasClass('prev-page')) {
-        this.vars.cursor = '';
-        this.currentPage = 1;
-        this.hasNextPage = false;
-        this.show();
-      } else if ($(e.target).hasClass('page-number')) {
-        this.currentPage = +$(e.target).text();
-        this.show();
-      }
-    });
   }
   private async removeEvents() {
-    $('.act-cards').off('click').off('change');
+    $('.act-cards').off('change');
   }
 }
