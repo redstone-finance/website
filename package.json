@@ -74,7 +74,7 @@
     "apexcharts": "^3.24.0",
     "ar-gql": "^0.0.3",
     "arverify": "^0.0.5",
-    "arweave": "^1.10.6",
+    "arweave": "^1.10.11",
     "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "bootstrap": "twbs/bootstrap#4fc701f",
