@@ -5,6 +5,7 @@ import Utils from '../utils/utils';
 import moment from 'moment';
 import Opportunity from '../models/opportunity';
 import arweave from '../libs/arweave';
+import Pager from '../utils/pager';
 
 export default class PageOpportunity {
   private opportunities: Opportunities;
@@ -26,17 +27,20 @@ export default class PageOpportunity {
   }
 
   public async syncPageState() {
-    this.opps = await this.opportunities.getAllByCommunityIds([app.getCommunityId()]);
     $('.opps-link').attr('href', './opportunity.html');
-    await this.toHTML();
+    const pager = new Pager(await this.opportunities.getAllByCommunityIds([app.getCommunityId()]), $('.active').find('.card-footer'), 10);
+    pager.onUpdate(async (p) => {
+      await this.toHTML(p.items);
+    });
+    pager.setPage(1);
   }
 
-  private async toHTML() {
-    const opps = this.opps;
+  private async toHTML(opps) {
     console.log(opps);
 
     $('[data-total]').text(0);
     $('.bounty-type').find('[data-total="All"]').text(opps.length);
+    console.log(opps)
 
     const state = await app.getCommunity().getState();
     let logo = '';

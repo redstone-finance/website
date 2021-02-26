@@ -8,6 +8,7 @@ import TokensWorker from './workers/tokens';
 import Utils from './utils/utils';
 import ActivityTable from './utils/activityTable';
 import CommunitiesWorker from './workers/communitiesWorker'
+import Pager from './utils/pager';
 
 class MemberPage {
   private hash: string;
@@ -59,13 +60,41 @@ class MemberPage {
       .catch(console.log);
 
     this.activityTable.show();
-    this.loadCommunities();
+
+    const communities: { id: string, state: StateInterface }[] = await CommunitiesWorker.getAllCommunities();
+    const commIds: { id: string, state: StateInterface, user: {
+      address: string;
+      balance: number;
+      vaultBalance: number;
+    } }[] = [];
+    for(const community of communities) {
+      const state = community.state;
+      const users = (await TokensWorker.sortHoldersByBalance(state.balances, state.vault)).filter((u) => u.address === address);
+
+      if(users.length) {
+        commIds.push({id: community.id, state: community.state, user: users[0]});
+      }
+    }
+
+    $('#total-psc').text(commIds.length);
+    const pager = new Pager(commIds, $('.col-12').find('.card-footer'), 10);
+    pager.onUpdate((p) => {
+      this.loadCommunities(p.items);
+    });
+    pager.setPage(1);
   }
 
-  private async loadCommunities() {
+  private async loadCommunities(commIds: { 
+    id: string, 
+    state: StateInterface, 
+      user: {
+      address: string;
+      balance: number;
+      vaultBalance: number;
+    } 
+  }[]) {
     $('#balance').find('tbody').remove();
 
-    const commIds: { id: string, state: StateInterface }[] = await CommunitiesWorker.getAllCommunities();
     const address = this.hashes[0];
 
     $('.loaded').show();
@@ -73,7 +102,6 @@ class MemberPage {
     const list: { html: string; balance: number; vault: number }[] = [];
     let current = -1;
     let completed = 0;
-    $('.total').text(commIds.length);
 
     const go = async (i = 0) => {
       if (i >= commIds.length) {
@@ -84,15 +112,7 @@ class MemberPage {
       const state: StateInterface = community.state;
 
       const id = community.id;
-      const users = (await TokensWorker.sortHoldersByBalance(state.balances, state.vault)).filter(
-        (u) => u.address === address,
-      );
-      if (!users.length) {
-        $('.completed').text(++completed);
-        $('.progress-bar').width(`${Math.floor((completed / commIds.length) * 100)}%`);
-        return go(++current);
-      }
-      const user = users[0];
+      const user = community.user;
 
       let logo = state.settings['communityLogo'];
       if (logo && logo.length) {
@@ -154,8 +174,6 @@ class MemberPage {
       </tbody>`,
       )
       .show();
-
-    $('#total-psc').text(` (${list.length})`);
   }
 
   private async events() {
