@@ -1,4 +1,3 @@
-import 'quill/dist/quill.snow.css';
 import Quill from 'quill';
 import jobboard from './jobboard';
 import Utils from '../utils/utils';
