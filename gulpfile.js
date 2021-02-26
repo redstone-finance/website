@@ -9,6 +9,7 @@ const revRewrite = require('gulp-rev-rewrite');
 const del = require('del');
 const replace = require('gulp-replace');
 const postcss = require('gulp-postcss');
+const postimport = require('postcss-import');
 const purgeCSS = require('gulp-purgecss');
 const cleanCSS = require('gulp-clean-css');
 const autoprefixer = require('autoprefixer');
@@ -73,15 +74,15 @@ task('styles', function (done) {
   src(sources.styles)
     .pipe(sourcemaps.init())
     .pipe(sass().on('error', sass.logError))
-    .pipe(postcss([autoprefixer(), cssnano()]))
-    .pipe(purgeCSS({
-      content: ['src/**/*.{pug,ts}'],
-      defaultExtractor: content => {
-        const broadMatches = content.match(/[^<>"'`\s]*[^<>"'`\s:]/g) || []
-        const innerMatches = content.match(/[^<>"'`\s.()]*[^<>"'`\s.():]/g) || []
-        return broadMatches.concat(innerMatches)
-      }
-    }))
+    .pipe(postcss([postimport(), autoprefixer(), cssnano()]))
+    // .pipe(purgeCSS({
+    //   content: ['src/**/*.{pug,ts}'],
+    //   defaultExtractor: content => {
+    //     const broadMatches = content.match(/[^<>"'`\s]*[^<>"'`\s:]/g) || []
+    //     const innerMatches = content.match(/[^<>"'`\s.()]*[^<>"'`\s.():]/g) || []
+    //     return broadMatches.concat(innerMatches)
+    //   }
+    // }))
     .pipe(cleanCSS({compatibility: 'ie8'}))
     .pipe(sourcemaps.write('.'))
     .pipe(dest('dist'));
