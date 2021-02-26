@@ -7,6 +7,7 @@ import app from '../app';
 import Author from '../models/author';
 import BalancesWorker from '../workers/balances';
 import VaultWorker from '../workers/vault';
+import Pager from '../utils/pager';
 
 export default class PageVault {
   private chart: ApexCharts;
@@ -41,7 +42,13 @@ export default class PageVault {
     $('.min-lock-length').text(state.settings.get('lockMinLength'));
     $('.max-lock-length').text(state.settings.get('lockMaxLength'));
 
-    const p = this.createOrUpdateTable(state);
+    let pa=null;
+    const usersAndBalances = await VaultWorker.totalVaults(state.vault, app.getCurrentBlock());
+    const pager = new Pager(Object.keys(usersAndBalances), $('.card').find('.card-footer'), 10);
+    pager.onUpdate((p) => {
+      pa = this.createOrUpdateTable(state,p.items);
+    });
+    pager.setPage(1);
     const myVault = state.vault[await app.getAccount().getAddress()];
 
     if ((await app.getAccount().isLoggedIn()) && myVault && myVault.length) {
@@ -62,7 +69,7 @@ export default class PageVault {
       `;
       $('.table-my-vault').find('tbody').html(html).parents('.dimmer').removeClass('active');
 
-      await p;
+      await pa;
       $('.dimmer').removeClass('active');
     }
   }
@@ -96,21 +103,19 @@ export default class PageVault {
     $('.table-my-vault').find('tbody').html(html).parents('.dimmer').removeClass('active');
   }
 
-  private async createOrUpdateTable(state: StateInterface): Promise<void> {
+  private async createOrUpdateTable(state: StateInterface,user): Promise<void> {
     let html = '';
 
     const usersAndBalances = await VaultWorker.totalVaults(state.vault, app.getCurrentBlock());
-    console.log(usersAndBalances);
 
-    const users = Object.keys(usersAndBalances);
-    for (let i = 0, j = users.length; i < j; i++) {
-      const v = usersAndBalances[users[i]];
-
+    for (let i = 0, j = user.length; i < j; i++) {
+      let currentUser=user[i]
+      const v = usersAndBalances[user[i]];
       if (!v.weight) {
         continue;
       }
 
-      const acc = new Author(null, users[i], null);
+      const acc = new Author(null, user[i], null);
       const arId = await acc.getDetails();
       const avatar = arId.avatar;
 
@@ -120,8 +125,8 @@ export default class PageVault {
           <div class="d-flex lh-sm py-1 align-items-center">
             <span class="avatar mr-2" style="background-image: url(${avatar})"></span>
             <div class="flex-fill">
-              <div class="strong">${arId.name || users[i]}</div>
-              <a href="./member.html#${users[i]}" target="_blank" class="text-muted text-h5">${users[i]}</a>
+              <div class="strong">${arId.name || user[i]}</div>
+              <a href="./member.html#${user[i]}" target="_blank" class="text-muted text-h5">${user[i]}</a>
             </div>
           </div>
         </td>
