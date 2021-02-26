@@ -8,7 +8,6 @@ import Utils from './utils';
 import Pager from './pager';
 
 export default class ActivityTable {
-  private currentPage = 1;
   private isMembersPage = true;
   private isAll = true;
 
@@ -44,22 +43,17 @@ export default class ActivityTable {
 
     $('.act-cards').find('.dimmer').addClass('active');
 
-    if (
-      forceUpdate ||
-      (this.currentPage >= this.items.length && this.hasNextPage)
-    ) {
+    if (forceUpdate) {
       await this.request();
     }
 
     const pager = new Pager(this.items, $('.act-cards').find('.card-footer'), 10);
-    pager.onUpdate(async (p) => {
-      console.log(p);
-      this.currentPage = p.currentPage;
-      const res = await Promise.all([this.showHeader(), this.showContent(p.items)]);
+    pager.onUpdate(async (pager) => {
+      const res = await Promise.all([this.showHeader(), this.showContent(pager.items)]);
       $('.act-cards').find('.comm-activity').html(res.join(''));
       $('.act-cards').find('.dimmer.active').removeClass('active');
-  });
-  pager.setPage(1);
+    });
+    pager.setPage(1);
     this.events();
   }
 

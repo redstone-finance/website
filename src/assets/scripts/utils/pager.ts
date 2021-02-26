@@ -43,11 +43,17 @@ export default class Pager {
     let startPage = 1;
     let endPage = totalPages;
 
-    if(totalPages > 10) {
-      if(currentPage + 4 >= totalPages) {
+    if(totalPages <= 10) {
+      startPage = 1;
+      endPage = totalPages;
+    } else {
+      if (currentPage <= 6) {
+        startPage = 1;
+        endPage = 10;
+      } else if (currentPage + 4 >= totalPages) {
         startPage = totalPages - 9;
         endPage = totalPages;
-      } else if(currentPage > 6) {
+      } else {
         startPage = currentPage - 5;
         endPage = currentPage + 4;
       }
@@ -58,7 +64,10 @@ export default class Pager {
 
     const items = this.items.slice(startIndex, endIndex + 1);
 
-    const pages: number[] = Array.from({length: 10}, (_, i) => i + startPage);
+    const pages: number[] = [];
+    for(let i = startPage, j = endPage + 1; i < j; i++) {
+      pages.push(i);
+    }
 
     this.pager = {
       totalItems: this.items.length,
@@ -96,7 +105,7 @@ export default class Pager {
     html += `
       <li class="page-item ${this.pager.totalPages > this.pager.currentPage ? '' : 'disabled'}">
         <a class="next-page page-link" href="#">
-          Next 
+          Last 
           ${feather.icons['chevron-right'].toSvg()}
         </a>
       </li>
@@ -117,7 +126,7 @@ export default class Pager {
       if ($(e.target).hasClass('disabled')) return;
 
       if ($(e.target).hasClass('next-page')) {
-        this.pager.currentPage++;
+        this.pager.currentPage = this.pager.totalPages;
       } else if ($(e.target).hasClass('prev-page')) {
         this.pager.currentPage = 1;
       } else if ($(e.target).hasClass('page-number')) {
