@@ -20,6 +20,7 @@ export default class Account {
   private arBalance = -1;
   private isInitialized = false;
   private verified = null;
+  private isExternalWallet = false;
 
   constructor(community: Community) {
     this.community = community;
@@ -60,7 +61,10 @@ export default class Account {
   }
 
   async getWallet(): Promise<JWKInterface> {
+    if (await this.getIsExternalWallet()===false)
     return this.wallet;
+    else
+    return null
   }
   async getAddress(): Promise<string> {
     return this.address;
@@ -75,6 +79,9 @@ export default class Account {
       trim: true,
     });
     return this.arBalance;
+  }
+  async getIsExternalWallet():Promise<boolean>{
+    return this.isExternalWallet
   }
 
   async showLoginError(duration = 5000) {
@@ -186,6 +193,13 @@ export default class Account {
   }
 
   private events() {
+    addEventListener("arweaveWalletLoaded", async () => {
+      this.address= await arweave.wallets.getAddress();
+      
+    });
+    addEventListener("walletSwitch", (e) => {
+      this.address = e.detail.address;
+    });
     $('.file-upload-default').on('change', (e: any) => {
       this.login(e);
     });
