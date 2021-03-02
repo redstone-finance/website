@@ -5,7 +5,8 @@
     "module": "commonjs",
     "outDir": "./dist",
     "baseUrl": "./src",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "types": ["cypress", "cypress-file-upload"]
   },
   "include": [
     "src"
