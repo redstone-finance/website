@@ -89,7 +89,7 @@ export default class Applicant implements ApplicantInterface {
 
     let txs: GQLTransactionsResultInterface;
     try {
-      const res = await arweave.api.request().post('https://arweave.dev/graphql', query);
+      const res = await arweave.api.request().post('https://arweave.net/graphql', query);
       txs = res.data.data.transactions;
     } catch (err) {
       console.log(err);
@@ -221,7 +221,7 @@ export default class Applicant implements ApplicantInterface {
 
     let txs: GQLTransactionsResultInterface;
     try {
-      const res = await arweave.api.request().post('https://arweave.dev/graphql', query);
+      const res = await arweave.api.request().post('https://arweave.net/graphql', query);
       txs = res.data.data.transactions;
     } catch (err) {
       console.log(err);
