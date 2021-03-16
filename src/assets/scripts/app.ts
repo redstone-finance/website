@@ -136,7 +136,7 @@ class App {
       `,
     };
 
-    const res = await arweave.api.request().post('https://arweave.dev/graphql', query);
+    const res = await arweave.api.request().post('https://arweave.net/graphql', query);
     if (!res.data || !res.data.data) {
       return;
     }

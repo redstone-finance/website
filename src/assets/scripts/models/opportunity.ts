@@ -110,7 +110,7 @@ export default class Opportunity implements OpportunityInterface {
 
     let txs: GQLTransactionsResultInterface;
     try {
-      const res = await arweave.api.request().post('https://arweave.dev/graphql', query);
+      const res = await arweave.api.request().post('https://arweave.net/graphql', query);
       txs = res.data.data.transactions;
     } catch (err) {
       console.log(err);
@@ -251,7 +251,7 @@ export default class Opportunity implements OpportunityInterface {
 
       let res: any;
       try {
-        res = await arweave.api.request().post('https://arweave.dev/graphql', query);
+        res = await arweave.api.request().post('https://arweave.net/graphql', query);
       } catch (err) {
         console.log(err);
 
@@ -366,7 +366,7 @@ export default class Opportunity implements OpportunityInterface {
 
       let res: any;
       try {
-        res = await arweave.api.request().post('https://arweave.dev/graphql', query);
+        res = await arweave.api.request().post('https://arweave.net/graphql', query);
       } catch (err) {
         console.log(err);
 
