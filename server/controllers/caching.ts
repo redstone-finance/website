@@ -39,9 +39,20 @@ export default class CacheController {
   private async getCommunities(req: express.Request, res: express.Response) {
     const cached = await cache.get('getcommunities');
     if(cached) {
-      return res.json(JSON.parse(cached));
+      const cache: any[] = JSON.parse(cached);
+      const toSend: any[] = [];
+      console.log('cached');
+      for(const obj of cache) {
+        console.log(obj);
+        if(!obj.state.error) {
+          toSend.push(obj);
+        }
+      }
+
+      return res.json(toSend);
     }
 
+    console.log('not from cache');
     return res.json(await this.setCommunities());
   }
 
@@ -92,6 +103,8 @@ export default class CacheController {
   
     let ids: string[] = [];
     while (hasNextPage) {
+      console.log(cursor);
+
       const query = {
         query: `query {
           transactions(
@@ -141,6 +154,8 @@ export default class CacheController {
         cursor = data.data.transactions.edges[data.data.transactions.edges.length - 1].cursor;
       }
     }
+
+    console.log('load completed!');
   
     return ids;
   }
