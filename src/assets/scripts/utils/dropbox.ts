@@ -14,12 +14,7 @@ export default class Dropbox {
     this.$container = $container;
   }
 
-  async show(
-    text = 'Drag and drop a file or click to deploy.',
-    icon = 'upload-cloud',
-    isWallet = false,
-    accept = [],
-  ) {
+  async show(text = 'Drag and drop a file or click to deploy.', icon = 'upload-cloud', isWallet = false, accept = []) {
     const klass = isWallet ? 'file-upload-default' : '';
     this.$elem = $(`
     <div class="col-12 deployer text-center">

@@ -15,7 +15,7 @@ export default class VaultWorker {
 
     return { me, others };
   }
-  
+
   static meVsOthersWeight(v: VaultInterface, address: string) {
     const vaultUsers = Object.keys(v);
     let me = 0;

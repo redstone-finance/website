@@ -1,4 +1,3 @@
-
 import Community from 'community-js';
 import $ from './libs/jquery';
 import 'bootstrap/dist/js/bootstrap.bundle';
@@ -90,7 +89,7 @@ class App {
 
     await this.updateNetworkInfo();
     this.checkVersion();
-    
+
     await this.community.setCommunityTx(this.hashes[0]);
 
     $('.navbar-brand').attr('href', '/index.html');
@@ -258,7 +257,10 @@ class App {
 
     $(document).on('input', '.input-float', (e: any) => {
       const $target = $(e.target);
-      const newVal = +$target.val().toString().replace(/[^0-9.]/g, '');
+      const newVal = +$target
+        .val()
+        .toString()
+        .replace(/[^0-9.]/g, '');
       $target.val(newVal);
 
       // Needed?

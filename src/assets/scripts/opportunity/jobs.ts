@@ -34,7 +34,7 @@ export default class PageJobs {
 
   private async showAll() {
     this.opps = await jobboard.getOpportunities().getAll();
-    this.oppss=this.opps;
+    this.oppss = this.opps;
     $('.jobs-total-results').text(`${this.opps.length} results`);
     $('.bounty-type, .exp-level').find('[data-total="All"]').text(this.opps.length);
 
@@ -47,30 +47,29 @@ export default class PageJobs {
   }
 
   private async toHTML(opps) {
-
     $('[data-total]').text(0);
     $('.bounty-type').find('[data-total="All"]').text(this.opps.length);
 
     let html = '';
     for (let i = 0, j = this.opps.length; i < j; i++) {
       const opp = this.opps[i];
-    const $type = $('.bounty-type').find(`[data-total="${opp.type}"]`);
-    $type.text(+$type.text() + 1);
+      const $type = $('.bounty-type').find(`[data-total="${opp.type}"]`);
+      $type.text(+$type.text() + 1);
 
-    if (this.oppType !== 'All' && opp.type !== this.oppType) {
-      continue;
+      if (this.oppType !== 'All' && opp.type !== this.oppType) {
+        continue;
+      }
+      if (this.oppExp !== 'All' && opp.experience !== this.oppExp) {
+        continue;
+      }
     }
-    if (this.oppExp !== 'All' && opp.experience !== this.oppExp) {
-      continue;
+    for (let i = 0, j = this.oppss.length; i < j; i++) {
+      const opp = this.oppss[i];
+      const $exp = $('.exp-level').find(`[data-total="${opp.experience}"]`);
+      $exp.text(+$exp.text() + 1);
+      const $expTotal = $('.exp-level').find('[data-total="All"]');
+      $expTotal.text(+$expTotal.text() + 1);
     }
-  }
-  for (let i = 0, j = this.oppss.length; i < j; i++) {
-    const opp = this.oppss[i];
-    const $exp = $('.exp-level').find(`[data-total="${opp.experience}"]`);
-    $exp.text(+$exp.text() + 1);
-    const $expTotal = $('.exp-level').find('[data-total="All"]');
-    $expTotal.text(+$expTotal.text() + 1);
-  }
     for (let i = 0, j = opps.length; i < j; i++) {
       const opp = opps[i];
       html += `
@@ -139,19 +138,18 @@ export default class PageJobs {
 
       $('.jobs-list').parents('.dimmer').addClass('active');
       this.oppType = $target.attr('data-type');
-      console.log(this)
-      
-      if(this.oppType!=='All'){
-      this.oppss = this.opps.filter((op)=>op.type===this.oppType);
-      }else
-      this.oppss=this.opps
+      console.log(this);
+
+      if (this.oppType !== 'All') {
+        this.oppss = this.opps.filter((op) => op.type === this.oppType);
+      } else this.oppss = this.opps;
 
       const pager = new Pager(this.oppss, $('.dimmer-content').find('.card-footer'), 10);
       pager.onUpdate(async (p) => {
         await this.toHTML(p.items);
       });
       pager.setPage(1);
-      return 
+      return;
     });
     $('.exp-level').on('click', (e) => {
       e.preventDefault();
@@ -165,17 +163,16 @@ export default class PageJobs {
       $target.addClass('active');
 
       this.oppExp = $target.attr('data-level');
-      let ops: Opportunity[]
-      if(this.oppExp!=='All'){
-      ops = this.oppss.filter((op)=>op.experience===this.oppExp);
-      }else
-      ops=this.oppss
+      let ops: Opportunity[];
+      if (this.oppExp !== 'All') {
+        ops = this.oppss.filter((op) => op.experience === this.oppExp);
+      } else ops = this.oppss;
       const pager = new Pager(ops, $('.dimmer-content').find('.card-footer'), 10);
       pager.onUpdate(async (p) => {
         await this.toHTML(p.items);
       });
       pager.setPage(1);
-      return
+      return;
     });
 
     $('.btn-filters').on('click', (e) => {

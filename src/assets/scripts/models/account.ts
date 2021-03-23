@@ -56,7 +56,7 @@ export default class Account {
   }
   async getVerify() {
     // this.verified = await getVerification(this.address);
-    return this.verified
+    return this.verified;
   }
 
   async getWallet(): Promise<JWKInterface> {
@@ -67,8 +67,8 @@ export default class Account {
   }
 
   async getArBalance(): Promise<number> {
-    if(!this.loggedIn) return 0;
-    
+    if (!this.loggedIn) return 0;
+
     this.arBalance = +arweave.ar.winstonToAr(await arweave.wallets.getBalance(this.address), {
       formatted: false,
       decimals: 5,
@@ -113,9 +113,9 @@ export default class Account {
     $('.user-name').text(this.username);
     $('.user-avatar').css('background-image', `url(${this.avatar})`);
     $('.member-profile').attr('href', `./member.html#${this.address}`);
-    
+
     //this.loadVerify();
-    
+
     arweave.wallets.getBalance(this.address).then((bal) => {
       $('.member-ar').removeAttr('href').html(`
       ${feather.icons['dollar-sign'].toSvg({ class: 'icon' })} 
