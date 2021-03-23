@@ -5,22 +5,26 @@ import GQLResultInterface from '../interfaces/gqlResult';
 import Community from 'community-js';
 
 export default class CommunitiesWorker {
-  static async getAllCommunities(): Promise<{ id: string, state: StateInterface }[]> {
-
+  static async getAllCommunities(): Promise<{ id: string; state: StateInterface }[]> {
     let result;
     try {
-      const res = await axios.get('./caching/communities');
+      const res = await axios.get('./caching/communities', {
+        timeout: 10000,
+      });
       if (res && res.data) {
+        console.log(res.data);
         result = res.data;
       } else {
-        result = this.loadFromArweave();
+        result = await this.loadFromArweave();
       }
     } catch (e) {
       console.log(e);
-      result = this.loadFromArweave();
+      result = await this.loadFromArweave();
     }
 
-    result = result.filter(r => (!r.state.settings['communityHide'] || r.state.settings['communityHide'] !== 'hide'));
+    console.log(result);
+
+    result = result.filter((r) => !r.state.settings['communityHide'] || r.state.settings['communityHide'] !== 'hide');
     return result;
   }
   static async loadFromArweave() {
@@ -69,17 +73,27 @@ export default class CommunitiesWorker {
       const res = await arweave.api.post('/graphql', query);
       const data: GQLResultInterface = res.data;
 
-      for (let i = 0, j = data.data.transactions.edges.length; i < j; i++) {
-        ids.push(data.data.transactions.edges[i].node.id);
+      const edges = data.data.transactions.edges;
+
+      for (let i = 0, j = edges.length; i < j; i++) {
+        let isAtomic = false;
+        const node = edges[i].node;
+        for (const tag of node.tags) {
+          if (tag.name === 'Init-State') {
+            isAtomic = true;
+            break;
+          }
+        }
+        if (!isAtomic) ids.push(node.id);
       }
       hasNextPage = data.data.transactions.pageInfo.hasNextPage;
 
       if (hasNextPage) {
-        cursor = data.data.transactions.edges[data.data.transactions.edges.length - 1].cursor;
+        cursor = edges[edges.length - 1].cursor;
       }
     }
 
-    const states: { id: string, state: StateInterface }[] = [];
+    const states: { id: string; state: StateInterface }[] = [];
     let current = -1;
     const go = async (i = 0) => {
       if (i >= ids.length) {
@@ -95,12 +109,14 @@ export default class CommunitiesWorker {
         state = await community.getState(true);
 
         // @ts-ignore
-        state.settings = Array.from(state.settings).reduce((obj, [key, value]) => (
-          Object.assign(obj, { [key]: value }) // Be careful! Maps can have non-String keys; object literals can't.
-        ), {});
+        state.settings = Array.from(state.settings).reduce(
+          (obj, [key, value]) =>
+            Object.assign(obj, { [key]: value }), // Be careful! Maps can have non-String keys; object literals can't.
+          {},
+        );
 
         states.push({ id, state });
-      } catch (e) { }
+      } catch (e) {}
       return go(++current);
     };
 
@@ -113,5 +129,4 @@ export default class CommunitiesWorker {
 
     return JSON.parse(JSON.stringify(states));
   }
-
 }
