@@ -144,14 +144,23 @@ export default class CacheController {
       };
       const res = await this.arweave.api.post('/graphql', query);
       const data: GQLResultInterface = res.data;
+      const edges = data.data.transactions.edges;
   
-      for (let i = 0, j = data.data.transactions.edges.length; i < j; i++) {
-        ids.push(data.data.transactions.edges[i].node.id);
+      for (let i = 0, j = edges.length; i < j; i++) {
+        let isAtomic = false;
+        const node = edges[i].node;
+        for(const tag of node.tags) {
+          if(tag.name === 'Init-State') {
+            isAtomic = true;
+            break;
+          }
+        }
+        if(!isAtomic) ids.push(node.id);
       }
       hasNextPage = data.data.transactions.pageInfo.hasNextPage;
   
       if (hasNextPage) {
-        cursor = data.data.transactions.edges[data.data.transactions.edges.length - 1].cursor;
+        cursor = edges[edges.length - 1].cursor;
       }
     }
 
