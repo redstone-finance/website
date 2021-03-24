@@ -273,7 +273,7 @@ export default class Opportunity implements OpportunityInterface {
 
     let current = -1;
     const go = async (index = 0) => {
-      if(index >= edges.length) {
+      if (index >= edges.length) {
         return true;
       }
       const res = await OpportunitiesWorker.nodeToOpportunity(edges[index].node);
@@ -287,10 +287,10 @@ export default class Opportunity implements OpportunityInterface {
       opps.push(opp);
 
       return go(++current);
-    }
+    };
 
     const gos = [];
-    for(let i = 0, j = (edges.length > 5? 5 : edges.length); i < j; i++) {
+    for (let i = 0, j = edges.length > 5 ? 5 : edges.length; i < j; i++) {
       gos.push(go(++current));
     }
     await Promise.all(gos);

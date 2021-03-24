@@ -5,8 +5,7 @@ import GQLResultInterface from '../interfaces/gqlResult';
 import Community from 'community-js';
 
 export default class CommunitiesWorker {
-  static async getAllCommunities(): Promise<{ id: string, state: StateInterface }[]> {
-
+  static async getAllCommunities(): Promise<{ id: string; state: StateInterface }[]> {
     let result;
     try {
       const res = await axios.get('./caching/communities');
@@ -20,7 +19,7 @@ export default class CommunitiesWorker {
       result = this.loadFromArweave();
     }
 
-    result = result.filter(r => (!r.state.settings['communityHide'] || r.state.settings['communityHide'] !== 'hide'));
+    result = result.filter((r) => !r.state.settings['communityHide'] || r.state.settings['communityHide'] !== 'hide');
     return result;
   }
   static async loadFromArweave() {
@@ -79,7 +78,7 @@ export default class CommunitiesWorker {
       }
     }
 
-    const states: { id: string, state: StateInterface }[] = [];
+    const states: { id: string; state: StateInterface }[] = [];
     let current = -1;
     const go = async (i = 0) => {
       if (i >= ids.length) {
@@ -95,12 +94,14 @@ export default class CommunitiesWorker {
         state = await community.getState(true);
 
         // @ts-ignore
-        state.settings = Array.from(state.settings).reduce((obj, [key, value]) => (
-          Object.assign(obj, { [key]: value }) // Be careful! Maps can have non-String keys; object literals can't.
-        ), {});
+        state.settings = Array.from(state.settings).reduce(
+          (obj, [key, value]) =>
+            Object.assign(obj, { [key]: value }), // Be careful! Maps can have non-String keys; object literals can't.
+          {},
+        );
 
         states.push({ id, state });
-      } catch (e) { }
+      } catch (e) {}
       return go(++current);
     };
 
@@ -113,5 +114,4 @@ export default class CommunitiesWorker {
 
     return JSON.parse(JSON.stringify(states));
   }
-
 }

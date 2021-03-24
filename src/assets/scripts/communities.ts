@@ -9,7 +9,6 @@ import Opportunities from './models/opportunities';
 import Utils from './utils/utils';
 import CommunitiesWorker from './workers/communitiesWorker';
 
-
 const getAllOpportunities = async (commIds: string[]): Promise<{ [key: string]: number }> => {
   const res: { [key: string]: number } = {};
 
@@ -27,8 +26,8 @@ const getAllOpportunities = async (commIds: string[]): Promise<{ [key: string]: 
 };
 
 const loadCards = async () => {
-  const communities: { id: string, state: StateInterface }[] = await CommunitiesWorker.getAllCommunities();
-  const opps: { [key: string]: number } = await getAllOpportunities(communities.map(i => i.id));
+  const communities: { id: string; state: StateInterface }[] = await CommunitiesWorker.getAllCommunities();
+  const opps: { [key: string]: number } = await getAllOpportunities(communities.map((i) => i.id));
 
   $('.total').text(communities.length);
   $('.loaded').show();
@@ -49,7 +48,7 @@ const loadCards = async () => {
 
     const users = await TokensWorker.sortHoldersByBalance(state.balances, state.vault);
     const oppsTotal = opps[id] ? opps[id] : 0;
-    if((users.length === 1 && !oppsTotal)) {
+    if (users.length === 1 && !oppsTotal) {
       return go(++current);
     }
 
@@ -60,7 +59,6 @@ const loadCards = async () => {
       const aDetails: AuthorInterface = await author.getDetails();
       avatarList += `<span class="avatar" data-toggle="tooltip" data-placement="top" title="${aDetails.address}" data-original-title="${aDetails.address}" style="background-image: url(${aDetails.avatar})"></span>`;
     }
-
 
     let logo = state.settings['communityLogo'];
     if (logo && logo.length) {

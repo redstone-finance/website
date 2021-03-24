@@ -28,11 +28,7 @@ export default class ActivityTable {
     cursor: string;
   } = { commId: [''], owners: [''], cursor: '' };
 
-  constructor(
-    gqlVariables: { commId: string[]; owners: string[]; cursor: string },
-    isMembersPage = true,
-    limit = 10,
-  ) {
+  constructor(gqlVariables: { commId: string[]; owners: string[]; cursor: string }, isMembersPage = true, limit = 10) {
     this.isMembersPage = isMembersPage;
     this.vars = gqlVariables;
     this.vars.cursor = '';
@@ -77,7 +73,7 @@ export default class ActivityTable {
     }
 
     const items = itemss;
-    
+
     for (let i = 0, j = items.length; i < j; i++) {
       const item = items[i];
 
@@ -133,10 +129,10 @@ export default class ActivityTable {
     this.items = [];
 
     while (hasNextPage) {
-    const query = `
+      const query = `
       query(${this.vars.commId.length ? '$commId: [String!]!, ' : ''}${
-      this.vars.owners.length ? '$owners: [String!]!, ' : ''
-    } $cursor: String!) {
+        this.vars.owners.length ? '$owners: [String!]!, ' : ''
+      } $cursor: String!) {
         transactions(
           tags: [
             ${
@@ -171,45 +167,48 @@ export default class ActivityTable {
       }
     `;
 
-    const res = await run(query, this.vars);
-    const edges = res.data.transactions.edges;
-    if (!edges.length) {
-      return;
-    }
+      const res = await run(query, this.vars);
+      const edges = res.data.transactions.edges;
+      if (!edges.length) {
+        return;
+      }
 
-    for (const tx of res.data.transactions.edges) {
-      let comm: string;
-      let message: string;
-      for (const tag of tx.node.tags) {
-        if (tag.name === 'Community-ID') {
-          comm = tag.value;
-        } else if (tag.name === 'Message') {
-          message = tag.value;
+      for (const tx of res.data.transactions.edges) {
+        let comm: string;
+        let message: string;
+        for (const tag of tx.node.tags) {
+          if (tag.name === 'Community-ID') {
+            comm = tag.value;
+          } else if (tag.name === 'Message') {
+            message = tag.value;
+          }
         }
+
+        const name = tx.node.owner.address;
+        const avatar = Utils.generateIcon(tx.node.owner.address);
+
+        let d = new Date();
+        if (tx.node.block && tx.node.block.timestamp) {
+          d = new Date(tx.node.block.timestamp * 1000);
+        }
+
+        this.items.push({
+          avatar,
+          name,
+          community: comm,
+          address: this.isMembersPage ? comm : tx.node.owner.address,
+          message: message.replace(
+            /[a-z0-9_-]{43}/gi,
+            `<a href="./member.html#$&" target="_blank"><code>$&</code></a>`,
+          ),
+          date: d.toLocaleString(),
+        });
       }
-      
-      const name = tx.node.owner.address;
-      const avatar = Utils.generateIcon(tx.node.owner.address);
-      
-      let d = new Date();
-      if(tx.node.block && tx.node.block.timestamp) {
-        d = new Date(tx.node.block.timestamp * 1000);
-      }
-      
-      this.items.push({
-        avatar,
-        name,
-        community: comm,
-        address: this.isMembersPage ? comm : tx.node.owner.address,
-        message: message.replace(/[a-z0-9_-]{43}/gi, `<a href="./member.html#$&" target="_blank"><code>$&</code></a>`),
-        date: d.toLocaleString(),
-      });
+      this.vars.cursor = res.data.transactions.edges[res.data.transactions.edges.length - 1].cursor;
+      hasNextPage = res.data.transactions.pageInfo.hasNextPage;
     }
-    this.vars.cursor=res.data.transactions.edges[res.data.transactions.edges.length-1].cursor
-    hasNextPage = res.data.transactions.pageInfo.hasNextPage;
+    return this.items;
   }
-  return this.items;
-}
 
   private async events() {
     $('.act-cards').on('change', '.act-filter', (e) => {

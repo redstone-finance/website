@@ -49,7 +49,7 @@ export default class PageTokens {
     $('.minted').parents('.dimmer').removeClass('active');
 
     const holdersByBalance = await TokensWorker.sortHoldersByBalance(this.state.balances, this.state.vault);
-    const holders = holdersByBalance.filter(holder => /[a-z0-9_-]{43}/i.test(holder.address));
+    const holders = holdersByBalance.filter((holder) => /[a-z0-9_-]{43}/i.test(holder.address));
 
     this.createOrUpdateCharts(holders);
     const pager = new Pager(holders, $('.tokens-list').find('.card-footer'), 10);
@@ -71,11 +71,13 @@ export default class PageTokens {
     $('.tx-fee').text(` ${transferFee} `);
   }
 
-  private async createOrUpdateTable(holders: {
-    address: string;
-    balance: number;
-    vaultBalance: number;
-  }[]): Promise<void> {
+  private async createOrUpdateTable(
+    holders: {
+      address: string;
+      balance: number;
+      vaultBalance: number;
+    }[],
+  ): Promise<void> {
     let html = '';
 
     $('#total-holders').text(`(${holders.length})`);

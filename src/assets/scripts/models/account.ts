@@ -57,22 +57,20 @@ export default class Account {
   }
   async getVerify() {
     // this.verified = await getVerification(this.address);
-    return this.verified
+    return this.verified;
   }
 
   async getWallet(): Promise<JWKInterface> {
-    if (await this.getIsExternalWallet()===false)
-    return this.wallet;
-    else
-    return null
+    if ((await this.getIsExternalWallet()) === false) return this.wallet;
+    else return null;
   }
   async getAddress(): Promise<string> {
     return this.address;
   }
 
   async getArBalance(): Promise<number> {
-    if(!this.loggedIn) return 0;
-    
+    if (!this.loggedIn) return 0;
+
     this.arBalance = +arweave.ar.winstonToAr(await arweave.wallets.getBalance(this.address), {
       formatted: false,
       decimals: 5,
@@ -80,8 +78,8 @@ export default class Account {
     });
     return this.arBalance;
   }
-  async getIsExternalWallet():Promise<boolean>{
-    return this.isExternalWallet
+  async getIsExternalWallet(): Promise<boolean> {
+    return this.isExternalWallet;
   }
 
   async showLoginError(duration = 5000) {
@@ -120,9 +118,9 @@ export default class Account {
     $('.user-name').text(this.username);
     $('.user-avatar').css('background-image', `url(${this.avatar})`);
     $('.member-profile').attr('href', `./member.html#${this.address}`);
-    
+
     //this.loadVerify();
-    
+
     arweave.wallets.getBalance(this.address).then((bal) => {
       $('.member-ar').removeAttr('href').html(`
       ${feather.icons['dollar-sign'].toSvg({ class: 'icon' })} 
@@ -193,11 +191,10 @@ export default class Account {
   }
 
   private events() {
-    addEventListener("arweaveWalletLoaded", async () => {
-      this.address= await arweave.wallets.getAddress();
-      
+    addEventListener('arweaveWalletLoaded', async () => {
+      this.address = await arweave.wallets.getAddress();
     });
-    addEventListener("walletSwitch", (e) => {
+    addEventListener('walletSwitch', (e) => {
       this.address = e.detail.address;
     });
     $('.file-upload-default').on('change', (e: any) => {

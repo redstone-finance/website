@@ -1,6 +1,6 @@
-import { BalancesInterface, VaultInterface } from "community-js/lib/faces";
+import { BalancesInterface, VaultInterface } from 'community-js/lib/faces';
 export default class BalancesWorker {
-  static async usersAndBalance(bal: BalancesInterface): Promise<{users: string[], balance: number}> {
+  static async usersAndBalance(bal: BalancesInterface): Promise<{ users: string[]; balance: number }> {
     const users = Object.keys(bal);
     const balance = users.map((u) => bal[u]).reduce((a, b) => a + b, 0);
 

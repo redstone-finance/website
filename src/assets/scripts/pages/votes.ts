@@ -474,7 +474,7 @@ export default class PageVotes {
           .get();
       } else if ($('#vote-set-value2').css('display') !== 'none') {
         setValue = $('#vote-set-value2').val().toString().trim();
-      } else if($('#vote-set-value3').css('display') !== 'none') {
+      } else if ($('#vote-set-value3').css('display') !== 'none') {
         setValue = $('#vote-set-value3').val().toString().trim();
       } else {
         setValue = $('#vote-set-value').val().toString().trim();

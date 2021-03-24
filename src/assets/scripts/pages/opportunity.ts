@@ -28,7 +28,11 @@ export default class PageOpportunity {
 
   public async syncPageState() {
     $('.opps-link').attr('href', './opportunity.html');
-    const pager = new Pager(await this.opportunities.getAllByCommunityIds([app.getCommunityId()]), $('.active').find('.card-footer'), 10);
+    const pager = new Pager(
+      await this.opportunities.getAllByCommunityIds([app.getCommunityId()]),
+      $('.active').find('.card-footer'),
+      10,
+    );
     pager.onUpdate(async (p) => {
       await this.toHTML(p.items);
     });
@@ -40,7 +44,7 @@ export default class PageOpportunity {
 
     $('[data-total]').text(0);
     $('.bounty-type').find('[data-total="All"]').text(opps.length);
-    console.log(opps)
+    console.log(opps);
 
     const state = await app.getCommunity().getState();
     let logo = '';

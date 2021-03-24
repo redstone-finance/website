@@ -42,11 +42,11 @@ export default class PageVault {
     $('.min-lock-length').text(state.settings.get('lockMinLength'));
     $('.max-lock-length').text(state.settings.get('lockMaxLength'));
 
-    let pa=null;
+    let pa = null;
     const usersAndBalances = await VaultWorker.totalVaults(state.vault, app.getCurrentBlock());
     const pager = new Pager(Object.keys(usersAndBalances), $('.card').find('.card-footer'), 10);
     pager.onUpdate((p) => {
-      pa = this.createOrUpdateTable(state,p.items);
+      pa = this.createOrUpdateTable(state, p.items);
     });
     pager.setPage(1);
     const myVault = state.vault[await app.getAccount().getAddress()];
@@ -103,13 +103,13 @@ export default class PageVault {
     $('.table-my-vault').find('tbody').html(html).parents('.dimmer').removeClass('active');
   }
 
-  private async createOrUpdateTable(state: StateInterface,user): Promise<void> {
+  private async createOrUpdateTable(state: StateInterface, user): Promise<void> {
     let html = '';
 
     const usersAndBalances = await VaultWorker.totalVaults(state.vault, app.getCurrentBlock());
 
     for (let i = 0, j = user.length; i < j; i++) {
-      let currentUser=user[i]
+      let currentUser = user[i];
       const v = usersAndBalances[user[i]];
       if (!v.weight) {
         continue;

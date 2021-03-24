@@ -1,5 +1,3 @@
-
-
 import $ from './libs/jquery';
 import './global';
 import arweave from './libs/arweave';
@@ -7,7 +5,7 @@ import { StateInterface } from 'community-js/lib/faces';
 import TokensWorker from './workers/tokens';
 import Utils from './utils/utils';
 import ActivityTable from './utils/activityTable';
-import CommunitiesWorker from './workers/communitiesWorker'
+import CommunitiesWorker from './workers/communitiesWorker';
 import Pager from './utils/pager';
 
 class MemberPage {
@@ -61,18 +59,24 @@ class MemberPage {
 
     this.activityTable.show();
 
-    const communities: { id: string, state: StateInterface }[] = await CommunitiesWorker.getAllCommunities();
-    const commIds: { id: string, state: StateInterface, user: {
-      address: string;
-      balance: number;
-      vaultBalance: number;
-    } }[] = [];
-    for(const community of communities) {
+    const communities: { id: string; state: StateInterface }[] = await CommunitiesWorker.getAllCommunities();
+    const commIds: {
+      id: string;
+      state: StateInterface;
+      user: {
+        address: string;
+        balance: number;
+        vaultBalance: number;
+      };
+    }[] = [];
+    for (const community of communities) {
       const state = community.state;
-      const users = (await TokensWorker.sortHoldersByBalance(state.balances, state.vault)).filter((u) => u.address === address);
+      const users = (await TokensWorker.sortHoldersByBalance(state.balances, state.vault)).filter(
+        (u) => u.address === address,
+      );
 
-      if(users.length) {
-        commIds.push({id: community.id, state: community.state, user: users[0]});
+      if (users.length) {
+        commIds.push({ id: community.id, state: community.state, user: users[0] });
       }
     }
 
@@ -84,15 +88,17 @@ class MemberPage {
     pager.setPage(1);
   }
 
-  private async loadCommunities(commIds: { 
-    id: string, 
-    state: StateInterface, 
+  private async loadCommunities(
+    commIds: {
+      id: string;
+      state: StateInterface;
       user: {
-      address: string;
-      balance: number;
-      vaultBalance: number;
-    } 
-  }[]) {
+        address: string;
+        balance: number;
+        vaultBalance: number;
+      };
+    }[],
+  ) {
     $('#balance').find('tbody').remove();
 
     const address = this.hashes[0];
@@ -130,7 +136,9 @@ class MemberPage {
                 <span class="avatar mr-2" style="background-image: url(${logo})"></span>
                 <div class="flex-fill">
                   <div class="strong">${state.name} (${state.ticker})</div>
-                  <a class="text-muted text-h5" href="./index.html#${community.id}" data-community="${community.id}" target="_blank">${community.id}</a>
+                  <a class="text-muted text-h5" href="./index.html#${community.id}" data-community="${
+          community.id
+        }" target="_blank">${community.id}</a>
                 </div>
               </div>
             </td>

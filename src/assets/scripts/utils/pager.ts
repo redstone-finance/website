@@ -1,4 +1,4 @@
-import feather from "feather-icons";
+import feather from 'feather-icons';
 
 export interface PagerResultInterface {
   totalItems: number;
@@ -35,7 +35,7 @@ export default class Pager {
   async setPage(page: number = 1): Promise<PagerResultInterface> {
     const totalPages = Math.ceil(this.items.length / this.limit);
 
-    if(page < 1 || page > totalPages) {
+    if (page < 1 || page > totalPages) {
       return;
     }
 
@@ -43,7 +43,7 @@ export default class Pager {
     let startPage = 1;
     let endPage = totalPages;
 
-    if(totalPages <= 10) {
+    if (totalPages <= 10) {
       startPage = 1;
       endPage = totalPages;
     } else {
@@ -65,7 +65,7 @@ export default class Pager {
     const items = this.items.slice(startIndex, endIndex + 1);
 
     const pages: number[] = [];
-    for(let i = startPage, j = endPage + 1; i < j; i++) {
+    for (let i = startPage, j = endPage + 1; i < j; i++) {
       pages.push(i);
     }
 
@@ -79,7 +79,7 @@ export default class Pager {
       startIndex,
       endIndex,
       pages,
-      items
+      items,
     };
 
     this.updateHtml();
