@@ -18,7 +18,7 @@ jobs:
       - name: Deploy the application
         uses: thadeu/easily-dokku-action@v1.0.8
         env:
-          BRANCH: master # optional
+          BRANCH: staging # optional
           PROJECT: community-staging
           PORT: 22 # optional
           FLAGS: --force # optional
