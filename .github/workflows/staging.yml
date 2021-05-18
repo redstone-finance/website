@@ -1,0 +1,27 @@
+name: deploy
+
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-18.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 0
+
+      - name: Deploy the application
+        uses: thadeu/easily-dokku-action@v1.0.8
+        env:
+          BRANCH: master # optional
+          PROJECT: community-staging
+          PORT: 22 # optional
+          FLAGS: --force # optional
+          SSH_PRIVATE_KEY: ${{ secrets.DOKKU_PRIVATE_KEY }}
+          SSH_PUBLIC_KEY: ${{ secrets.DOKKU_PUBLIC_KEY }}
+          SSH_HOST: ${{ secrets.DOKKU_HOST }}

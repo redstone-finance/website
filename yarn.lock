@@ -2006,6 +2006,13 @@ archy@^1.0.0:
   resolved "https://registry.yarnpkg.com/archy/-/archy-1.0.0.tgz#f9c8c13757cc1dd7bc379ac77b2c62a5c2868c40"
   integrity sha1-+cjBN1fMHde8N5rHeyxipcKGjEA=
 
+ardb@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/ardb/-/ardb-1.0.5.tgz#c0361de4fc88e629260e910bfdbf72a2bc814fe3"
+  integrity sha512-SJDk0ivvPyedvRSZaVFScNzDewaIqEfK8A8CTGcMXXLNzm8vbgT9qytpWyZklCkfgChKpuWj2e98HCNhyM580Q==
+  dependencies:
+    arweave "^1.10.11"
+
 are-we-there-yet@~1.1.2:
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/are-we-there-yet/-/are-we-there-yet-1.1.5.tgz#4b35c2944f062a8bfcda66410760350fe9ddfc21"

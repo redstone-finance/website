@@ -1,3 +1,4 @@
+import ArDB from 'ardb';
 import OpportunityInterface, {
   OpportunityCommunityInterface,
   OpportunityType,
@@ -17,6 +18,7 @@ import Author from './author';
 import communityDB from '../libs/db';
 import arweave from '../libs/arweave';
 import JobBoard from '../opportunity/jobboard';
+import { GQLEdgeTransactionInterface, GQLTransactionInterface } from 'ardb/lib/faces/gql';
 
 export default class Opportunity implements OpportunityInterface {
   id?: string;
@@ -36,6 +38,8 @@ export default class Opportunity implements OpportunityInterface {
   updateTx: Transaction;
   timestamp: number;
   applicants: Applicant[];
+
+  private readonly ardb = new ArDB(arweave);
 
   constructor(params: OpportunityInterface) {
     if (Object.keys(params).length) {
@@ -63,55 +67,19 @@ export default class Opportunity implements OpportunityInterface {
       return this.doUpdate(params, caller);
     }
 
-    const query = {
-      query: `
-      query{
-        transactions(
-          first: 1
-          owners: "${this.author.address}"
-          tags:[
-          {
-            name: "App-Name",
-            values: "CommunityXYZ"
-          },
-          {
-            name: "Action",
-            values: "updateOpportunity"
-          },
-          {
-            name: "Opportunity-ID",
-            values: "${this.id}"
-          }]
-        ){
-          pageInfo {
-            hasNextPage
-          }
-          edges {
-            cursor
-            node {
-              id
-              owner {
-                address
-              },
-              tags {
-                name,
-                value
-              }
-              block {
-                timestamp
-                height
-              }
-            }
-          }
-        }
-      }
-      `,
-    };
-
-    let txs: GQLTransactionsResultInterface;
+    let tx: GQLEdgeTransactionInterface;
     try {
-      const res = await arweave.api.request().post('https://arweave.net/graphql', query);
-      txs = res.data.data.transactions;
+      const res = await this.ardb.search('transactions').from(this.author.address).appName('CommunityXYZ').tags([
+        {
+          name: 'Action',
+          values: ['updateOpportunity']
+        },
+        {
+          name: 'Opportunity-ID',
+          values: [this.id]
+        }
+      ]).only(['id', 'owner.address', 'tags', 'block.timestamp', 'block.height']).findOne();
+      tx = res[0];
     } catch (err) {
       console.log(err);
       const toast = new Toast();
@@ -119,14 +87,14 @@ export default class Opportunity implements OpportunityInterface {
       return;
     }
 
-    if (!txs.edges.length) {
+    if (!tx) {
       return;
     }
 
-    for (let i = 0; i < txs.edges[0].node.tags.length; i++) {
-      if (txs.edges[0].node.tags[i].name === 'status') {
+    for (let i = 0; i < tx.node.tags.length; i++) {
+      if (tx.node.tags[i].name === 'status') {
         // @ts-ignore
-        this.status = txs.edges[0].node.tags[i].value;
+        this.status = tx.node.tags[i].value;
         break;
       }
     }
@@ -199,75 +167,16 @@ export default class Opportunity implements OpportunityInterface {
   }
 
   static async getAll(oppIds?: string[]): Promise<Opportunity[]> {
-    let hasNextPage = true;
-    let edges: GQLEdgeInterface[] = [];
-    let cursor = '';
+    let oppTags = {name: '', values: ['']};
+    if(oppIds && oppIds.length) 
+      oppTags = {name: "communityId", values: oppIds};
 
-    const oppTagStr = oppIds && oppIds.length ? `, {name: "communityId", values: ${JSON.stringify(oppIds)}}` : '';
+    const ardb = new ArDB(arweave);
 
-    while (hasNextPage) {
-      const query = {
-        query: `
-        query{
-          transactions(
-            first: 100
-            tags:[
-              {
-                name: "App-Name",
-                values: "CommunityXYZ"
-              },
-              {
-                name: "Action",
-                values: "addOpportunity"
-              }
-              ${oppTagStr}
-            ]
-            after: "${cursor}"
-          ){
-            pageInfo {
-              hasNextPage
-            }
-            edges {
-              cursor
-              node {
-                id
-                owner {
-                  address
-                },
-                tags {
-                  name,
-                  value
-                }
-                block {
-                  timestamp
-                  height
-                }
-              }
-            }
-          }
-        }
-        `,
-      };
-
-      let res: any;
-      try {
-        res = await arweave.api.request().post('https://arweave.net/graphql', query);
-      } catch (err) {
-        console.log(err);
-
-        const toast = new Toast();
-        toast.show('Error', 'Error connecting to the network.', 'error', 5000);
-        return;
-      }
-
-      const transactions: GQLTransactionsResultInterface = res.data.data.transactions;
-      if (transactions.edges && transactions.edges.length) {
-        edges = edges.concat(transactions.edges);
-        cursor = transactions.edges[transactions.edges.length - 1].cursor;
-      }
-
-      hasNextPage = transactions.pageInfo.hasNextPage;
-    }
+    const edges = await ardb.search('transactions').appName('CommunityXYZ').tags([
+      {name: 'Action', values: ['addOpportunity']},
+      oppTags
+    ]).only(['id', 'owner.address', 'tags', 'block.timestamp', 'block.height']).findAll() as GQLEdgeTransactionInterface[];
 
     let opps: Opportunity[] = [];
 
@@ -314,75 +223,24 @@ export default class Opportunity implements OpportunityInterface {
 
   static async updateAll(opps: Opportunity[]) {
     let hasNextPage = true;
-    let edges: GQLEdgeInterface[] = [];
     let cursor = '';
 
-    const ids = JSON.stringify(opps.map((opp) => opp.id));
-    while (hasNextPage) {
-      const query = {
-        query: `
-        query{
-          transactions(
-            first: 100
-            tags:[
-              {
-                name: "App-Name",
-                values: "CommunityXYZ"
-              },
-              {
-                name: "Action",
-                values: "updateOpportunity"
-              },
-              {
-                name: "Opportunity-ID",
-                values: ${ids}
-              }]
-            after: "${cursor}"
-          ){
-            pageInfo {
-              hasNextPage
-            }
-            edges {
-              cursor
-              node {
-                id
-                owner {
-                  address
-                },
-                tags {
-                  name,
-                  value
-                }
-                block {
-                  timestamp
-                  height
-                }
-              }
-            }
-          }
-        }
-        `,
-      };
-
-      let res: any;
-      try {
-        res = await arweave.api.request().post('https://arweave.net/graphql', query);
-      } catch (err) {
-        console.log(err);
-
-        const toast = new Toast();
-        toast.show('Error', 'Error connecting to the network.', 'error', 5000);
-        return;
-      }
-
-      const transactions: GQLTransactionsResultInterface = res.data.data.transactions;
-      if (transactions.edges && transactions.edges.length) {
-        edges = edges.concat(transactions.edges);
-        cursor = transactions.edges[transactions.edges.length - 1].cursor;
-      }
-
-      hasNextPage = transactions.pageInfo.hasNextPage;
-    }
+    const ids = opps.map((opp) => opp.id);
+    const ardb = new ArDB(arweave);
+    const edges = await ardb.search('transactions').tags([
+      {name: 'App-Name', values: ['CommunityXYZ']},
+      {name: 'Action', values: ['updateOpportunity']},
+      {name: 'Opportunity-ID', values: ids}
+    ]).only([
+      'id', 
+      'owner.address', 
+      'tags', 
+      'tags.name', 
+      'tags.value', 
+      'block.timestamp', 
+      'block.height'
+    ])
+    .findAll() as GQLEdgeTransactionInterface[];
 
     const updates: Map<string, GQLNodeInterface> = new Map();
     for (let i = 0, j = edges.length; i < j; i++) {

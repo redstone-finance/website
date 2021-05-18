@@ -76,6 +76,7 @@
     "@verto/lib": "^0.9.1",
     "apexcharts": "^3.24.0",
     "ar-gql": "^0.0.3",
+    "ardb": "^1.0.5",
     "arverify": "^0.0.5",
     "arweave": "^1.10.11",
     "axios": "^0.21.1",
