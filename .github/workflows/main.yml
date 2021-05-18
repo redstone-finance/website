@@ -3,11 +3,11 @@ name: deploy
 on:
   push:
     branches:
-      - master
+      - staging
 
 jobs:
   deploy:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
@@ -19,7 +19,7 @@ jobs:
         uses: thadeu/easily-dokku-action@v1.0.8
         env:
           BRANCH: master # optional
-          PROJECT: community
+          PROJECT: community-staging
           PORT: 22 # optional
           FLAGS: --force # optional
           SSH_PRIVATE_KEY: ${{ secrets.DOKKU_PRIVATE_KEY }}
