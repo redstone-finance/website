@@ -7,7 +7,7 @@ import arweave from '../libs/arweave';
 import JobBoard from '../opportunity/jobboard';
 import Opportunity from './opportunity';
 import ArDB from 'ardb';
-import { GQLTransactionInterface } from 'ardb/lib/faces/gql';
+import { GQLEdgeTransactionInterface, GQLTransactionInterface } from 'ardb/lib/faces/gql';
 
 export default class Applicant implements ApplicantInterface {
   id: string;
@@ -46,7 +46,7 @@ export default class Applicant implements ApplicantInterface {
       owners.push(oppOwner);
     }
 
-    let txs: GQLTransactionsResultInterface;
+    let edges: GQLEdgeTransactionInterface[];
     try {
       const res = await this.ardb.search('transactions').tags([
         {
@@ -61,8 +61,8 @@ export default class Applicant implements ApplicantInterface {
           name: 'Applicant-ID',
           values: [this.id]
         }
-      ]).only(['id', 'owner.address', 'tags', 'block.timestamp', 'block.height']).findOne();
-      txs = res[0];
+      ]).only(['id', 'owner.address', 'tags', 'block.timestamp', 'block.height']).findOne() as GQLEdgeTransactionInterface[];
+      edges = res;
     } catch (err) {
       console.log(err);
       const toast = new Toast();
@@ -70,14 +70,14 @@ export default class Applicant implements ApplicantInterface {
       return;
     }
 
-    if (!txs.edges.length) {
+    if (!edges.length) {
       return;
     }
 
-    for (let i = 0; i < txs.edges[0].node.tags.length; i++) {
-      if (txs.edges[0].node.tags[i].name === 'approved') {
+    for (let i = 0; i < edges[0].node.tags.length; i++) {
+      if (edges[0].node.tags[i].name === 'approved') {
         // @ts-ignore
-        this.approved = txs.edges[0].node.tags[i].value === 'true';
+        this.approved = edges.edges[0].node.tags[i].value === 'true';
         break;
       }
     }
@@ -153,7 +153,7 @@ export default class Applicant implements ApplicantInterface {
   static async getAll(oppIds: string[]): Promise<Applicant[]> {
     const ardb = new ArDB(arweave);
 
-    let txs: GQLTransactionsResultInterface;
+    let edges: GQLEdgeTransactionInterface[];
     try {
       const res = await ardb.search('transactions').tags([
         {
@@ -168,8 +168,8 @@ export default class Applicant implements ApplicantInterface {
           name: 'Opportunity-ID',
           values: oppIds
         }
-      ]).only(['id', 'owner.address', 'tags', 'block.timestamp', 'block.height']).findOne();
-      txs = res[0];
+      ]).only(['id', 'owner.address', 'tags', 'block.timestamp', 'block.height']).findOne() as GQLEdgeTransactionInterface[];
+      edges = res;
     } catch (err) {
       console.log(err);
       const toast = new Toast();
@@ -178,11 +178,11 @@ export default class Applicant implements ApplicantInterface {
     }
 
     const res: Applicant[] = [];
-    for (let i = 0, j = txs.edges.length; i < j; i++) {
-      const applicant = await this.nodeToApplicant(txs.edges[i].node);
+    for (let i = 0, j = edges.length; i < j; i++) {
+      const applicant = await this.nodeToApplicant(edges[i].node);
       res.push(applicant);
     }
-
+    
     return res;
   }
 
