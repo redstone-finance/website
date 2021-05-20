@@ -11,6 +11,8 @@ export default class PageDashboard {
   private prevCall: number;
 
   async open() {
+    // @ts-ignore
+    $('[data-toggle="popover"]').popover();
     $('.page-dashboard').show();
 
     $('.link-home').addClass('active');
@@ -42,10 +44,10 @@ export default class PageDashboard {
     const commDesc = state.settings.get('communityDescription') || '';
     const commAppUrl = state.settings.get('communityAppUrl') || '';
 
-    $('.commId').text(app.getCommunityId());
-    $('.comm-title').text(state.name);
-    $('.comm-description').text(commDesc);
-    $('.app-link').attr('href', commAppUrl).text(commAppUrl);
+    $('.commId').text(app.getCommunityId()).val(app.getCommunityId());
+    $('.comm-title').text(state.name).val(state.name);
+    $('.comm-description').text(commDesc).val(commDesc);
+    $('.app-link').attr('href', commAppUrl).text(commAppUrl).val(commAppUrl);
 
     const quorum = state.settings.get('quorum') * 100;
     const support = state.settings.get('support') * 100;
@@ -53,11 +55,11 @@ export default class PageDashboard {
     const lockMinLength = state.settings.get('lockMinLength');
     const lockMaxLength = state.settings.get('lockMaxLength');
 
-    $('.quorum').text(` ${quorum}%`);
-    $('.support').text(` ${support}%`);
-    $('.voteLength').text(` ${Utils.formatNumber(voteLength)} blocks (${Utils.formatBlocks(voteLength)})`);
-    $('.lockMinLength').text(` ${Utils.formatNumber(lockMinLength)} blocks (${Utils.formatBlocks(lockMinLength)})`);
-    $('.lockMaxLength').text(` ${Utils.formatNumber(lockMaxLength)} blocks (${Utils.formatBlocks(lockMaxLength)})`);
+    $('.quorum').text(` ${quorum}%`).val(quorum);
+    $('.support').text(` ${support}%`).val(support);
+    $('.voteLength').text(` ${Utils.formatNumber(voteLength)} blocks (${Utils.formatBlocks(voteLength)})`).val(voteLength);
+    $('.lockMinLength').text(` ${Utils.formatNumber(lockMinLength)} blocks (${Utils.formatBlocks(lockMinLength)})`).val(lockMinLength);
+    $('.lockMaxLength').text(` ${Utils.formatNumber(lockMaxLength)} blocks (${Utils.formatBlocks(lockMaxLength)})`).val(lockMaxLength);
 
     const links = state.settings.get('communityDiscussionLinks');
     if (links && links.length) {
@@ -71,6 +73,8 @@ export default class PageDashboard {
     }
 
     let logo = state.settings.get('communityLogo');
+    $('.community-logo').val(logo);
+
     if (logo && logo.length) {
       const config = arweave.api.getConfig();
       logo = `${config.protocol}://${config.host}:${config.port}/${logo}`;
@@ -98,7 +102,7 @@ export default class PageDashboard {
     $('.mint-waiting').text(`${votesMint} `).parents('.dimmer').removeClass('active');
     $('.vault').text(Utils.formatNumber(vaultBalance));
     $('.vault-waiting').text(`${votesVault} `).parents('.dimmer').removeClass('active');
-    $('.ticker').text(` ${state.ticker} `);
+    $('.ticker').text(` ${state.ticker} `).val(state.ticker);
     $('.votes').text(`${votesActive} `);
     $('.votes-completed')
       .text(`${votesAll - votesActive} `)

@@ -3341,10 +3341,10 @@ community-js@^1.1.15:
     smartweave "^0.4.25"
     tiny-worker "^2.3.0"
 
-community-js@^1.1.36:
-  version "1.1.36"
-  resolved "https://registry.yarnpkg.com/community-js/-/community-js-1.1.36.tgz#d4e684dec58589ce2498621d965942030aee019a"
-  integrity sha512-ZpAjmUqfZSyhHTukFD8UwtB2ap184nh3g8FL9Uucndl5OPIRA6P1K2GmIbD+59uVlLq3Ax8Q+xPMxA2LTxBuYA==
+community-js@^1.1.40:
+  version "1.1.40"
+  resolved "https://registry.yarnpkg.com/community-js/-/community-js-1.1.40.tgz#1fb9e332b2bfe63ff0ba7ca47dc531cb482a8559"
+  integrity sha512-Vx3S88dmE/cqEF8F/IRo0uyL8qoe4ANpRB/MazZF0Hs1ygwAp4n4ZgHYsUau+Bc4/SmjjzGtXDuWicOQk/2myQ==
   dependencies:
     "@ponicode/cli" "^0.0.1-18"
     arweave "^1.10.11"

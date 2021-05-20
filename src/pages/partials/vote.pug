@@ -33,6 +33,12 @@
               i.icon.mr-1(data-feather="help-circle")
               | Indicative
 
+          label.form-selectgroup-item
+            input.form-selectgroup-input(type="radio" name="voteType" value="evolve")
+            span.form-selectgroup-label
+              i.icon.mr-1(data-feather="copy")
+              | Evolve  
+
       .vote-recipient.mb-3
           label.form-label Recipient
           input#vote-recipient.form-control(type="text")
@@ -103,7 +109,79 @@
                 td
                   input.btn.delete-tr(type="button" value="Del")
             input.btn#vote-set-value-links-add(type="button" value="Add")
-          #logo-box(style="display: none;")
+          #vote-logo.logo-box(style="display: none;")
+      
+      .vote-fields.vote-evolve.mb-3(style="display: none")
+        .mb-3: p #[strong Warning:] By evolving your Community you are completely replacing this PSC with a new one. The new PSC will still have the same users, balances, vaults, and more, but with the new settings in place and the new contract source.
+        
+        .mb-3
+          label.form-label Contract source
+          input#vote-contract-src.form-control.contract-src(type="text")
+        
+        .mb-3 
+          label.form-label Community name 
+          input#vote-comm-name.form-control.comm-title(type="text")
+
+        .mb-3
+          label.form-label Community ticker 
+          input#vote-comm-ticker.form-control.ticker(type="text")
+        
+        .mb-3 
+          label.form-label Community logo 
+          input#vote-comm-logo.form-control.community-logo(type="text")
+          .logo-box
+
+        .mb-3
+          label.form-label(for="support") Support
+          .row.row-sm
+            .col
+              .input-group
+                input#support.form-control.input-number.percent.support(type="text")
+                span.input-group-text %
+            .col-auto.align-self-center
+              span.form-help(data-toggle="popover", data-placement="top", data-content="Support is the relative percentage of tokens that are required to vote “Yes” for a proposal to be approved. For example, if “Support” is set to 50%, then more than 50% of the tokens used to vote on a proposal must vote “Yes” for it to pass.") ?
+
+        .mb-3
+          label.form-label(for="quorum") Quorum
+          .row.row-sm
+            .col
+              .input-group
+                input#quorum.form-control.input-number.percent.quorum(type="text")
+                span.input-group-text %
+            .col-auto.align-self-center
+              span.form-help(data-toggle="popover", data-placement="top", data-content="Quorum is how much of the vault weight is required to vote on a proposal to be approved. For example, if “Quorum” is set to 50%, then more than 50% of the vault weight must vote for it to pass.") ?
+
+        .mb-3
+          label.form-label(for="voteLength") Vote Length
+          .row.row-sm
+            .col
+              .input-group
+                input#voteLength.form-control.input-number.voteLength(type="text")
+                span.input-group-text BLOCKS
+            .col-auto.align-self-center
+              span.form-help(data-toggle="popover", data-placement="top", data-content="For how many blocks a proposal is considered active and able to vote on it.") ?
+
+        .mb-3
+          label.form-label(for="lockMinLength") Lock Minimum Length
+          .row.row-sm
+            .col
+              .input-group
+                input#lockMinLength.form-control.input-number.lockMinLength(type="text")
+                span.input-group-text BLOCKS
+            .col-auto.align-self-center
+              span.form-help(data-toggle="popover", data-placement="top", data-content="What is the minimum allowed lock time (in blocks) for each locked token.") ?
+
+        .mb-3
+          label.form-label(for="lockMaxLength") Lock Maximum Length
+          .row.row-sm
+            .col
+              .input-group
+                input#lockMaxLength.form-control.input-number.lockMaxLength(type="text")
+                span.input-group-text BLOCKS
+            .col-auto.align-self-center
+              span.form-help(data-toggle="popover", data-placement="top", data-content="What is the maximum allowed lock time (in blocks) for each locked token.") ?
+
+
       .mb-3
         label.form-label Note
         textarea#vote-note.form-control
