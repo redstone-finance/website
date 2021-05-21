@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "main": "./dist/index.html",
   "scripts": {
     "start": "node distserver/server.js",
