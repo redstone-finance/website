@@ -88,6 +88,15 @@ include mixins/mixins.pug
           input#transfer-balance.input-max-balance.input-number.form-control(type="text")
           a.btn-max-balance.btn.btn-success(href="#") MAX
 
+      #transfer-lock.mb-3(style="display: none")
+        .form-label Lock length in blocks
+        .input-group
+          input#transfer-lock-length.input-max-lock.input-number.form-control(type="text", value="0")
+          a.btn-max-lock.btn.btn-success(href="#") MAX
+
+        small.form-hint Minimum length is #[span.min-lock-length.strong] and maximum is #[span.max-lock-length.strong] blocks. If 0 is specified, there will be no lock.
+        
+
     .modal-footer
       div
         span.strong Fee:

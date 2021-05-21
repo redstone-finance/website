@@ -1535,6 +1535,18 @@
   resolved "https://registry.yarnpkg.com/@types/cors/-/cors-2.8.9.tgz#4bd1fcac72eca8d5bec93e76c7fdcbdc1bc2cd4a"
   integrity sha512-zurD1ibz21BRlAOIKP8yhrxlqKx6L9VCwkB5kMiP6nZAhoF5MvC7qS1qPA7nRcr1GJolfkQC7/EAL4hdYejLtg==
 
+"@types/esprima@^4.0.2":
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/@types/esprima/-/esprima-4.0.2.tgz#0303602d0644086d4802635d7abc9ac0eec57207"
+  integrity sha512-DKqdyuy7Go7ir6iKhZ0jUvgt/h9Q5zb9xS+fLeeXD2QSHv8gC6TimgujBBGfw8dHrpx4+u2HlMv7pkYOOfuUqg==
+  dependencies:
+    "@types/estree" "*"
+
+"@types/estree@*":
+  version "0.0.47"
+  resolved "https://registry.yarnpkg.com/@types/estree/-/estree-0.0.47.tgz#d7a51db20f0650efec24cd04994f523d93172ed4"
+  integrity sha512-c5ciR06jK8u9BstrmJyO97m+klJrrhCf9u3rLu3DEAJBirxRqSCvDQoYKmxuYwQI5SZChAWu+tq9oVlGRuzPAg==
+
 "@types/express-serve-static-core@^4.17.18":
   version "4.17.18"
   resolved "https://registry.yarnpkg.com/@types/express-serve-static-core/-/express-serve-static-core-4.17.18.tgz#8371e260f40e0e1ca0c116a9afcd9426fa094c40"
@@ -3341,10 +3353,10 @@ community-js@^1.1.15:
     smartweave "^0.4.25"
     tiny-worker "^2.3.0"
 
-community-js@^1.1.40:
-  version "1.1.40"
-  resolved "https://registry.yarnpkg.com/community-js/-/community-js-1.1.40.tgz#1fb9e332b2bfe63ff0ba7ca47dc531cb482a8559"
-  integrity sha512-Vx3S88dmE/cqEF8F/IRo0uyL8qoe4ANpRB/MazZF0Hs1ygwAp4n4ZgHYsUau+Bc4/SmjjzGtXDuWicOQk/2myQ==
+community-js@^1.1.41:
+  version "1.1.41"
+  resolved "https://registry.yarnpkg.com/community-js/-/community-js-1.1.41.tgz#f636578ff16105d39da0dff63c6b3dd6ceb0b858"
+  integrity sha512-YAxZETTEEMet8N8pxCaURsoD5eYoyg8Nrkqigwdt3ARCGLYplukGA/xr9RAYl47AL2p+ohYYxBxCuqStA7p4rw==
   dependencies:
     "@ponicode/cli" "^0.0.1-18"
     arweave "^1.10.11"

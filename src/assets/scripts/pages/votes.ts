@@ -52,17 +52,23 @@ export default class PageVotes {
 
     $('.quorum').text(` ${quorum}%`).val(quorum);
     $('.support').text(` ${support}%`).val(support);
-    $('.voteLength').text(` ${Utils.formatNumber(voteLength)} blocks (${Utils.formatBlocks(voteLength)})`).val(voteLength);
-    $('.lockMinLength').text(` ${Utils.formatNumber(lockMinLength)} blocks (${Utils.formatBlocks(lockMinLength)})`).val(lockMinLength);
-    $('.lockMaxLength').text(` ${Utils.formatNumber(lockMaxLength)} blocks (${Utils.formatBlocks(lockMaxLength)})`).val(lockMaxLength);
+    $('.voteLength')
+      .text(` ${Utils.formatNumber(voteLength)} blocks (${Utils.formatBlocks(voteLength)})`)
+      .val(voteLength);
+    $('.lockMinLength')
+      .text(` ${Utils.formatNumber(lockMinLength)} blocks (${Utils.formatBlocks(lockMinLength)})`)
+      .val(lockMinLength);
+    $('.lockMaxLength')
+      .text(` ${Utils.formatNumber(lockMaxLength)} blocks (${Utils.formatBlocks(lockMaxLength)})`)
+      .val(lockMaxLength);
 
     let logo = state.settings.get('communityLogo');
     $('.community-logo').val(logo);
 
     $('.ticker').text(` ${state.ticker} `).val(state.ticker);
 
-    $('.min-lock-length').text(state.settings.get('lockMinLength'));
-    $('.max-lock-length').text(state.settings.get('lockMaxLength'));
+    $('.min-lock-length').text(Utils.formatNumber(lockMinLength));
+    $('.max-lock-length').text(Utils.formatNumber(lockMaxLength));
 
     if (this.firstCall) {
       this.extraParams();
@@ -559,21 +565,22 @@ export default class PageVotes {
         // @ts-ignore
         voteParams['key'] = setKey === 'other' ? $('#vote-set-name').val().toString() : setKey;
         voteParams['value'] = setValue;
-      } else if(voteType === 'evolve') {
+
+        // @ts-ignore
+      } else if (voteType === 'evolve') {
         try {
           $(e.target).addClass('btn-loading disabled');
           voteParams.type = 'set';
           const newCommId = await this.evolve();
           voteParams['key'] = 'evolve';
           voteParams['value'] = newCommId;
-        } catch(err) {
+        } catch (err) {
           console.log(err);
           const toast = new Toast();
           toast.show('Evolve error', err.message, 'error', 3000);
           $(e.target).removeClass('btn-loading disabled');
           return;
         }
-        
       }
 
       if (!note.length) {
@@ -613,7 +620,7 @@ export default class PageVotes {
 
   async evolve() {
     const state = await app.getCommunity().getState();
-    if(state.votes[state.votes.length -1].status === 'active') {
+    if (state.votes[state.votes.length - 1].status === 'active') {
       throw new Error('You cannot evolve when there are active votes');
     }
 
@@ -621,13 +628,12 @@ export default class PageVotes {
 
     await community.setWallet(await app.getAccount().getWallet());
 
-    if(!await community.setContractSourceId($('#vote-contract-src').val().toString().trim())) {
+    if (!(await community.setContractSourceId($('#vote-contract-src').val().toString().trim()))) {
       throw new Error('Invalid contract source ID.');
     }
 
     // Set all the params
     state.settings.set('communityLogo', $('#vote-comm-logo').val().toString().trim());
-    
 
     const create = {
       communityName: $('#vote-comm-name').val().toString().trim(),
@@ -641,19 +647,19 @@ export default class PageVotes {
       vault: state.vault,
       votes: state.votes,
       roles: state.roles,
-      extras: []
+      extras: [],
     };
 
     console.log(create);
 
-    for(const key of Object.keys(create)) {
-      if(!create[key]) {
+    for (const key of Object.keys(create)) {
+      if (!create[key]) {
         throw new Error(`${key} is required`);
       }
     }
 
-    for(const key of ['quorum', 'support', 'voteLength', 'lockMinLength', 'lockMaxLength']) {
-      if(isNaN(create[key]) || create[key] < 1) {
+    for (const key of ['quorum', 'support', 'voteLength', 'lockMinLength', 'lockMaxLength']) {
+      if (isNaN(create[key]) || create[key] < 1) {
         throw new Error(`${key} must be greater than 0`);
       }
       state.settings.delete(key);
@@ -661,17 +667,17 @@ export default class PageVotes {
     create.extras = Array.from(state.settings);
 
     // Validate params
-    if(create.communityName.length < 3) {
+    if (create.communityName.length < 3) {
       throw new Error('Community name must be at least 3 characters');
-    } else if(create.ticker.length < 3) {
+    } else if (create.ticker.length < 3) {
       throw new Error('Ticker must be at least 3 characters');
-    } else if(create.quorum > 99) {
+    } else if (create.quorum > 99) {
       throw new Error('Quorum cannot be greater than 99');
-    } else if(create.support > 99) {
+    } else if (create.support > 99) {
       throw new Error('Support cannot be greater than 99');
-    } else if(create.lockMinLength >= create.lockMaxLength) {
+    } else if (create.lockMinLength >= create.lockMaxLength) {
       throw new Error('Lock min length cannot be greater than lock max length');
-    } else if(create.lockMaxLength <= create.lockMinLength) {
+    } else if (create.lockMaxLength <= create.lockMinLength) {
       throw new Error('Lock max length cannot be lower than lock min length');
     }
 
@@ -688,7 +694,7 @@ export default class PageVotes {
       create.vault,
       create.votes,
       create.roles,
-      create.extras
+      create.extras,
     );
 
     console.log(newState, newState.settings);

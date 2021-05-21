@@ -110,8 +110,7 @@ export default class CommunitiesWorker {
 
         // @ts-ignore
         state.settings = Array.from(state.settings).reduce(
-          (obj, [key, value]) =>
-            Object.assign(obj, { [key]: value }), // Be careful! Maps can have non-String keys; object literals can't.
+          (obj, [key, value]) => Object.assign(obj, { [key]: value }), // Be careful! Maps can have non-String keys; object literals can't.
           {},
         );
 

@@ -69,16 +69,22 @@ export default class Opportunity implements OpportunityInterface {
 
     let tx: GQLEdgeTransactionInterface;
     try {
-      const res = await this.ardb.search('transactions').from(this.author.address).appName('CommunityXYZ').tags([
-        {
-          name: 'Action',
-          values: ['updateOpportunity']
-        },
-        {
-          name: 'Opportunity-ID',
-          values: [this.id]
-        }
-      ]).only(['id', 'owner.address', 'tags', 'block.timestamp', 'block.height']).findOne();
+      const res = await this.ardb
+        .search('transactions')
+        .from(this.author.address)
+        .appName('CommunityXYZ')
+        .tags([
+          {
+            name: 'Action',
+            values: ['updateOpportunity'],
+          },
+          {
+            name: 'Opportunity-ID',
+            values: [this.id],
+          },
+        ])
+        .only(['id', 'owner.address', 'tags', 'block.timestamp', 'block.height'])
+        .findOne();
       tx = res[0];
     } catch (err) {
       console.log(err);
@@ -167,16 +173,17 @@ export default class Opportunity implements OpportunityInterface {
   }
 
   static async getAll(oppIds?: string[]): Promise<Opportunity[]> {
-    let oppTags = {name: '', values: ['']};
-    if(oppIds && oppIds.length) 
-      oppTags = {name: "communityId", values: oppIds};
+    let oppTags = { name: '', values: [''] };
+    if (oppIds && oppIds.length) oppTags = { name: 'communityId', values: oppIds };
 
     const ardb = new ArDB(arweave);
 
-    const edges = await ardb.search('transactions').appName('CommunityXYZ').tags([
-      {name: 'Action', values: ['addOpportunity']},
-      oppTags
-    ]).only(['id', 'owner.address', 'tags', 'block.timestamp', 'block.height']).findAll() as GQLEdgeTransactionInterface[];
+    const edges = (await ardb
+      .search('transactions')
+      .appName('CommunityXYZ')
+      .tags([{ name: 'Action', values: ['addOpportunity'] }, oppTags])
+      .only(['id', 'owner.address', 'tags', 'block.timestamp', 'block.height'])
+      .findAll()) as GQLEdgeTransactionInterface[];
 
     let opps: Opportunity[] = [];
 
@@ -227,20 +234,15 @@ export default class Opportunity implements OpportunityInterface {
 
     const ids = opps.map((opp) => opp.id);
     const ardb = new ArDB(arweave);
-    const edges = await ardb.search('transactions').tags([
-      {name: 'App-Name', values: ['CommunityXYZ']},
-      {name: 'Action', values: ['updateOpportunity']},
-      {name: 'Opportunity-ID', values: ids}
-    ]).only([
-      'id', 
-      'owner.address', 
-      'tags', 
-      'tags.name', 
-      'tags.value', 
-      'block.timestamp', 
-      'block.height'
-    ])
-    .findAll() as GQLEdgeTransactionInterface[];
+    const edges = (await ardb
+      .search('transactions')
+      .tags([
+        { name: 'App-Name', values: ['CommunityXYZ'] },
+        { name: 'Action', values: ['updateOpportunity'] },
+        { name: 'Opportunity-ID', values: ids },
+      ])
+      .only(['id', 'owner.address', 'tags', 'tags.name', 'tags.value', 'block.timestamp', 'block.height'])
+      .findAll()) as GQLEdgeTransactionInterface[];
 
     const updates: Map<string, GQLNodeInterface> = new Map();
     for (let i = 0, j = edges.length; i < j; i++) {

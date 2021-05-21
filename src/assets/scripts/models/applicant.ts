@@ -48,20 +48,24 @@ export default class Applicant implements ApplicantInterface {
 
     let edges: GQLEdgeTransactionInterface[];
     try {
-      const res = await this.ardb.search('transactions').tags([
-        {
-          name: 'App-Name',
-          values: ['CommunityXYZ']
-        },
-        {
-          name: 'Action',
-          values: ['updateApplicant']
-        },
-        {
-          name: 'Applicant-ID',
-          values: [this.id]
-        }
-      ]).only(['id', 'owner.address', 'tags', 'block.timestamp', 'block.height']).findOne() as GQLEdgeTransactionInterface[];
+      const res = (await this.ardb
+        .search('transactions')
+        .tags([
+          {
+            name: 'App-Name',
+            values: ['CommunityXYZ'],
+          },
+          {
+            name: 'Action',
+            values: ['updateApplicant'],
+          },
+          {
+            name: 'Applicant-ID',
+            values: [this.id],
+          },
+        ])
+        .only(['id', 'owner.address', 'tags', 'block.timestamp', 'block.height'])
+        .findOne()) as GQLEdgeTransactionInterface[];
       edges = res;
     } catch (err) {
       console.log(err);
@@ -155,20 +159,24 @@ export default class Applicant implements ApplicantInterface {
 
     let edges: GQLEdgeTransactionInterface[];
     try {
-      const res = await ardb.search('transactions').tags([
-        {
-          name: 'App-Name',
-          values: ['CommunityXYZ']
-        },
-        {
-          name: 'Action',
-          values: ['Application']
-        },
-        {
-          name: 'Opportunity-ID',
-          values: oppIds
-        }
-      ]).only(['id', 'owner.address', 'tags', 'block.timestamp', 'block.height']).findOne() as GQLEdgeTransactionInterface[];
+      const res = (await ardb
+        .search('transactions')
+        .tags([
+          {
+            name: 'App-Name',
+            values: ['CommunityXYZ'],
+          },
+          {
+            name: 'Action',
+            values: ['Application'],
+          },
+          {
+            name: 'Opportunity-ID',
+            values: oppIds,
+          },
+        ])
+        .only(['id', 'owner.address', 'tags', 'block.timestamp', 'block.height'])
+        .findOne()) as GQLEdgeTransactionInterface[];
       edges = res;
     } catch (err) {
       console.log(err);
@@ -182,7 +190,7 @@ export default class Applicant implements ApplicantInterface {
       const applicant = await this.nodeToApplicant(edges[i].node);
       res.push(applicant);
     }
-    
+
     return res;
   }
 

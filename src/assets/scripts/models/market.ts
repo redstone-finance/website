@@ -22,8 +22,13 @@ export default class Market {
   async getAVGPrice() {
     this.tradingPost = await this.client.recommendPost();
 
-    const res = await this.ardb.search('transactions').from(this.tradingPost).tags([{name: 'Type', values: ['Genesis']}]).only('id').findOne();
-    
+    const res = await this.ardb
+      .search('transactions')
+      .from(this.tradingPost)
+      .tags([{ name: 'Type', values: ['Genesis'] }])
+      .only('id')
+      .findOne();
+
     const tpUri = (await arweave.api.get(`/${res[0].node.id}`)).data.publicURL;
     const datas = (await arweave.api.request().get(`https://${tpUri}/orders`)).data;
 

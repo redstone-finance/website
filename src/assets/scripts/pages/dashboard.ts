@@ -57,9 +57,15 @@ export default class PageDashboard {
 
     $('.quorum').text(` ${quorum}%`).val(quorum);
     $('.support').text(` ${support}%`).val(support);
-    $('.voteLength').text(` ${Utils.formatNumber(voteLength)} blocks (${Utils.formatBlocks(voteLength)})`).val(voteLength);
-    $('.lockMinLength').text(` ${Utils.formatNumber(lockMinLength)} blocks (${Utils.formatBlocks(lockMinLength)})`).val(lockMinLength);
-    $('.lockMaxLength').text(` ${Utils.formatNumber(lockMaxLength)} blocks (${Utils.formatBlocks(lockMaxLength)})`).val(lockMaxLength);
+    $('.voteLength')
+      .text(` ${Utils.formatNumber(voteLength)} blocks (${Utils.formatBlocks(voteLength)})`)
+      .val(voteLength);
+    $('.lockMinLength')
+      .text(` ${Utils.formatNumber(lockMinLength)} blocks (${Utils.formatBlocks(lockMinLength)})`)
+      .val(lockMinLength);
+    $('.lockMaxLength')
+      .text(` ${Utils.formatNumber(lockMaxLength)} blocks (${Utils.formatBlocks(lockMaxLength)})`)
+      .val(lockMaxLength);
 
     const links = state.settings.get('communityDiscussionLinks');
     if (links && links.length) {
