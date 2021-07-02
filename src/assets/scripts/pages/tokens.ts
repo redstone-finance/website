@@ -1,4 +1,5 @@
 import ApexCharts from 'apexcharts';
+import * as esprima from 'esprima';
 import $ from '../libs/jquery';
 import { StateInterface } from 'community-js/lib/faces';
 import Utils from '../utils/utils';
@@ -9,12 +10,15 @@ import Market from '../models/market';
 import BalancesWorker from '../workers/balances';
 import TokensWorker from '../workers/tokens';
 import Pager from '../utils/pager';
+import arweave, { ardb } from '../libs/arweave';
+import { GQLEdgeTransactionInterface } from 'ardb/lib/faces/gql';
 
 export default class PageTokens {
   private chart: ApexCharts;
   private limit: number = 10;
   private state: StateInterface;
   private currentPage: number = 1;
+  private hasTransferLocked: boolean = false;
 
   async open() {
     $('.link-tokens').addClass('active');
@@ -33,13 +37,58 @@ export default class PageTokens {
 
   public async syncPageState() {
     const market = new Market(app.getCommunityId(), await app.getAccount().getWallet());
+
+    this.state = await app.getCommunity().getState();
+
     if (await app.getAccount().isLoggedIn()) {
       market.showSellButton();
     } else {
       market.hideSellButton();
     }
 
-    this.state = await app.getCommunity().getState();
+    this.hasTransferLocked = false;
+
+    let contractSrc: string;
+    if(this.state.settings.get('evolve')) {
+      contractSrc = this.state.settings.get('evolve');
+    } else {
+      try {
+        const edge = (await ardb
+          .search('transactions')
+          .id(app.getCommunityId())
+          .only(['tags', 'tags.name', 'tags.value'])
+          .findOne()) as GQLEdgeTransactionInterface[];
+        contractSrc = edge[0].node.tags.filter((t) => t.name === 'Contract-Src')[0].value;
+      } catch (e) {
+        console.log(e);
+      }
+    }
+
+    console.log(contractSrc);
+    try {
+      const { data } = await arweave.api.get(contractSrc);
+      const res = esprima.tokenize(data);
+
+      for (let i = 0, j = res.length; i < j; i++) {
+        if (res[i].type === 'Keyword' && res[i].value === 'function') {
+          if (res[i + 1].type === 'Punctuator' && (res[i + 1].value === '===' || res[i + 1].value === '==')) {
+            if (
+              res[i + 2].type === 'String' &&
+              (res[i + 2].value === '"transferLocked"' || res[i + 2].value === '"transferLocked"')
+            ) {
+              this.hasTransferLocked = true;
+              break;
+            }
+          }
+        }
+      }
+    } catch (e) {}
+
+    if (this.hasTransferLocked) {
+      $('#transfer-lock').show();
+    } else {
+      $('#transfer-lock').hide();
+    }
 
     const { balance } = await BalancesWorker.usersAndBalance(this.state.balances);
     const { vaultBalance } = await BalancesWorker.vaultUsersAndBalance(this.state.vault);
@@ -47,6 +96,12 @@ export default class PageTokens {
     $('.ticker').text(this.state.ticker);
     $('.minted').text(Utils.formatNumber(balance + vaultBalance));
     $('.minted').parents('.dimmer').removeClass('active');
+
+    const lockMinLength = this.state.settings.get('lockMinLength');
+    const lockMaxLength = this.state.settings.get('lockMaxLength');
+
+    $('.min-lock-length').text(Utils.formatNumber(lockMinLength));
+    $('.max-lock-length').text(Utils.formatNumber(lockMaxLength));
 
     const holdersByBalance = await TokensWorker.sortHoldersByBalance(this.state.balances, this.state.vault);
     const holders = holdersByBalance.filter((holder) => /[a-z0-9_-]{43}/i.test(holder.address));
@@ -214,12 +269,14 @@ export default class PageTokens {
 
       const $target = $('#transfer-target');
       const $balance = $('#transfer-balance');
+      const $transferLock = $('#transfer-lock-length');
       if ($target.hasClass('is-invalid') || $balance.hasClass('is-invalid')) {
         return;
       }
 
       const transferTarget = $target.val().toString().trim();
       const transferBalance = +$balance.val().toString().trim();
+      const transferLock = this.hasTransferLocked ? +$transferLock.val().toString().trim() : 0;
 
       if (isNaN(transferBalance) || transferBalance < 1 || !Number.isInteger(transferBalance)) {
         return;
@@ -228,7 +285,13 @@ export default class PageTokens {
       $(e.target).addClass('btn-loading disabled');
 
       try {
-        const txid = await app.getCommunity().transfer(transferTarget, transferBalance);
+        let txid;
+        if (transferLock > 0) {
+          txid = await app.getCommunity().transferLocked(transferTarget, transferBalance, transferLock);
+        } else {
+          txid = await app.getCommunity().transfer(transferTarget, transferBalance);
+        }
+
         app
           .getStatusify()
           .add('Transfer balance', txid)

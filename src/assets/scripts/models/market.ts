@@ -1,6 +1,7 @@
 import Verto from '@verto/lib';
 import { JWKInterface } from 'arweave/web/lib/wallet';
 import Community from 'community-js';
+import ArDB from 'ardb';
 import arweave from '../libs/arweave';
 import Toast from '../utils/toast';
 
@@ -10,6 +11,7 @@ export default class Market {
   private community: Community;
   private tradingPost: string;
   private orders: { amnt: number; rate: number }[];
+  private readonly ardb = new ArDB(arweave);
 
   constructor(communityId: string, keyfile: JWKInterface) {
     this.client = new Verto(keyfile);
@@ -20,27 +22,14 @@ export default class Market {
   async getAVGPrice() {
     this.tradingPost = await this.client.recommendPost();
 
-    const query = {
-      query: `
-      query {
-        transactions(
-          owners: ["${this.tradingPost}"]
-          tags: [
-            { name: "Type", values: "Genesis" }
-          ]
-          first: 1
-        ) {
-          edges {
-            node {
-              id
-            }
-          }
-        }
-      }`,
-    };
+    const res = await this.ardb
+      .search('transactions')
+      .from(this.tradingPost)
+      .tags([{ name: 'Type', values: ['Genesis'] }])
+      .only('id')
+      .findOne();
 
-    const res = (await arweave.api.post('/graphql', query)).data;
-    const tpUri = (await arweave.api.get(`/${res.data.transactions.edges[0].node.id}`)).data.publicURL;
+    const tpUri = (await arweave.api.get(`/${res[0].node.id}`)).data.publicURL;
     const datas = (await arweave.api.request().get(`https://${tpUri}/orders`)).data;
 
     const sellOrders = [];

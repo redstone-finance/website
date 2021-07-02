@@ -4,7 +4,7 @@ const pug = require('gulp-pug');
 const rev = require('gulp-rev');
 const sourcemaps = require('gulp-sourcemaps');
 const imagemin = require('gulp-imagemin');
-const sass = require('gulp-sass');
+const sass = require('gulp-sass')(require('node-sass'));
 const revRewrite = require('gulp-rev-rewrite');
 const del = require('del');
 const replace = require('gulp-replace');
@@ -14,8 +14,6 @@ const purgeCSS = require('gulp-purgecss');
 const cleanCSS = require('gulp-clean-css');
 const autoprefixer = require('autoprefixer');
 const cssnano = require('cssnano');
-
-sass.compiler = require('node-sass');
 
 const sources = {
   html: 'src/*.pug',

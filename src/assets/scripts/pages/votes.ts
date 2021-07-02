@@ -1,4 +1,5 @@
 import $ from '../libs/jquery';
+import 'bootstrap/dist/js/bootstrap.bundle';
 import Utils from '../utils/utils';
 import Toast from '../utils/toast';
 import app from '../app';
@@ -6,6 +7,7 @@ import arweave from '../libs/arweave';
 import Vote from '../models/vote';
 import { VoteType, VoteInterface } from 'community-js/lib/faces';
 import Dropbox from '../utils/dropbox';
+import Community from 'community-js';
 
 export default class PageVotes {
   private votes: Vote[] = [];
@@ -32,8 +34,41 @@ export default class PageVotes {
   public async syncPageState() {
     const state = await app.getCommunity().getState();
 
-    $('.min-lock-length').text(state.settings.get('lockMinLength'));
-    $('.max-lock-length').text(state.settings.get('lockMaxLength'));
+    $('.contract-src').val(await app.getCommunity().getContractSourceId());
+
+    const commDesc = state.settings.get('communityDescription') || '';
+    const commAppUrl = state.settings.get('communityAppUrl') || '';
+
+    $('.commId').text(app.getCommunityId()).val(app.getCommunityId());
+    $('.comm-title').text(state.name).val(state.name);
+    $('.comm-description').text(commDesc).val(commDesc);
+    $('.app-link').attr('href', commAppUrl).text(commAppUrl).val(commAppUrl);
+
+    const quorum = state.settings.get('quorum') * 100;
+    const support = state.settings.get('support') * 100;
+    const voteLength = state.settings.get('voteLength');
+    const lockMinLength = state.settings.get('lockMinLength');
+    const lockMaxLength = state.settings.get('lockMaxLength');
+
+    $('.quorum').text(` ${quorum}%`).val(quorum);
+    $('.support').text(` ${support}%`).val(support);
+    $('.voteLength')
+      .text(` ${Utils.formatNumber(voteLength)} blocks (${Utils.formatBlocks(voteLength)})`)
+      .val(voteLength);
+    $('.lockMinLength')
+      .text(` ${Utils.formatNumber(lockMinLength)} blocks (${Utils.formatBlocks(lockMinLength)})`)
+      .val(lockMinLength);
+    $('.lockMaxLength')
+      .text(` ${Utils.formatNumber(lockMaxLength)} blocks (${Utils.formatBlocks(lockMaxLength)})`)
+      .val(lockMaxLength);
+
+    let logo = state.settings.get('communityLogo');
+    $('.community-logo').val(logo);
+
+    $('.ticker').text(` ${state.ticker} `).val(state.ticker);
+
+    $('.min-lock-length').text(Utils.formatNumber(lockMinLength));
+    $('.max-lock-length').text(Utils.formatNumber(lockMaxLength));
 
     if (this.firstCall) {
       this.extraParams();
@@ -92,13 +127,10 @@ export default class PageVotes {
 
   private showLogo(hash) {
     $('#vote-set-value').removeClass('is-invalid');
-    // $('#vote-set-value-logo-preview').attr('src', "https://arweave.net/" + hash);
-    // $('#vote-set-value-logo-preview').show();
   }
 
   private setLogoInvalid() {
     $('#vote-set-value').addClass('is-invalid');
-    // $('#vote-set-value-logo-preview').hide();
   }
 
   private async setValueValidate() {
@@ -184,6 +216,19 @@ export default class PageVotes {
           }
         });
       }
+    } else if(setKey === 'evolve') {
+      let canEvolve = state.settings?.get('canEvolve');
+      if(canEvolve === false) {
+        $('.lock-set-value-invalid').text('Evolve is currently locked');
+        $('#vote-set-value').addClass('is-invalid');
+        return false;
+      }
+
+      if(!setValue.length || !/[a-z0-9_-]{43}/i.test(setValue)) {
+        $('.lock-set-value-invalid').text('Invalid contract source txid');
+        $('#vote-set-value').addClass('is-invalid');
+        return false;
+      }
     } else {
       $('.lock-set-value-invalid').text('');
     }
@@ -220,11 +265,10 @@ export default class PageVotes {
   }
 
   private async handleLogo() {
-    const dropbox = new Dropbox($('#logo-box'));
-    console.log(await app.getAccount().getWallet());
+    const dropbox = new Dropbox($('.logo-box'));
     dropbox.showAndDeploy(await app.getAccount().getWallet()).then((logoId) => {
       if (logoId) {
-        $('#vote-set-value').val(logoId);
+        $('#vote-set-value, #vote-comm-logo').val(logoId);
         this.showLogo(logoId);
       }
       this.handleLogo();
@@ -240,7 +284,7 @@ export default class PageVotes {
 
   private removeModifyVotes() {
     $('#vote-set-name').off('input');
-    $('#logo-box').off('change');
+    $('#vote-logo').off('change');
   }
 
   async validateVotes() {
@@ -254,16 +298,21 @@ export default class PageVotes {
             $('.vote-fields').hide();
             break;
           case 'burnVault':
-            $('.vote-recipient, .vote-qty, .vote-lock-length, .vote-fields').hide();
+            $('.vote-recipient, .vote-qty, .vote-lock-length, .vote-fields, .vote-evolve').hide();
             $('.vote-burn-vault').show();
             break;
           case 'set':
-            $('.vote-recipient, .vote-qty, .vote-lock-length, .vote-fields').hide();
+            $('.vote-recipient, .vote-qty, .vote-lock-length, .vote-fields, .vote-evolve').hide();
             $('.vote-set').show();
             $('#vote-set-key').trigger('change');
             break;
           case 'indicative':
-            $('.vote-recipient, .vote-qty, .vote-lock-length, .vote-fields').hide();
+            $('.vote-recipient, .vote-qty, .vote-lock-length, .vote-fields, .vote-evolve').hide();
+            break;
+          case 'evolve':
+            $('.vote-recipient, .vote-qty, .vote-lock-length, .vote-fields, .vote-evolve').hide();
+            this.handleLogo();
+            $('.vote-evolve').show();
             break;
         }
       })
@@ -297,7 +346,7 @@ export default class PageVotes {
       }
       if (setKey !== 'communityLogo') {
         // $('#vote-set-value-logo-preview').hide();
-        $('#logo-box').hide();
+        $('#vote-logo').hide();
       }
       $('#vote-set-value').removeClass('input-number input-float percent url');
 
@@ -324,7 +373,7 @@ export default class PageVotes {
           $target.addClass('url');
           break;
         case 'communityLogo':
-          $('#logo-box').show();
+          $('#vote-logo').show();
           this.handleLogo();
           $target.trigger('input');
           break;
@@ -531,6 +580,22 @@ export default class PageVotes {
         voteParams['value'] = setValue;
       }
 
+      // } else if (voteType === 'evolve') {
+      //   try {
+      //     $(e.target).addClass('btn-loading disabled');
+      //     voteParams.type = 'set';
+      //     const newCommId = await this.evolve();
+      //     voteParams['key'] = 'evolve';
+      //     voteParams['value'] = newCommId;
+      //   } catch (err) {
+      //     console.log(err);
+      //     const toast = new Toast();
+      //     toast.show('Evolve error', err.message, 'error', 3000);
+      //     $(e.target).removeClass('btn-loading disabled');
+      //     return;
+      //   }
+      // }
+
       if (!note.length) {
         $('#vote-note').addClass('is-invalid');
         return;
@@ -548,7 +613,6 @@ export default class PageVotes {
             // Just create the new vote, do not sync the entire page.
             const state = await app.getCommunity().getState(false);
 
-            const voteId = state.votes.length - 1;
             if (this.votes.length < state.votes.length) {
               const vote = new Vote(state.votes[this.votes.length], this.votes.length);
               this.votes.push(vote);
@@ -566,6 +630,91 @@ export default class PageVotes {
       $(e.target).removeClass('btn-loading disabled');
     });
   }
+
+  async updateDefaults() {
+    const state = await app.getCommunity().getState();
+    if (state.votes[state.votes.length - 1].status === 'active') {
+      throw new Error('You cannot evolve when there are active votes');
+    }
+
+    const community = new Community(arweave);
+
+    await community.setWallet(await app.getAccount().getWallet());
+
+    if (!(await community.setContractSourceId($('#vote-contract-src').val().toString().trim()))) {
+      throw new Error('Invalid contract source ID.');
+    }
+
+    // Set all the params
+    state.settings.set('communityLogo', $('#vote-comm-logo').val().toString().trim());
+
+    const create = {
+      communityName: $('#vote-comm-name').val().toString().trim(),
+      ticker: $('#vote-comm-ticker').val().toString().trim(),
+      balances: state.balances,
+      quorum: +$('#quorum').val().toString().trim(),
+      support: +$('#support').val().toString().trim(),
+      voteLength: +$('#voteLength').val().toString().trim(),
+      lockMinLength: +$('#lockMinLength').val().toString().trim(),
+      lockMaxLength: +$('#lockMaxLength').val().toString().trim(),
+      vault: state.vault,
+      votes: state.votes,
+      roles: state.roles,
+      extras: [],
+    };
+
+    console.log(create);
+
+    for (const key of Object.keys(create)) {
+      if (!create[key]) {
+        throw new Error(`${key} is required`);
+      }
+    }
+
+    for (const key of ['quorum', 'support', 'voteLength', 'lockMinLength', 'lockMaxLength']) {
+      if (isNaN(create[key]) || create[key] < 1) {
+        throw new Error(`${key} must be greater than 0`);
+      }
+      state.settings.delete(key);
+    }
+    create.extras = Array.from(state.settings);
+
+    // Validate params
+    if (create.communityName.length < 3) {
+      throw new Error('Community name must be at least 3 characters');
+    } else if (create.ticker.length < 3) {
+      throw new Error('Ticker must be at least 3 characters');
+    } else if (create.quorum > 99) {
+      throw new Error('Quorum cannot be greater than 99');
+    } else if (create.support > 99) {
+      throw new Error('Support cannot be greater than 99');
+    } else if (create.lockMinLength >= create.lockMaxLength) {
+      throw new Error('Lock min length cannot be greater than lock max length');
+    } else if (create.lockMaxLength <= create.lockMinLength) {
+      throw new Error('Lock max length cannot be lower than lock min length');
+    }
+
+    // Create the new community
+    const newState = await community.setState(
+      create.communityName,
+      create.ticker,
+      create.balances,
+      create.quorum,
+      create.support,
+      create.voteLength,
+      create.lockMinLength,
+      create.lockMaxLength,
+      create.vault,
+      create.votes,
+      create.roles,
+      create.extras,
+    );
+
+    console.log(newState, newState.settings);
+
+    return await community.create();
+  }
+
   async removeValidateVotes() {
     $('input[name="voteType"], #vote-set-key').off('change');
     $('#vote-recipient, #vote-target, #vote-set-value').off('input');

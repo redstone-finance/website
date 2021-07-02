@@ -161,9 +161,6 @@ class App {
     if (contracts[0] === contracts[1]) {
       return;
     }
-
-    // TODO: Show the alert
-    $('.alert-version').removeClass('d-none');
   }
 
   private async getPageStr(): Promise<string> {
