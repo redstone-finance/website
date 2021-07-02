@@ -216,6 +216,19 @@ export default class PageVotes {
           }
         });
       }
+    } else if(setKey === 'evolve') {
+      let canEvolve = state.settings?.get('canEvolve');
+      if(canEvolve === false) {
+        $('.lock-set-value-invalid').text('Evolve is currently locked');
+        $('#vote-set-value').addClass('is-invalid');
+        return false;
+      }
+
+      if(!setValue.length || !/[a-z0-9_-]{43}/i.test(setValue)) {
+        $('.lock-set-value-invalid').text('Invalid contract source txid');
+        $('#vote-set-value').addClass('is-invalid');
+        return false;
+      }
     } else {
       $('.lock-set-value-invalid').text('');
     }
@@ -565,23 +578,23 @@ export default class PageVotes {
         // @ts-ignore
         voteParams['key'] = setKey === 'other' ? $('#vote-set-name').val().toString() : setKey;
         voteParams['value'] = setValue;
-
-        // @ts-ignore
-      } else if (voteType === 'evolve') {
-        try {
-          $(e.target).addClass('btn-loading disabled');
-          voteParams.type = 'set';
-          const newCommId = await this.evolve();
-          voteParams['key'] = 'evolve';
-          voteParams['value'] = newCommId;
-        } catch (err) {
-          console.log(err);
-          const toast = new Toast();
-          toast.show('Evolve error', err.message, 'error', 3000);
-          $(e.target).removeClass('btn-loading disabled');
-          return;
-        }
       }
+
+      // } else if (voteType === 'evolve') {
+      //   try {
+      //     $(e.target).addClass('btn-loading disabled');
+      //     voteParams.type = 'set';
+      //     const newCommId = await this.evolve();
+      //     voteParams['key'] = 'evolve';
+      //     voteParams['value'] = newCommId;
+      //   } catch (err) {
+      //     console.log(err);
+      //     const toast = new Toast();
+      //     toast.show('Evolve error', err.message, 'error', 3000);
+      //     $(e.target).removeClass('btn-loading disabled');
+      //     return;
+      //   }
+      // }
 
       if (!note.length) {
         $('#vote-note').addClass('is-invalid');
@@ -618,7 +631,7 @@ export default class PageVotes {
     });
   }
 
-  async evolve() {
+  async updateDefaults() {
     const state = await app.getCommunity().getState();
     if (state.votes[state.votes.length - 1].status === 'active') {
       throw new Error('You cannot evolve when there are active votes');
