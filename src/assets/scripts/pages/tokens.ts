@@ -37,6 +37,9 @@ export default class PageTokens {
 
   public async syncPageState() {
     const market = new Market(app.getCommunityId(), await app.getAccount().getWallet());
+
+    this.state = await app.getCommunity().getState();
+
     if (await app.getAccount().isLoggedIn()) {
       market.showSellButton();
     } else {
@@ -44,14 +47,25 @@ export default class PageTokens {
     }
 
     this.hasTransferLocked = false;
+
+    let contractSrc: string;
+    if(this.state.settings.get('evolve')) {
+      contractSrc = this.state.settings.get('evolve');
+    } else {
+      try {
+        const edge = (await ardb
+          .search('transactions')
+          .id(app.getCommunityId())
+          .only(['tags', 'tags.name', 'tags.value'])
+          .findOne()) as GQLEdgeTransactionInterface[];
+        contractSrc = edge[0].node.tags.filter((t) => t.name === 'Contract-Src')[0].value;
+      } catch (e) {
+        console.log(e);
+      }
+    }
+
+    console.log(contractSrc);
     try {
-      const edge = (await ardb
-        .search('transactions')
-        .id(app.getCommunityId())
-        .only(['tags', 'tags.name', 'tags.value'])
-        .findOne()) as GQLEdgeTransactionInterface[];
-      const contractSrc = edge[0].node.tags.filter((t) => t.name === 'Contract-Src')[0].value;
-      console.log(contractSrc);
       const { data } = await arweave.api.get(contractSrc);
       const res = esprima.tokenize(data);
 
@@ -68,15 +82,13 @@ export default class PageTokens {
           }
         }
       }
-    } catch (e) {
-      console.log(e);
-    }
+    } catch (e) {}
 
     if (this.hasTransferLocked) {
       $('#transfer-lock').show();
+    } else {
+      $('#transfer-lock').hide();
     }
-
-    this.state = await app.getCommunity().getState();
 
     const { balance } = await BalancesWorker.usersAndBalance(this.state.balances);
     const { vaultBalance } = await BalancesWorker.vaultUsersAndBalance(this.state.vault);

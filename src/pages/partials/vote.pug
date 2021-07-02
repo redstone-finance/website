@@ -33,11 +33,11 @@
               i.icon.mr-1(data-feather="help-circle")
               | Indicative
 
-          label.form-selectgroup-item
-            input.form-selectgroup-input(type="radio" name="voteType" value="evolve")
-            span.form-selectgroup-label
-              i.icon.mr-1(data-feather="copy")
-              | Evolve  
+          //- label.form-selectgroup-item
+          //-   input.form-selectgroup-input(type="radio" name="voteType" value="evolve")
+          //-   span.form-selectgroup-label
+          //-     i.icon.mr-1(data-feather="copy")
+          //-     | Evolve  
 
       .vote-recipient.mb-3
           label.form-label Recipient
@@ -66,7 +66,6 @@
         .mb-3
           label.form-label Key
           select#vote-set-key.form-select
-            option(value="evolve") Evolve
             option(value="quorum") Quorum
             option(value="support") Support
             option(value="lockMinLength") Minimum lock length
@@ -77,6 +76,7 @@
             option(value="communityLogo") Community logo
             option(value="communityDiscussionLinks") Discussion links
             option(value="communityHide") Hide Community
+            option(value="evolve") Evolve
             option(value="other") Other
 
         .vote-set-name.mb-3(style="display: none")

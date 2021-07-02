@@ -3364,7 +3364,7 @@ common-tags@^1.8.0:
   resolved "https://registry.yarnpkg.com/common-tags/-/common-tags-1.8.0.tgz#8e3153e542d4a39e9b10554434afaaf98956a937"
   integrity sha512-6P6g0uetGpW/sdyUy/iQQCbFF0kWVMSIVSyYz7Zgjcgh8mgw8PQzDNZeyZ5DQ2gM7LBoZPHmnjz8rUthkBG5tw==
 
-community-js@^1.1.27, community-js@^1.1.46:
+community-js@^1.1.27:
   version "1.1.46"
   resolved "https://registry.yarnpkg.com/community-js/-/community-js-1.1.46.tgz#29e95662249ed1dcac740403fc910886936a8263"
   integrity sha512-4PviQgwrpKSI0oHxxvupgAD23Bv4n5oYq6E9Le+X21xyWXTEiSYihIdIuPrw3B7vVVzCli4WNy/4egnBpw3Mlw==
@@ -3372,6 +3372,15 @@ community-js@^1.1.27, community-js@^1.1.46:
     arweave "^1.10.15"
     axios "^0.21.1"
     smartweave "^0.4.37"
+
+community-js@^1.1.47:
+  version "1.1.47"
+  resolved "https://registry.yarnpkg.com/community-js/-/community-js-1.1.47.tgz#c53983522c3d0e3123d256c3818fa8182b823a15"
+  integrity sha512-WLKnuq+YbckhEK2ozMiV61vLx45ewYaxGzhqeEIqD5stz7DHusaJP2fcKi+AZl+/pyMvwPcdScHbra+5Y7Lf/Q==
+  dependencies:
+    arweave "^1.10.15"
+    axios "^0.21.1"
+    smartweave "^0.4.38"
 
 component-emitter@^1.2.1:
   version "1.3.0"
@@ -10732,6 +10741,25 @@ smartweave@^0.4.10, smartweave@^0.4.27, smartweave@^0.4.37:
   version "0.4.37"
   resolved "https://registry.yarnpkg.com/smartweave/-/smartweave-0.4.37.tgz#c92fd3ef5c7269b609a64282b0797bcb6dcd6dbf"
   integrity sha512-Hx1e55nxyVCFy7XZxtBKryq9SCareQxbaQUNHbCjlO4DsB2ZwubyqKvPrQnVReuKXj8mi2C1dVDtDZeoq/La4A==
+  dependencies:
+    "@types/clui" "^0.3.0"
+    "@types/inquirer" "^7.3.1"
+    "@weavery/clarity" "^0.1.5"
+    arweave "^1.10.15"
+    bignumber.js "^9.0.1"
+    chalk "^4.1.0"
+    clui "^0.3.6"
+    figlet "^1.5.0"
+    inquirer "^7.3.3"
+    json-beautify "^1.1.1"
+    loglevel "^1.7.0"
+    sentencer "^0.2.1"
+    yargs "^16.2.0"
+
+smartweave@^0.4.38:
+  version "0.4.38"
+  resolved "https://registry.yarnpkg.com/smartweave/-/smartweave-0.4.38.tgz#70b3cd676582ba4b06ce5fc850cee77dc9519f69"
+  integrity sha512-m8c279z4PnBEjnXEzj08f79MFM+EF7M4Wo9q4Wf38Nd9lrcQkhpG7/7dPdl+qpV9Z9JmZiyCRhXiGJwiFHrjQQ==
   dependencies:
     "@types/clui" "^0.3.0"
     "@types/inquirer" "^7.3.1"
