@@ -3373,14 +3373,14 @@ community-js@^1.1.27:
     axios "^0.21.1"
     smartweave "^0.4.37"
 
-community-js@^1.1.47:
-  version "1.1.47"
-  resolved "https://registry.yarnpkg.com/community-js/-/community-js-1.1.47.tgz#c53983522c3d0e3123d256c3818fa8182b823a15"
-  integrity sha512-WLKnuq+YbckhEK2ozMiV61vLx45ewYaxGzhqeEIqD5stz7DHusaJP2fcKi+AZl+/pyMvwPcdScHbra+5Y7Lf/Q==
+community-js@^1.1.48:
+  version "1.1.48"
+  resolved "https://registry.yarnpkg.com/community-js/-/community-js-1.1.48.tgz#e56c6cab4612089ce9ef481073c29f25423ed9bd"
+  integrity sha512-3JL4VZqR3KrknoANYcTQEGW22BWa1aasTPmzXnjFO+xl8ODM0qjehAnxsQVbwcBCZVYMKGA+NCKCAG+tSvcFCg==
   dependencies:
     arweave "^1.10.15"
     axios "^0.21.1"
-    smartweave "^0.4.38"
+    smartweave "^0.4.39"
 
 component-emitter@^1.2.1:
   version "1.3.0"
@@ -10756,10 +10756,10 @@ smartweave@^0.4.10, smartweave@^0.4.27, smartweave@^0.4.37:
     sentencer "^0.2.1"
     yargs "^16.2.0"
 
-smartweave@^0.4.38:
-  version "0.4.38"
-  resolved "https://registry.yarnpkg.com/smartweave/-/smartweave-0.4.38.tgz#70b3cd676582ba4b06ce5fc850cee77dc9519f69"
-  integrity sha512-m8c279z4PnBEjnXEzj08f79MFM+EF7M4Wo9q4Wf38Nd9lrcQkhpG7/7dPdl+qpV9Z9JmZiyCRhXiGJwiFHrjQQ==
+smartweave@^0.4.39:
+  version "0.4.39"
+  resolved "https://registry.yarnpkg.com/smartweave/-/smartweave-0.4.39.tgz#cd7fc1877c3a92f2b9abfb24b7bf8d35d10353e5"
+  integrity sha512-EKrcJCz3fNnrOvQk3x2+KqqhvdrOsK4COOY3ocLmKW4nfzEFPNL8HkmXgn1+JRxB296RuBrgBLCQKWa0XtvlAA==
   dependencies:
     "@types/clui" "^0.3.0"
     "@types/inquirer" "^7.3.1"
