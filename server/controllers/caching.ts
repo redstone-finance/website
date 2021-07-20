@@ -1,13 +1,13 @@
-import GQLResultInterface from 'ar-gql/dist/types';
 import Arweave from 'arweave';
 import Community from 'community-js';
 import { StateInterface } from 'community-js/lib/faces';
 import * as express from 'express';
 import cors from 'cors';
 import Caching from '../models/cache';
+import GQLResultInterface from 'ar-gql/dist/faces';
 
 const cache = new Caching();
-const whitelist = ['https://community.xyz', 'http://community.xyz', 'https://arweave.net', 'http://localhost'];
+const whitelist = ['https://community.xyz', 'http://community.xyz', 'https://arweave.live/', 'https://arweave.net', 'http://localhost:5000'];
 const corsOptionsDelegate = function (req, callback) {
   let corsOptions = { origin: false };
   if (whitelist.indexOf(req.header('Origin')) !== -1) {
@@ -40,6 +40,9 @@ export default class CacheController {
     const cached = await cache.get('getcommunities');
     if(cached) {
       const cache: any[] = JSON.parse(cached);
+      if(!cache.length) {
+        return res.json(await this.setCommunities());
+      }
       const toSend: any[] = [];
       console.log('cached');
       for(const obj of cache) {
@@ -110,7 +113,7 @@ export default class CacheController {
           transactions(
             tags: [
               {name: "App-Name", values: ["SmartWeaveContract"]},
-              {name: "Contract-Src", values: ["ngMml4jmlxu0umpiQCsHgPX2pb_Yz6YDB8f7G6j-tpI"]}
+              {name: "Contract-Src", values: ["ngMml4jmlxu0umpiQCsHgPX2pb_Yz6YDB8f7G6j-tpI", "40tPvYdnGiSpwgnqrS2xJ2dqSvA6h8K11HjJxMs1cbI"]}
             ]
             after: "${cursor}"
             first: 100

@@ -27,6 +27,11 @@ export default class Account {
 
   async init() {
     try {
+      this.address = await window.arweaveWallet.getActiveAddress();
+      this.loadAddress();
+    } catch(e) {}
+
+    try {
       const sess = atob(communityDB.get('sesswall'));
       if (sess) {
         await this.loadWallet(JSON.parse(sess));
@@ -95,8 +100,15 @@ export default class Account {
   private async loadWallet(wallet: JWKInterface) {
     this.wallet = wallet;
 
+    
     this.address = await this.community.setWallet(wallet);
+    this.loadAddress();
 
+    // @ts-ignore
+    window.currentPage.syncPageState();
+  }
+
+  private async loadAddress() {
     const bal = await arweave.wallets.getBalance(this.address);
     const arBalance = arweave.ar.winstonToAr(bal, {
       formatted: false,
@@ -114,27 +126,15 @@ export default class Account {
     $('.user-avatar').css('background-image', `url(${this.avatar})`);
     $('.member-profile').attr('href', `./member.html#${this.address}`);
 
-    //this.loadVerify();
+    $('.member-ar').removeAttr('href').html(`${feather.icons['dollar-sign'].toSvg({ class: 'icon' })} ${this.arBalance} AR`);
 
-    arweave.wallets.getBalance(this.address).then((bal) => {
-      $('.member-ar').removeAttr('href').html(`
-      ${feather.icons['dollar-sign'].toSvg({ class: 'icon' })} 
-      ${arweave.ar.winstonToAr(bal, { formatted: true, decimals: 5, trim: true })} 
-      AR`);
-    });
-
-    if (this.address.length && this.arBalance >= 0) {
+    if (this.address) {
       this.loggedIn = true;
-      if ($('#login-modal').length) {
-        // @ts-ignore
-        $('#login-modal').modal('hide');
-      }
+      // @ts-ignore
+      $('#login-modal').modal('hide');
       $('.loggedin').show();
       $('.loggedout').hide();
     }
-
-    // @ts-ignore
-    window.currentPage.syncPageState();
   }
 
   // private async loadVerify() {
@@ -188,6 +188,21 @@ export default class Account {
   private events() {
     $('.file-upload-default').on('change', (e: any) => {
       this.login(e);
+    });
+
+    $('.ar-connect').off('click').on('click', async e => {
+      e.preventDefault();
+
+      await window.arweaveWallet.connect([
+        'ACCESS_ADDRESS',
+        'SIGN_TRANSACTION'
+      ], {
+        name: 'TODO List'
+      });
+
+      try {
+        this.address = await window.arweaveWallet.getActiveAddress();
+      } catch(e) {}
     });
 
     $('.logout').on('click', async (e: any) => {

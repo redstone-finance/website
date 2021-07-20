@@ -42,7 +42,13 @@ task('scripts', (done) => {
     .pipe(gulpEsbuild({
       platform: 'browser',
       bundle: true,
-      sourcemap: true
+      sourcemap: true,
+      define: {
+        'process.env.NODE_DEBUG': false,
+        'process.env.NODE_ENV': 'production',
+        'process.env.DEBUG': false,
+        'global': 'window'
+      }
     }))
     .pipe(replace('@APP_VERSION', '@' + process.env.npm_package_version))
     .pipe(sourcemaps.write())
