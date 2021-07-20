@@ -3378,10 +3378,10 @@ community-js@^1.1.27:
     axios "^0.21.1"
     smartweave "^0.4.37"
 
-community-js@^1.1.53:
-  version "1.1.53"
-  resolved "https://registry.yarnpkg.com/community-js/-/community-js-1.1.53.tgz#f888c4be15ad7683872e76a0bb762bf885164423"
-  integrity sha512-U3lwZ4ebTktNJTHHD1W3JNQP3eq6rxjrTf4hX4GwfZ/ow14nf6kq6WpwHukeyZnHToOqlW4PyojRksbJVTP6NA==
+community-js@^1.1.54:
+  version "1.1.54"
+  resolved "https://registry.yarnpkg.com/community-js/-/community-js-1.1.54.tgz#8acec55b868683cbbf89e28cf4689c9f0ccfdd43"
+  integrity sha512-5zAJ7QMxAeT/dTCzN8rRlZgWx001zGMyeZKFVddKzwJsUElXQZJDxUZ7rSyTfjrSIqKN43/l9MikUN/ryUxTsw==
   dependencies:
     arweave "^1.10.15"
     axios "^0.21.1"
