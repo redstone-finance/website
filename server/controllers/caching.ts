@@ -38,6 +38,7 @@ export default class CacheController {
 
   private async getCommunities(req: express.Request, res: express.Response) {
     const cached = await cache.get('getcommunities');
+
     if(cached) {
       const cache: any[] = JSON.parse(cached);
       if(!cache.length) {

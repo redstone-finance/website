@@ -17,6 +17,10 @@ const arweave = Arweave.init({
   port: 443
 });
 
+memored.clean(() => {
+  console.log('Memored cache cleaned.');
+});
+
 const worker = async (id: string, disconnect: any) => {
   console.log(`Started worker ${id}`);
   await mongoose.connect(process.env.MONGO_URL, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true});

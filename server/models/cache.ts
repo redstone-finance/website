@@ -10,12 +10,15 @@ export default class Caching {
 
   async get(key: string): Promise<string> {
     if (this._data.has(key)) {
+      console.log('from cache');
       return this._data.get(key);
     }
 
     return new Promise((resolve, reject) => {
       memored.read(key, (err: any, val: string) => {
         if (err) return reject(err);
+        console.log('from memory');
+        this._data.set(key, val);
         resolve(val);
       });
     });
