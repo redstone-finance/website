@@ -113,7 +113,7 @@ export default class CacheController {
           transactions(
             tags: [
               {name: "App-Name", values: ["SmartWeaveContract"]},
-              {name: "Contract-Src", values: ["ngMml4jmlxu0umpiQCsHgPX2pb_Yz6YDB8f7G6j-tpI", "40tPvYdnGiSpwgnqrS2xJ2dqSvA6h8K11HjJxMs1cbI"]}
+              {name: "Contract-Src", values: ["ngMml4jmlxu0umpiQCsHgPX2pb_Yz6YDB8f7G6j-tpI"]}
             ]
             after: "${cursor}"
             first: 100
