@@ -1,6 +1,7 @@
+import path from 'path';
 import express from 'express';
 import { Application } from 'express';
-import path from 'path';
+import * as memored from 'memored';
 export default class App {
   app: Application;
   port: number;
