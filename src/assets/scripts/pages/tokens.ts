@@ -49,7 +49,7 @@ export default class PageTokens {
     this.hasTransferLocked = false;
 
     let contractSrc: string;
-    if(this.state.settings.get('evolve')) {
+    if (this.state.settings.get('evolve')) {
       contractSrc = this.state.settings.get('evolve');
     } else {
       try {

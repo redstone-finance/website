@@ -29,7 +29,7 @@ export default class Account {
     try {
       this.address = await window.arweaveWallet.getActiveAddress();
       this.loadAddress();
-    } catch(e) {}
+    } catch (e) {}
 
     try {
       const sess = atob(communityDB.get('sesswall'));
@@ -100,7 +100,6 @@ export default class Account {
   private async loadWallet(wallet: JWKInterface) {
     this.wallet = wallet;
 
-    
     this.address = await this.community.setWallet(wallet);
     this.loadAddress();
 
@@ -126,7 +125,9 @@ export default class Account {
     $('.user-avatar').css('background-image', `url(${this.avatar})`);
     $('.member-profile').attr('href', `./member.html#${this.address}`);
 
-    $('.member-ar').removeAttr('href').html(`${feather.icons['dollar-sign'].toSvg({ class: 'icon' })} ${this.arBalance} AR`);
+    $('.member-ar')
+      .removeAttr('href')
+      .html(`${feather.icons['dollar-sign'].toSvg({ class: 'icon' })} ${this.arBalance} AR`);
 
     if (this.address) {
       this.loggedIn = true;
@@ -190,20 +191,19 @@ export default class Account {
       this.login(e);
     });
 
-    $('.ar-connect').off('click').on('click', async e => {
-      e.preventDefault();
+    $('.ar-connect')
+      .off('click')
+      .on('click', async (e) => {
+        e.preventDefault();
 
-      await window.arweaveWallet.connect([
-        'ACCESS_ADDRESS',
-        'SIGN_TRANSACTION'
-      ], {
-        name: 'TODO List'
+        await window.arweaveWallet.connect(['ACCESS_ADDRESS', 'SIGN_TRANSACTION'], {
+          name: 'TODO List',
+        });
+
+        try {
+          this.address = await window.arweaveWallet.getActiveAddress();
+        } catch (e) {}
       });
-
-      try {
-        this.address = await window.arweaveWallet.getActiveAddress();
-      } catch(e) {}
-    });
 
     $('.logout').on('click', async (e: any) => {
       e.preventDefault();

@@ -5,9 +5,12 @@ import * as express from 'express';
 import cors from 'cors';
 import Caching from '../models/cache';
 import GQLResultInterface from 'ar-gql/dist/faces';
+import ArDB from 'ardb';
+import { GQLEdgeTransactionInterface, GQLTransactionInterface } from 'ardb/lib/faces/gql';
 
 const cache = new Caching();
-const whitelist = ['https://community.xyz', 'http://community.xyz', 'https://arweave.live/', 'https://arweave.net', 'http://localhost:5000'];
+const whitelist = ['https://community.xyz', 'http://community.xyz', 'https://arweave.live', 'https://arweave.net', 'http://localhost:5000'];
+
 const corsOptionsDelegate = function (req, callback) {
   let corsOptions = { origin: false };
   if (whitelist.indexOf(req.header('Origin')) !== -1) {
@@ -21,9 +24,11 @@ export default class CacheController {
   router = express.Router();
 
   private arweave: Arweave;
+  private ardb: ArDB;
 
   constructor(arweave: Arweave) {
     this.arweave = arweave;
+    this.ardb = new ArDB(arweave);
     this.setCommunities();
 
     this.initRoutes();
@@ -39,16 +44,16 @@ export default class CacheController {
   private async getCommunities(req: express.Request, res: express.Response) {
     const cached = await cache.get('getcommunities');
 
-    if(cached) {
+    if (cached) {
       const cache: any[] = JSON.parse(cached);
-      if(!cache.length) {
+      if (!cache.length) {
         return res.json(await this.setCommunities());
       }
       const toSend: any[] = [];
       console.log('cached');
-      for(const obj of cache) {
+      for (const obj of cache) {
         console.log(obj);
-        if(!obj.state.error) {
+        if (!obj.state.error) {
           toSend.push(obj);
         }
       }
@@ -66,7 +71,7 @@ export default class CacheController {
     const states: { id: string, state: StateInterface }[] = [];
     let current = -1;
     const go = async (i = 0) => {
-      if(i >= ids.length) {
+      if (i >= ids.length) {
         return true;
       }
 
@@ -83,8 +88,8 @@ export default class CacheController {
           Object.assign(obj, { [key]: value }) // Be careful! Maps can have non-String keys; object literals can't.
         ), {});
 
-        states.push({id, state});
-      } catch(e) {}
+        states.push({ id, state });
+      } catch (e) { }
       return go(++current);
     };
 
@@ -102,74 +107,33 @@ export default class CacheController {
   }
 
   private async getAllCommunityIds(): Promise<string[]> {
-    let cursor = '';
-    let hasNextPage = true;
-  
-    let ids: string[] = [];
-    while (hasNextPage) {
-      console.log(cursor);
+    const res = await this.ardb.appName('SmartWeaveContract')
+      .tag('Contract-Src', ['ngMml4jmlxu0umpiQCsHgPX2pb_Yz6YDB8f7G6j-tpI'])
+      .only([
+        'id',
+        'tags'
+      ]).findAll() as GQLEdgeTransactionInterface[];
 
-      const query = {
-        query: `query {
-          transactions(
-            tags: [
-              {name: "App-Name", values: ["SmartWeaveContract"]},
-              {name: "Contract-Src", values: ["ngMml4jmlxu0umpiQCsHgPX2pb_Yz6YDB8f7G6j-tpI"]}
-            ]
-            after: "${cursor}"
-            first: 100
-          ) {
-            pageInfo {
-              hasNextPage
-            }
-            edges {
-              cursor
-              node {
-                id
-                recipient
-                quantity {
-                  ar
-                }
-                owner {
-                  address
-                },
-                tags {
-                  name,
-                  value
-                }
-                block {
-                  timestamp
-                  height
-                }
-              }
-            }
-          }
-        }`,
-      };
-      const res = await this.arweave.api.post('/graphql', query);
-      const data: GQLResultInterface = res.data;
-      const edges = data.data.transactions.edges;
-  
-      for (let i = 0, j = edges.length; i < j; i++) {
-        let isAtomic = false;
-        const node = edges[i].node;
-        for(const tag of node.tags) {
-          if(tag.name === 'Init-State') {
-            isAtomic = true;
-            break;
-          }
+    let ids: string[] = [];
+
+    for (const tx of res) {
+      if (!tx.node.tags) {
+        console.log(tx);
+        continue;
+      }
+
+      let isAtomic = false;
+      for (const tag of tx.node.tags) {
+        if (tag.name === 'Init-State') {
+          isAtomic = true;
+          break;
         }
-        if(!isAtomic) ids.push(node.id);
       }
-      hasNextPage = data.data.transactions.pageInfo.hasNextPage;
-  
-      if (hasNextPage) {
-        cursor = edges[edges.length - 1].cursor;
-      }
+      if (!isAtomic) ids.push(tx.node.id);
     }
 
     console.log('load completed!');
-  
+
     return ids;
   }
 }

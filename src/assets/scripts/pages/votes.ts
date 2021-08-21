@@ -216,15 +216,15 @@ export default class PageVotes {
           }
         });
       }
-    } else if(setKey === 'evolve') {
+    } else if (setKey === 'evolve') {
       let canEvolve = state.settings?.get('canEvolve');
-      if(canEvolve === false) {
+      if (canEvolve === false) {
         $('.lock-set-value-invalid').text('Evolve is currently locked');
         $('#vote-set-value').addClass('is-invalid');
         return false;
       }
 
-      if(!setValue.length || !/[a-z0-9_-]{43}/i.test(setValue)) {
+      if (!setValue.length || !/[a-z0-9_-]{43}/i.test(setValue)) {
         $('.lock-set-value-invalid').text('Invalid contract source txid');
         $('#vote-set-value').addClass('is-invalid');
         return false;

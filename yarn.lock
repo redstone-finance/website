@@ -1498,6 +1498,13 @@
   dependencies:
     defer-to-connect "^1.0.1"
 
+"@textury/ardb@^1.1.3":
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/@textury/ardb/-/ardb-1.1.3.tgz#a16c2cac807eef955fe0ff21bcce0f2597a6adef"
+  integrity sha512-Q7mQH56zLNIpbEJ2E7/UM1e2b0lgaU8ARr/KCEq/m9aXJwvNJBCB+YCbPe9oQcZgXtybgNR0hEwBaYSaoicF3w==
+  dependencies:
+    arweave "^1.10.15"
+
 "@trysound/sax@0.1.1":
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/@trysound/sax/-/sax-0.1.1.tgz#3348564048e7a2d7398c935d466c0414ebb6a669"
@@ -2950,11 +2957,6 @@ caniuse-lite@1.0.30001181, caniuse-lite@^1.0.0, caniuse-lite@^1.0.30001181, cani
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001181.tgz#4f0e5184e1ea7c3bf2727e735cbe7ca9a451d673"
   integrity sha512-m5ul/ARCX50JB8BSNM+oiPmQrR5UmngaQ3QThTTp5HcIIQGP/nPBs82BYLE+tigzm3VW+F4BJIhUyaVtEweelQ==
 
-caniuse-lite@1.0.30001241:
-  version "1.0.30001241"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001241.tgz#cd3fae47eb3d7691692b406568d7a3e5b23c7598"
-  integrity sha512-1uoSZ1Pq1VpH0WerIMqwptXHNNGfdl7d1cJUFs80CwQ/lVzdhTvsFZCeNFslze7AjsQnb4C85tzclPa1VShbeQ==
-
 canvas-renderer@~2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/canvas-renderer/-/canvas-renderer-2.2.0.tgz#512151f5494aaac5270802fba22599785114716d"
@@ -3378,15 +3380,15 @@ community-js@^1.1.27:
     axios "^0.21.1"
     smartweave "^0.4.37"
 
-community-js@^1.1.54:
-  version "1.1.54"
-  resolved "https://registry.yarnpkg.com/community-js/-/community-js-1.1.54.tgz#8acec55b868683cbbf89e28cf4689c9f0ccfdd43"
-  integrity sha512-5zAJ7QMxAeT/dTCzN8rRlZgWx001zGMyeZKFVddKzwJsUElXQZJDxUZ7rSyTfjrSIqKN43/l9MikUN/ryUxTsw==
+community-js@^1.1.55:
+  version "1.1.55"
+  resolved "https://registry.yarnpkg.com/community-js/-/community-js-1.1.55.tgz#73d3a140d4414e53ad83ce21aada556e0e5214ee"
+  integrity sha512-xoVVYTdqZBSUhtnd5taXBWvJ6Lg1NKxVTt3L4Mrp/ddaWjiDlI0LGkiyojpzJDXMTaA7Imv1sxJNJhqyPE8iaw==
   dependencies:
     arweave "^1.10.15"
     axios "^0.21.1"
     redstone-api "^0.4.3"
-    smartweave "^0.4.39"
+    smartweave "^0.4.41"
     util "^0.12.4"
 
 component-emitter@^1.2.1:
@@ -10803,10 +10805,10 @@ smartweave@^0.4.10, smartweave@^0.4.27, smartweave@^0.4.37:
     sentencer "^0.2.1"
     yargs "^16.2.0"
 
-smartweave@^0.4.39:
-  version "0.4.39"
-  resolved "https://registry.yarnpkg.com/smartweave/-/smartweave-0.4.39.tgz#cd7fc1877c3a92f2b9abfb24b7bf8d35d10353e5"
-  integrity sha512-EKrcJCz3fNnrOvQk3x2+KqqhvdrOsK4COOY3ocLmKW4nfzEFPNL8HkmXgn1+JRxB296RuBrgBLCQKWa0XtvlAA==
+smartweave@^0.4.41:
+  version "0.4.41"
+  resolved "https://registry.yarnpkg.com/smartweave/-/smartweave-0.4.41.tgz#40a2cad2f443091b4fe5c8e6bf565d980fe91403"
+  integrity sha512-xixp9Nfuiy/2e2JmU0IICKI9iU0KMDbLKsS/SLOwpgj7LDUwIhfGzaOHWAcK5OJ2iij9dHYSmGPRjRk+wurKqA==
   dependencies:
     "@types/clui" "^0.3.0"
     "@types/inquirer" "^7.3.1"
