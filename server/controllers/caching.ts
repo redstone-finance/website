@@ -65,8 +65,14 @@ export default class CacheController {
     return res.json(await this.setCommunities());
   }
 
-  private async setCommunities() {
+  private async setCommunities(): Promise<{
+    id: string;
+    state: StateInterface;
+  }[]> {
     const ids = await this.getAllCommunityIds();
+    if (!ids || !ids.length) {
+      return [];
+    }
 
     const states: { id: string, state: StateInterface }[] = [];
     let current = -1;
@@ -107,12 +113,19 @@ export default class CacheController {
   }
 
   private async getAllCommunityIds(): Promise<string[]> {
-    const res = await this.ardb.appName('SmartWeaveContract')
-      .tag('Contract-Src', ['ngMml4jmlxu0umpiQCsHgPX2pb_Yz6YDB8f7G6j-tpI'])
-      .only([
-        'id',
-        'tags'
-      ]).findAll() as GQLEdgeTransactionInterface[];
+    let res;
+
+    try {
+      res = await this.ardb.appName('SmartWeaveContract')
+        .tag('Contract-Src', ['ngMml4jmlxu0umpiQCsHgPX2pb_Yz6YDB8f7G6j-tpI'])
+        .only([
+          'id',
+          'tags'
+        ]).findAll() as GQLEdgeTransactionInterface[];
+    } catch (e) {
+      console.log(e);
+      return [];
+    }
 
     let ids: string[] = [];
 
