@@ -26,6 +26,8 @@ export default class CacheController {
   private arweave: Arweave;
   private ardb: ArDB;
 
+  private isUpdating: boolean = false;
+
   constructor(arweave: Arweave) {
     this.arweave = arweave;
     this.ardb = new ArDB(arweave);
@@ -47,7 +49,8 @@ export default class CacheController {
     if (cached) {
       const cache: any[] = JSON.parse(cached);
       if (!cache.length) {
-        return res.json(await this.setCommunities());
+        await this.setCommunities();
+        return res.status(404).send();
       }
       const toSend: any[] = [];
       console.log('cached');
@@ -61,14 +64,17 @@ export default class CacheController {
       return res.json(toSend);
     }
 
-    console.log('not from cache');
-    return res.json(await this.setCommunities());
+    await this.setCommunities();
+    return res.status(404).send();
   }
 
   private async setCommunities(): Promise<{
     id: string;
     state: StateInterface;
   }[]> {
+    if (this.isUpdating) return [];
+    this.isUpdating = true;
+
     const ids = await this.getAllCommunityIds();
     if (!ids || !ids.length) {
       return [];
@@ -105,10 +111,13 @@ export default class CacheController {
     }
 
     await Promise.all(gos);
-    cache.set('getcommunities', JSON.stringify(states)).catch(console.log);
+    if (states.length) {
+      cache.set('getcommunities', JSON.stringify(states)).catch(console.log);
+    }
 
     setTimeout(() => this.setCommunities(), 1000 * 60 * 30);
 
+    this.isUpdating = false;
     return states;
   }
 
