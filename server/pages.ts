@@ -3,6 +3,6 @@ export const pages = [
   'home',
   'opportunity',
   'communities',
-  'claim',
+  // 'claim',
   'member'
 ];
