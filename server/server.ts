@@ -9,6 +9,7 @@ import App from './app';
 import HomeController from './controllers/home';
 import CacheController from './controllers/caching';
 import RedirectController from './controllers/redirection';
+import header from './middlewares/header';
 
 const arweave = Arweave.init({
   host: 'arweave.net',
@@ -33,7 +34,8 @@ const worker = async (id: string, disconnect: any) => {
       compression(),
       helmet({
         contentSecurityPolicy: false,
-      })
+      }),
+      header,
     ],
   });
 
