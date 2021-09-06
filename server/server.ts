@@ -14,7 +14,8 @@ import header from './middlewares/header';
 const arweave = Arweave.init({
   host: 'arweave.net',
   protocol: 'https',
-  port: 443
+  port: 443,
+  timeout: 100000,
 });
 
 memored.clean(() => {
