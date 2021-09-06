@@ -7,6 +7,7 @@ import Caching from '../models/cache';
 import GQLResultInterface from 'ar-gql/dist/faces';
 import ArDB from 'ardb';
 import { GQLEdgeTransactionInterface, GQLTransactionInterface } from 'ardb/lib/faces/gql';
+import ArdbTransaction from 'ardb/lib/models/transaction';
 
 const cache = new Caching();
 const whitelist = ['https://community.xyz', 'http://community.xyz', 'https://arweave.live', 'https://arweave.net', 'http://localhost:5000'];
@@ -91,6 +92,7 @@ export default class CacheController {
       let state: StateInterface;
 
       try {
+        // @ts-ignore
         const community = new Community(this.arweave);
         await community.setCommunityTx(id);
         state = await community.getState(true);
@@ -125,12 +127,14 @@ export default class CacheController {
     let res;
 
     try {
-      res = await this.ardb.appName('SmartWeaveContract')
+      res = await this.ardb.search('transactions').appName('SmartWeaveContract')
         .tag('Contract-Src', ['ngMml4jmlxu0umpiQCsHgPX2pb_Yz6YDB8f7G6j-tpI'])
         .only([
           'id',
-          'tags'
-        ]).findAll() as GQLEdgeTransactionInterface[];
+          'tags',
+          'tags.name',
+          'tags.value'
+        ]).findAll() as ArdbTransaction[];
     } catch (e) {
       console.log(e);
       return [];
@@ -139,19 +143,19 @@ export default class CacheController {
     let ids: string[] = [];
 
     for (const tx of res) {
-      if (!tx.node.tags) {
+      if (!tx.tags) {
         console.log(tx);
         continue;
       }
 
       let isAtomic = false;
-      for (const tag of tx.node.tags) {
+      for (const tag of tx.tags) {
         if (tag.name === 'Init-State') {
           isAtomic = true;
           break;
         }
       }
-      if (!isAtomic) ids.push(tx.node.id);
+      if (!isAtomic) ids.push(tx.id);
     }
 
     console.log('load completed!');
