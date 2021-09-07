@@ -55,7 +55,7 @@ task('scripts', (done) => {
         '__filename': 'String',
       }
     }))
-    .pipe(replace('@APP_VERSION', '@' + process.env.npm_package_version))
+    .pipe(replace('@APP_VERSION', '@' + require('./package.json').version))
     .pipe(sourcemaps.write())
     .pipe(dest('dist/assets/scripts'));
 
