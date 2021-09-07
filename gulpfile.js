@@ -14,6 +14,7 @@ const purgeCSS = require('gulp-purgecss');
 const cleanCSS = require('gulp-clean-css');
 const autoprefixer = require('autoprefixer');
 const cssnano = require('cssnano');
+const { nodeBuiltIns } = require('esbuild-node-builtins');
 
 const sources = {
   html: 'src/*.pug',
@@ -24,8 +25,8 @@ const sources = {
 }
 
 task('clean', (done) => {
-    del.sync(['dist/**']);
-    done();
+  del.sync(['dist/**']);
+  done();
 });
 
 task('html', (done) => {
@@ -40,14 +41,18 @@ task('scripts', (done) => {
   src(sources.scripts)
     .pipe(sourcemaps.init())
     .pipe(gulpEsbuild({
+      plugins: [nodeBuiltIns()],
       platform: 'browser',
       bundle: true,
       sourcemap: true,
       define: {
-        'process.env.NODE_DEBUG': false,
+        'process.env.NODE_DEBUG': 'false',
         'process.env.NODE_ENV': 'production',
-        'process.env.DEBUG': false,
-        'global': 'window'
+        'process.env.DEBUG': 'false',
+        'global': 'window',
+        'process.cwd': 'String',
+        '_smartweave_1.LoggerFactory.INST': '{"create": "function() {}"}',
+        '__filename': 'String',
       }
     }))
     .pipe(replace('@APP_VERSION', '@' + process.env.npm_package_version))
@@ -60,12 +65,12 @@ task('scripts', (done) => {
 task('images', (done) => {
   src(sources.images)
     .pipe(imagemin([
-      imagemin.gifsicle({interlaced: true}),
-      imagemin.mozjpeg({quality: 75, progressive: true}),
-      imagemin.optipng({optimizationLevel: 5}),
+      imagemin.gifsicle({ interlaced: true }),
+      imagemin.mozjpeg({ quality: 75, progressive: true }),
+      imagemin.optipng({ optimizationLevel: 5 }),
       imagemin.svgo({
         plugins: [
-          {removeViewBox: false}
+          { removeViewBox: false }
         ]
       })
     ]))
@@ -87,7 +92,7 @@ task('styles', function (done) {
     //     return broadMatches.concat(innerMatches)
     //   }
     // }))
-    .pipe(cleanCSS({compatibility: 'ie8'}))
+    .pipe(cleanCSS({ compatibility: 'ie8' }))
     .pipe(sourcemaps.write('.'))
     .pipe(dest('dist'));
 
@@ -96,10 +101,10 @@ task('styles', function (done) {
 
 task('revision', (done) => {
   src(sources.revision)
-  .pipe(rev())
-  .pipe(src('dist/**/*.html'))
-  .pipe(revRewrite())
-  .pipe(dest('dist'));
+    .pipe(rev())
+    .pipe(src('dist/**/*.html'))
+    .pipe(revRewrite())
+    .pipe(dest('dist'));
 
   done();
 });
