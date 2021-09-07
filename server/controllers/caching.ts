@@ -1,12 +1,10 @@
-import Arweave from 'arweave';
+import Ardk from 'ardk';
 import Community from 'community-js';
 import { StateInterface } from 'community-js/lib/faces';
 import * as express from 'express';
 import cors from 'cors';
 import Caching from '../models/cache';
-import GQLResultInterface from 'ar-gql/dist/faces';
 import ArDB from 'ardb';
-import { GQLEdgeTransactionInterface, GQLTransactionInterface } from 'ardb/lib/faces/gql';
 import ArdbTransaction from 'ardb/lib/models/transaction';
 
 const cache = new Caching();
@@ -24,14 +22,16 @@ export default class CacheController {
   path = '/caching/';
   router = express.Router();
 
-  private arweave: Arweave;
+  private ardk: Ardk;
   private ardb: ArDB;
 
   private isUpdating: boolean = false;
 
-  constructor(arweave: Arweave) {
-    this.arweave = arweave;
-    this.ardb = new ArDB(arweave);
+  constructor(ardk: Ardk) {
+    this.ardk = ardk;
+
+    // @ts-ignore
+    this.ardb = new ArDB(ardk);
     this.setCommunities();
 
     this.initRoutes();
@@ -93,7 +93,7 @@ export default class CacheController {
 
       try {
         // @ts-ignore
-        const community = new Community(this.arweave);
+        const community = new Community(this.ardk);
         await community.setCommunityTx(id);
         state = await community.getState(true);
 
