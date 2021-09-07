@@ -73,8 +73,8 @@
     "apexcharts": "^3.27.1",
     "ar-gql": "^0.0.6",
     "ardb": "^1.1.6",
+    "ardk": "^1.0.4",
     "arverify": "^0.0.11",
-    "arweave": "^1.10.15",
     "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "bootstrap": "twbs/bootstrap#4fc701f",
@@ -94,6 +94,7 @@
     "peity": "^3.3.0",
     "popper.js": "^1.16.0",
     "quill": "1.3.7",
+    "redstone-smartweave": "^0.3.10-alpha.1",
     "store": "^2.0.12",
     "threads": "^1.6.5",
     "throng": "^5.0.0"

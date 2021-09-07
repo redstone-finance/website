@@ -1,13 +1,13 @@
-import Arweave from 'arweave';
-import Community from 'community-js';
+import Ardk from 'ardk';
+import { SmartWeaveNodeFactory, LoggerFactory, SmartWeave } from "redstone-smartweave";
 import { StateInterface } from 'community-js/lib/faces';
 import * as express from 'express';
 import cors from 'cors';
 import Caching from '../models/cache';
-import GQLResultInterface from 'ar-gql/dist/faces';
 import ArDB from 'ardb';
-import { GQLEdgeTransactionInterface, GQLTransactionInterface } from 'ardb/lib/faces/gql';
 import ArdbTransaction from 'ardb/lib/models/transaction';
+
+LoggerFactory.INST.logLevel('fatal');
 
 const cache = new Caching();
 const whitelist = ['https://community.xyz', 'http://community.xyz', 'https://arweave.live', 'https://arweave.net', 'http://localhost:5000'];
@@ -24,14 +24,19 @@ export default class CacheController {
   path = '/caching/';
   router = express.Router();
 
-  private arweave: Arweave;
+  private ardk: Ardk;
   private ardb: ArDB;
+  private smartweave: SmartWeave;
 
   private isUpdating: boolean = false;
 
-  constructor(arweave: Arweave) {
-    this.arweave = arweave;
-    this.ardb = new ArDB(arweave);
+  constructor(ardk: Ardk) {
+    this.ardk = ardk;
+
+    // @ts-ignore
+    this.ardb = new ArDB(ardk);
+    // @ts-ignore
+    this.smartweave = SmartWeaveNodeFactory.memCached(ardk);
     this.setCommunities();
 
     this.initRoutes();
@@ -53,20 +58,12 @@ export default class CacheController {
         await this.setCommunities();
         return res.status(404).send();
       }
-      const toSend: any[] = [];
-      console.log('cached');
-      for (const obj of cache) {
-        console.log(obj);
-        if (!obj.state.error) {
-          toSend.push(obj);
-        }
-      }
 
-      return res.json(toSend);
+      return res.json(cache);
     }
 
-    await this.setCommunities();
-    return res.status(404).send();
+    const state = await this.setCommunities();
+    return res.json(state);
   }
 
   private async setCommunities(): Promise<{
@@ -76,6 +73,7 @@ export default class CacheController {
     if (this.isUpdating) return [];
     this.isUpdating = true;
 
+    console.log('Updating all the communities...');
     const ids = await this.getAllCommunityIds();
     if (!ids || !ids.length) {
       return [];
@@ -92,10 +90,10 @@ export default class CacheController {
       let state: StateInterface;
 
       try {
-        // @ts-ignore
-        const community = new Community(this.arweave);
-        await community.setCommunityTx(id);
-        state = await community.getState(true);
+
+        const psc = this.smartweave.contract(id);
+        const res = await psc.readState();
+        state = res.state as StateInterface;
 
         // @ts-ignore
         state.settings = Array.from(state.settings).reduce((obj, [key, value]) => (
@@ -120,21 +118,26 @@ export default class CacheController {
     setTimeout(() => this.setCommunities(), 1000 * 60 * 30);
 
     this.isUpdating = false;
-    return states;
+    console.log('Done!');
+    // @ts-ignore
+    return states.filter(obj => !obj.state.error);
   }
 
   private async getAllCommunityIds(): Promise<string[]> {
     let res;
 
     try {
-      res = await this.ardb.search('transactions').appName('SmartWeaveContract')
-        .tag('Contract-Src', ['ngMml4jmlxu0umpiQCsHgPX2pb_Yz6YDB8f7G6j-tpI'])
-        .only([
-          'id',
-          'tags',
-          'tags.name',
-          'tags.value'
-        ]).findAll() as ArdbTransaction[];
+      res = (await this.ardb
+        .search('transactions')
+        .appName('SmartWeaveContract')
+        .tags([
+          {
+            name: 'Contract-Src',
+            values: ['ngMml4jmlxu0umpiQCsHgPX2pb_Yz6YDB8f7G6j-tpI', '40tPvYdnGiSpwgnqrS2xJ2dqSvA6h8K11HjJxMs1cbI'],
+          },
+          { name: 'Content-Type', values: 'application/json' },
+        ])
+        .findAll()) as ArdbTransaction[];
     } catch (e) {
       console.log(e);
       return [];

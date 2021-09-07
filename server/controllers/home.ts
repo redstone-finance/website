@@ -1,7 +1,7 @@
 import express from 'express';
 import path from 'path';
-import Arweave from 'arweave';
-import Community from 'community-js';
+import Ardk from 'ardk';
+//import Community from 'community-js';
 import { pages } from '../pages';
 
 export default class HomeController {
@@ -9,17 +9,17 @@ export default class HomeController {
   router = express.Router();
 
   private isSetTxId = false;
-  private arweave: Arweave;
-  private community: Community;
+  private ardk: Ardk;
+  //private community: Community;
 
-  constructor(arweave: Arweave) {
-    this.arweave = arweave;
+  constructor(ardk: Ardk) {
+    this.ardk = ardk;
     this.initRoutes();
   }
 
   private async initRoutes() {
     // @ts-ignore
-    this.community = new Community(this.arweave, await this.arweave.wallets.generate());
+    //this.community = new Community(this.ardk, await this.ardk.wallets.generate());
 
     this.router.get(this.path, (_, res) => {
       res.sendFile(path.join(__dirname, '../../dist/index.html'));

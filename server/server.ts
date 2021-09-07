@@ -4,17 +4,15 @@ import bodyParser from 'body-parser';
 import helmet from 'helmet';
 import throng from 'throng';
 import memored from 'memored';
-import Arweave from 'arweave';
+import Ardk from 'ardk';
 import App from './app';
 import HomeController from './controllers/home';
 import CacheController from './controllers/caching';
 import RedirectController from './controllers/redirection';
 import header from './middlewares/header';
 
-const arweave = Arweave.init({
-  host: 'arweave.net',
-  protocol: 'https',
-  port: 443,
+const ardk = new Ardk({
+  url: 'https://arweave.net',
   timeout: 100000,
 });
 
@@ -27,7 +25,7 @@ const worker = async (id: string, disconnect: any) => {
 
   const app = new App({
     port: 5000,
-    controllers: [new HomeController(arweave), new CacheController(arweave), new RedirectController()],
+    controllers: [new HomeController(ardk), new CacheController(ardk), new RedirectController()],
     middleWares: [
       morgan('tiny'),
       bodyParser.json(),
