@@ -1,7 +1,7 @@
 import express from 'express';
 import path from 'path';
 import Ardk from 'ardk';
-import Community from 'community-js';
+//import Community from 'community-js';
 import { pages } from '../pages';
 
 export default class HomeController {
@@ -10,7 +10,7 @@ export default class HomeController {
 
   private isSetTxId = false;
   private ardk: Ardk;
-  private community: Community;
+  //private community: Community;
 
   constructor(ardk: Ardk) {
     this.ardk = ardk;
@@ -19,7 +19,7 @@ export default class HomeController {
 
   private async initRoutes() {
     // @ts-ignore
-    this.community = new Community(this.ardk, await this.ardk.wallets.generate());
+    //this.community = new Community(this.ardk, await this.ardk.wallets.generate());
 
     this.router.get(this.path, (_, res) => {
       res.sendFile(path.join(__dirname, '../../dist/index.html'));
